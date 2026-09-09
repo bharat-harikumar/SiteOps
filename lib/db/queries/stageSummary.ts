@@ -98,6 +98,14 @@ export type StageCompositionRow = {
   unit: string | null;
   headCount: number | null;
   spend: number;
+  // Split-labour manpower, null for material rows and for labour rows logged on
+  // the ordinary people_count × wage_per_head path. Counts and money are summed
+  // in the same GROUP BY as `spend`, so they cannot disagree with it about which
+  // entries belong to this stage.
+  masonCount: number | null;
+  masonSalary: number | null;
+  helperCount: number | null;
+  helperSalary: number | null;
 };
 
 type RawCompositionRow = {
@@ -108,6 +116,10 @@ type RawCompositionRow = {
   unit: string | null;
   head_count: number | string | null;
   spend: number | string | null;
+  mason_count: number | string | null;
+  mason_salary: number | string | null;
+  helper_count: number | string | null;
+  helper_salary: number | string | null;
 };
 
 // Path sentinels for the two untagged buckets, mirroring the keys
@@ -136,10 +148,17 @@ export async function getStageComposition(
         ? sql`created_at < ${`${WORK_STAGE_LAUNCH_DATE} 00:00:00`}::timestamp`
         : sql`created_at >= ${`${WORK_STAGE_LAUNCH_DATE} 00:00:00`}::timestamp`;
 
+  // Per-role manpower rides along in the labour arm's existing GROUP BY, so it
+  // can never disagree with `spend` about which entries belong to this stage.
+  // mason/helper amounts are PER-PERSON wages, so a role costs count × wage --
+  // the same rule labourSpendSumExpr applies. The material arm selects NULL for
+  // all four, keeping "no roles on this row" distinct from "roles, both empty".
   const result = await executor.execute(sql`
     select 'material' as entry_type, material_type as name, count(*)::int as entry_count,
            coalesce(sum(quantity),0)::float8 as quantity, max(unit) as unit,
-           null::int as head_count, coalesce(sum(coalesce(cost,0)),0)::float8 as spend
+           null::int as head_count, coalesce(sum(coalesce(cost,0)),0)::float8 as spend,
+           null::int as mason_count, null::float8 as mason_salary,
+           null::int as helper_count, null::float8 as helper_salary
       from material_entries
      where site_id = ${siteId}::uuid
        and work_stage is not distinct from ${stage}
@@ -149,7 +168,11 @@ export async function getStageComposition(
     select 'labour', work_type, count(*)::int,
            null::float8, null,
            coalesce(sum(coalesce(people_count,0)),0)::int,
-           coalesce(${labourSpendSumExpr}, 0)::float8
+           coalesce(${labourSpendSumExpr}, 0)::float8,
+           coalesce(sum(coalesce(mason_count,0)),0)::int,
+           coalesce(sum(coalesce(mason_count,0)*coalesce(mason_salary_amount,0)),0)::float8,
+           coalesce(sum(coalesce(helper_count,0)),0)::int,
+           coalesce(sum(coalesce(helper_count,0)*coalesce(helper_salary_amount,0)),0)::float8
       from labour_entries
      where site_id = ${siteId}::uuid
        and work_stage is not distinct from ${stage}
@@ -166,5 +189,9 @@ export async function getStageComposition(
     unit: r.unit,
     headCount: r.head_count == null ? null : Number(r.head_count),
     spend: Number(r.spend ?? 0),
+    masonCount: r.mason_count == null ? null : Number(r.mason_count),
+    masonSalary: r.mason_salary == null ? null : Number(r.mason_salary),
+    helperCount: r.helper_count == null ? null : Number(r.helper_count),
+    helperSalary: r.helper_salary == null ? null : Number(r.helper_salary),
   }));
 }
