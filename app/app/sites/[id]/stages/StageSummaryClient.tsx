@@ -26,6 +26,31 @@ const TYPE_BARS: Record<StageEntryType, string> = {
 
 const TYPE_ORDER: StageEntryType[] = ["material", "labour", "machinery", "expense"];
 
+// One split-labour role line under a labour composition row. Rendered only when
+// the role has heads on it — a stage where every entry used the ordinary
+// people_count × wage path shows no sub-lines at all.
+function ManpowerLine({
+  role,
+  count,
+  salary,
+}: {
+  role: "Mason" | "Helper";
+  count: number | null;
+  salary: number | null;
+}) {
+  if (!count) return null;
+  return (
+    <div className="flex items-baseline justify-between gap-4">
+      <span className="text-[11px] text-slate-400 font-medium min-w-0 truncate">
+        • {role} · {count} {count === 1 ? "Person" : "People"}
+      </span>
+      <span className="text-[11px] font-semibold text-slate-400 shrink-0">
+        {formatCurrency(salary ?? 0)}
+      </span>
+    </div>
+  );
+}
+
 function span(row: StageSummaryRow) {
   if (!row.firstDate) return "No dated entries";
   return row.firstDate === row.lastDate
@@ -189,20 +214,26 @@ export default function StageSummaryClient({
                       </p>
                     )}
                     {detail[row.key]?.map((d) => (
-                      <div
-                        key={`${d.entryType}-${d.name}`}
-                        className="flex items-baseline justify-between gap-4 py-1"
-                      >
-                        <span className="text-xs text-slate-300 font-semibold min-w-0 truncate">
-                          {d.name}
-                          <span className="text-slate-600 font-medium">
-                            {d.quantity != null && d.unit ? ` · ${d.quantity} ${d.unit}` : ""}
-                            {d.headCount ? ` · ${d.headCount} heads` : ""}
+                      <div key={`${d.entryType}-${d.name}`} className="py-1">
+                        <div className="flex items-baseline justify-between gap-4">
+                          <span className="text-xs text-slate-300 font-semibold min-w-0 truncate">
+                            {d.name}
+                            <span className="text-slate-600 font-medium">
+                              {d.quantity != null && d.unit ? ` · ${d.quantity} ${d.unit}` : ""}
+                              {d.headCount ? ` · ${d.headCount} heads` : ""}
+                            </span>
                           </span>
-                        </span>
-                        <span className="text-xs font-bold text-slate-300 shrink-0">
-                          {formatCurrency(d.spend)}
-                        </span>
+                          <span className="text-xs font-bold text-slate-300 shrink-0">
+                            {formatCurrency(d.spend)}
+                          </span>
+                        </div>
+
+                        {(d.masonCount || d.helperCount) ? (
+                          <div className="pl-4 mt-0.5 space-y-0.5">
+                            <ManpowerLine role="Mason" count={d.masonCount} salary={d.masonSalary} />
+                            <ManpowerLine role="Helper" count={d.helperCount} salary={d.helperSalary} />
+                          </div>
+                        ) : null}
                       </div>
                     ))}
                   </div>
