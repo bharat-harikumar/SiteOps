@@ -21,6 +21,10 @@ export const ENTRY_FIELD_CONSTRAINTS = {
   // labour
   peopleCount: { min: 1, max: 10000, step: 1 },
   wagePerHead: { min: 0.01, max: 1000000, step: 0.01 },
+  // labour overtime
+  otPeopleCount: { min: 1, max: 10000, step: 1 },
+  otHours: { min: 0.1, max: 24, step: 0.1 },
+  otRate: { min: 0.01, max: 1000000, step: 0.01 },
   // material
   quantity: { min: 0.01, max: 1000000, step: 0.01 },
   cost: { min: 0.01, max: 100000000, step: 0.01 },

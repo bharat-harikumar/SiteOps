@@ -7,6 +7,7 @@ import { handleDbError } from "@/lib/errors/db";
 import { errorResponse, successResponse } from "@/lib/errors/response";
 import { parseJsonBody, validateBody } from "@/lib/http/request";
 import { withApi } from "@/lib/http/withApi";
+import { calculateOtAmount } from "@/lib/services/labourSpend";
 import { runNonCritical } from "@/lib/services/nonCritical";
 import { assertInCatalogList } from "@/lib/validation/catalogList";
 import { isSplitLabourWorkType, labourEntrySchema } from "@/lib/validation/schemas";
@@ -57,6 +58,22 @@ export const POST = withApi(async ({ request, requestId }) => {
   });
   if (!writable.ok) return writable.response;
 
+  const hasOt =
+    validation.data.otPeopleCount != null &&
+    validation.data.otHours != null &&
+    validation.data.otRate != null;
+
+  const otPeopleCount = hasOt ? validation.data.otPeopleCount! : null;
+  const otHours = hasOt ? String(validation.data.otHours) : null;
+  const otRate = hasOt ? String(validation.data.otRate) : null;
+  const otTotalAmount = hasOt
+    ? calculateOtAmount(
+        validation.data.otPeopleCount,
+        validation.data.otHours,
+        validation.data.otRate,
+      ).toFixed(2)
+    : null;
+
   try {
     const entry = await insertLabourEntry({
       siteId,
@@ -78,6 +95,10 @@ export const POST = withApi(async ({ request, requestId }) => {
         splitLabour && "helperSalaryAmount" in validation.data
           ? String(validation.data.helperSalaryAmount)
           : null,
+      otPeopleCount,
+      otHours,
+      otRate,
+      otTotalAmount,
       remarks: remarks || null,
       workStage: canonicalWorkStage,
       createdBy: writable.session.user.id,

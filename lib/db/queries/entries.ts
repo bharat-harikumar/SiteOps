@@ -54,6 +54,10 @@ export async function insertLabourEntry(data: {
   masonSalaryAmount?: string | null;
   helperCount?: number | null;
   helperSalaryAmount?: string | null;
+  otPeopleCount?: number | null;
+  otHours?: string | null;
+  otRate?: string | null;
+  otTotalAmount?: string | null;
   remarks: string | null;
   workStage?: string | null;
   createdBy: string;

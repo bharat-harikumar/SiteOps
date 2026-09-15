@@ -134,4 +134,33 @@ describeDb("searchRemarks archived-site scoping", () => {
       });
     });
   });
+
+  it("maps SQL search hits correctly including OT-augmented amount", async () => {
+    const mockTx = {
+      execute: async () => [
+        {
+          source: "labour",
+          entry_id: "l1",
+          site_id: "s1",
+          site_name: "Site A",
+          date: "2026-06-25",
+          note: "labour ot remarks",
+          sim: "0.8",
+          amount: "1400.00",
+        },
+      ],
+    };
+
+    const res = await searchRemarks({
+      q: "labour ot",
+      limit: 10,
+      offset: 0,
+      scope: { isAdmin: true, siteIds: [] },
+      tx: mockTx as any,
+    });
+
+    expect(res.hits).toHaveLength(1);
+    expect(res.hits[0].source).toBe("labour");
+    expect(res.hits[0].amount).toBe(1400);
+  });
 });

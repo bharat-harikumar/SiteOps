@@ -8,7 +8,11 @@ import { ArrowLeft, Search } from "lucide-react";
 import { EntryTypeIcon } from "@/components/constants/EntryTypeIcon";
 import { DateFilterField } from "@/components/operations/DateFilterField";
 import EntryLogList from "@/components/operations/EntryLogList";
-import { buildGroupedRows, entryMatchesSearch } from "@/components/operations/categoryView";
+import {
+  buildGroupedRows,
+  buildMaterialQuantitySummary,
+  entryMatchesSearch,
+} from "@/components/operations/categoryView";
 import type { EntryType } from "@/lib/db/queries/entries";
 import {
   type Entry,
@@ -68,6 +72,11 @@ export default function CategoryDetailPageClient({
     [shown, type, filters.sort],
   );
 
+  const quantitySummary = useMemo(
+    () => (type === "material" ? buildMaterialQuantitySummary(shown) : null),
+    [shown, type],
+  );
+
   const basePath = `/app/sites/${siteId}/operations/${type}/${encodeURIComponent(category)}`;
 
   function applyFilters() {
@@ -111,6 +120,11 @@ export default function CategoryDetailPageClient({
             <p className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Entries</p>
             <p className="mt-2 text-sm font-bold text-sky-400">{formatCurrency(totalSpend)}</p>
+            {type === "material" && visibleLogCount > 0 && quantitySummary?.displayText ? (
+              <p className="mt-1 text-xs font-bold text-slate-300">
+                {quantitySummary.displayText}
+              </p>
+            ) : null}
           </div>
         </div>
       </section>

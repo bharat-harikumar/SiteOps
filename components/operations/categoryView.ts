@@ -1,3 +1,4 @@
+import { displayUnitName } from "@/lib/catalog/units";
 import {
   type Entry, type EntryType,
   entrySpend, entryDate, entryId, gridCategoryKey,
@@ -109,4 +110,80 @@ export function entrySuccessDestination(entry: Entry, type: EntryType, siteId: s
   const category = gridCategoryKey(entry, type);
   const base = `/app/sites/${siteId}/operations/${type}/${encodeURIComponent(category)}`;
   return id ? `${base}?highlight=${id}` : base;
+}
+
+export type MaterialQuantitySummary = {
+  totalQuantity: number | null;
+  formattedQuantity: string | null;
+  unit: string | null;
+  isMixed: boolean;
+  displayText: string | null;
+};
+
+export function buildMaterialQuantitySummary(entries: Entry[]): MaterialQuantitySummary {
+  const emptyResult: MaterialQuantitySummary = {
+    totalQuantity: null,
+    formattedQuantity: null,
+    unit: null,
+    isMixed: false,
+    displayText: null,
+  };
+
+  if (!entries || entries.length === 0) {
+    return emptyResult;
+  }
+
+  let total = 0;
+  let validEntryCount = 0;
+  const normalizedUnits = new Set<string>();
+  let canonicalUnitDisplay = "";
+
+  for (const entry of entries) {
+    if (!entry || entry.quantity == null || entry.quantity === "") {
+      continue;
+    }
+    const qty = Number(entry.quantity);
+    if (!Number.isFinite(qty) || qty <= 0) {
+      continue;
+    }
+
+    validEntryCount += 1;
+    total += qty;
+
+    const rawUnit = typeof entry.unit === "string" ? entry.unit.trim() : "";
+    const displayUnit = rawUnit ? displayUnitName(rawUnit) : "";
+    const normalizedKey = displayUnit.toLowerCase();
+
+    normalizedUnits.add(normalizedKey);
+    if (!canonicalUnitDisplay && displayUnit) {
+      canonicalUnitDisplay = displayUnit;
+    }
+  }
+
+  if (validEntryCount === 0) {
+    return emptyResult;
+  }
+
+  if (normalizedUnits.size > 1) {
+    return {
+      totalQuantity: null,
+      formattedQuantity: null,
+      unit: null,
+      isMixed: true,
+      displayText: "MIXED UNITS",
+    };
+  }
+
+  const rounded = Math.round((total + Number.EPSILON) * 100) / 100;
+  const formattedQuantity = rounded.toFixed(2);
+  const unit = canonicalUnitDisplay || null;
+  const displayText = unit ? `${formattedQuantity} ${unit}` : formattedQuantity;
+
+  return {
+    totalQuantity: rounded,
+    formattedQuantity,
+    unit,
+    isMixed: false,
+    displayText,
+  };
 }

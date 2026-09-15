@@ -1,6 +1,7 @@
 import { and, eq, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db/client";
+import { labourSpendSumExpr } from "@/lib/db/queries/labourSpendSql";
 import { sites } from "@/lib/db/schema";
 
 /**
@@ -48,16 +49,7 @@ export async function siteTrackedSpend(executor: Executor, siteId: string): Prom
   const rows = (await executor.execute(sql`
     select
       coalesce((
-        select sum(
-          case
-            when coalesce(mason_count,0) * coalesce(mason_salary_amount,0)
-               + coalesce(helper_count,0) * coalesce(helper_salary_amount,0) > 0
-              then coalesce(mason_count,0) * coalesce(mason_salary_amount,0)
-                 + coalesce(helper_count,0) * coalesce(helper_salary_amount,0)
-            when coalesce(salary_amount,0) > 0 then salary_amount
-            else coalesce(people_count,0) * coalesce(wage_per_head,0)
-          end
-        ) from labour_entries where site_id = ${siteId}::uuid
+        select ${labourSpendSumExpr} from labour_entries where site_id = ${siteId}::uuid
       ), 0)
       + coalesce((select sum(coalesce(cost,0)) from material_entries where site_id = ${siteId}::uuid), 0)
       + coalesce((select sum(coalesce(total_cost,0)) from machinery_entries where site_id = ${siteId}::uuid), 0)

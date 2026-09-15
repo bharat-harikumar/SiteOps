@@ -10,6 +10,7 @@ export type ValidateInput = {
   siteId: string | null;
   isEdit: boolean;
   splitLabour: boolean;
+  otEnabled?: boolean;
 };
 
 // Pure mirror of the checks EntryForm used to run inline. Returns the FIRST
@@ -17,7 +18,7 @@ export type ValidateInput = {
 // Message strings are user-visible and are intentionally identical to the
 // pre-extraction strings — changing them changes what supervisors read.
 export function validateEntryValues(input: ValidateInput): ValidationFailure | null {
-  const { fields, values, siteId, isEdit, splitLabour } = input;
+  const { fields, values, siteId, isEdit, splitLabour, otEnabled } = input;
 
   if (!siteId && !isEdit) {
     return { field: "siteId", message: "Site is required" };
@@ -56,6 +57,41 @@ export function validateEntryValues(input: ValidateInput): ValidationFailure | n
       masonCount, masonSalaryAmount, helperCount, helperSalaryAmount,
     });
     if (pairing) return { field: "masonCount", message: pairing.message };
+  }
+
+  if (otEnabled) {
+    const rawPeople = values.otPeopleCount;
+    if (rawPeople === "" || rawPeople === null || rawPeople === undefined) {
+      return { field: "otPeopleCount", message: "OT people count is required" };
+    }
+    const people = Number(rawPeople);
+    if (!Number.isFinite(people) || !Number.isInteger(people) || people < 1 || people > 10000) {
+      return { field: "otPeopleCount", message: "OT people count must be a whole number between 1 and 10,000" };
+    }
+
+    const rawHours = values.otHours;
+    if (rawHours === "" || rawHours === null || rawHours === undefined) {
+      return { field: "otHours", message: "OT hours is required" };
+    }
+    const hours = Number(rawHours);
+    if (!Number.isFinite(hours) || hours < 0.1 || hours > 24) {
+      return { field: "otHours", message: "OT hours must be between 0.1 and 24" };
+    }
+    if (Number(hours.toFixed(2)) !== hours) {
+      return { field: "otHours", message: "OT hours must have at most 2 decimal places" };
+    }
+
+    const rawRate = values.otRate;
+    if (rawRate === "" || rawRate === null || rawRate === undefined) {
+      return { field: "otRate", message: "OT rate is required" };
+    }
+    const rate = Number(rawRate);
+    if (!Number.isFinite(rate) || rate < 0.01 || rate > 1000000) {
+      return { field: "otRate", message: "OT rate must be between 0.01 and 1,000,000" };
+    }
+    if (Number(rate.toFixed(2)) !== rate) {
+      return { field: "otRate", message: "OT rate must have at most 2 decimal places" };
+    }
   }
 
   return null;

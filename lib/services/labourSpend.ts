@@ -24,7 +24,23 @@ export type LabourSpendInput = {
   masonSalaryAmount?: string | number | null;
   helperCount?: number | null;
   helperSalaryAmount?: string | number | null;
+  otTotalAmount?: string | number | null;
 };
+
+export function calculateOtAmount(
+  people: number | null | undefined,
+  hours: number | null | undefined,
+  rate: number | string | null | undefined,
+): number {
+  const p = Number(people ?? 0);
+  const h = Number(hours ?? 0);
+  const r = Number(rate ?? 0);
+
+  if (!Number.isFinite(p) || !Number.isFinite(h) || !Number.isFinite(r)) return 0;
+  if (p <= 0 || h <= 0 || r <= 0) return 0;
+
+  return Number((p * h * r).toFixed(2));
+}
 
 function finiteNumber(value: string | number | null | undefined) {
   const next = Number(value ?? 0);
@@ -41,15 +57,25 @@ export function labourSpend(
     return Number.isFinite(people) && Number.isFinite(wageValue) ? people * wageValue : 0;
   }
 
+  let regularCost = 0;
   const splitTotal =
     finiteNumber(rowOrPeople.masonCount) * finiteNumber(rowOrPeople.masonSalaryAmount) +
     finiteNumber(rowOrPeople.helperCount) * finiteNumber(rowOrPeople.helperSalaryAmount);
-  if (splitTotal > 0) return splitTotal;
 
-  const stored = finiteNumber(rowOrPeople.salaryAmount);
-  if (stored > 0) return stored;
+  if (splitTotal > 0) {
+    regularCost = splitTotal;
+  } else {
+    const stored = finiteNumber(rowOrPeople.salaryAmount);
+    if (stored > 0) {
+      regularCost = stored;
+    } else {
+      const people = Number(rowOrPeople.peopleCount ?? 0);
+      const wageValue = finiteNumber(rowOrPeople.wagePerHead);
+      regularCost = Number.isFinite(people) && Number.isFinite(wageValue) ? people * wageValue : 0;
+    }
+  }
 
-  const people = Number(rowOrPeople.peopleCount ?? 0);
-  const wageValue = finiteNumber(rowOrPeople.wagePerHead);
-  return Number.isFinite(people) && Number.isFinite(wageValue) ? people * wageValue : 0;
+  const otCost = finiteNumber(rowOrPeople.otTotalAmount);
+
+  return regularCost + otCost;
 }

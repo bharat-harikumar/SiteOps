@@ -137,6 +137,36 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
             {entry.peopleCount ?? 0} people{isMerged ? "" : ` x ${formatCurrency(wage)}`}
           </p>
         )}
+        {(() => {
+          if (
+            entry.otPeopleCount == null ||
+            entry.otHours == null ||
+            entry.otRate == null ||
+            entry.otTotalAmount == null
+          ) {
+            return null;
+          }
+
+          const otPeople = Number(entry.otPeopleCount);
+          const otHours = Number(entry.otHours);
+          const otRate = Number(entry.otRate);
+          const otTotal = Number(entry.otTotalAmount);
+
+          const isValid =
+            Number.isFinite(otPeople) && otPeople > 0 &&
+            Number.isFinite(otHours) && otHours > 0 &&
+            Number.isFinite(otRate) && otRate > 0 &&
+            Number.isFinite(otTotal) && otTotal > 0;
+
+          if (!isValid) return null;
+
+          return (
+            <p className="text-xs text-slate-400">
+              OT: {otPeople} {otPeople === 1 ? "person" : "people"} × {otHours} hrs × {formatCurrency(otRate)} ={" "}
+              <span className="font-semibold text-slate-200">{formatCurrency(otTotal)}</span>
+            </p>
+          );
+        })()}
         <p className="text-sm font-bold text-sky-400">{formatCurrency(entrySpend(entry, type))}</p>
         {entry.remarks ? <p className="text-xs text-slate-500">{entry.remarks}</p> : null}
       </div>

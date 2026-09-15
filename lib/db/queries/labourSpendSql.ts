@@ -15,4 +15,4 @@ export const labourSpendSumExpr = sql`sum(case
           then coalesce(mason_count,0)*coalesce(mason_salary_amount,0)+coalesce(helper_count,0)*coalesce(helper_salary_amount,0)
         when coalesce(salary_amount,0)>0 then salary_amount
         else coalesce(people_count,0)*coalesce(wage_per_head,0)
-      end)`;
+      end + coalesce((to_jsonb(labour_entries)->>'ot_total_amount')::numeric, 0))`;

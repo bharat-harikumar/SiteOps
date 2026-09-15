@@ -129,6 +129,157 @@ describe("labour schemas", () => {
   });
 });
 
+describe("labour overtime schemas", () => {
+  const baseLabour = {
+    siteId: validSiteId,
+    date: validEntryDate,
+    workTypeMode: "default_enum" as const,
+    workTypeEnum: "Steel work" as const,
+    peopleCount: 3,
+    wagePerHead: 1300,
+    workStage: "Basement Level",
+  };
+
+  it("accepts valid OT on create", () => {
+    const result = labourEntrySchema.safeParse({
+      ...baseLabour,
+      otPeopleCount: 2,
+      otHours: 2.5,
+      otRate: 150,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts payload with no OT fields present", () => {
+    const result = labourEntrySchema.safeParse(baseLabour);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts payload where all OT fields are explicitly null", () => {
+    const result = labourEntrySchema.safeParse({
+      ...baseLabour,
+      otPeopleCount: null,
+      otHours: null,
+      otRate: null,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects partial OT input (missing hours)", () => {
+    const result = labourEntrySchema.safeParse({
+      ...baseLabour,
+      otPeopleCount: 2,
+      otHours: null,
+      otRate: 100,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects partial OT input (missing rate)", () => {
+    const result = labourEntrySchema.safeParse({
+      ...baseLabour,
+      otPeopleCount: 2,
+      otHours: 2,
+      otRate: null,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects partial OT input (missing people count)", () => {
+    const result = labourEntrySchema.safeParse({
+      ...baseLabour,
+      otPeopleCount: null,
+      otHours: 2,
+      otRate: 100,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects partial OT input (only people count provided)", () => {
+    const result = labourEntrySchema.safeParse({
+      ...baseLabour,
+      otPeopleCount: 2,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects non-integer OT people count", () => {
+    const result = labourEntrySchema.safeParse({
+      ...baseLabour,
+      otPeopleCount: 2.5,
+      otHours: 2,
+      otRate: 100,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects zero or negative OT people count", () => {
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 0, otHours: 2, otRate: 100 }).success).toBe(false);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: -1, otHours: 2, otRate: 100 }).success).toBe(false);
+  });
+
+  it("enforces OT people count bounds (1 to 10000)", () => {
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 1, otHours: 2, otRate: 100 }).success).toBe(true);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 10000, otHours: 2, otRate: 100 }).success).toBe(true);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 10001, otHours: 2, otRate: 100 }).success).toBe(false);
+  });
+
+  it("rejects negative or below-minimum OT hours", () => {
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 0, otRate: 100 }).success).toBe(false);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: -2, otRate: 100 }).success).toBe(false);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 0.05, otRate: 100 }).success).toBe(false);
+  });
+
+  it("enforces OT hours bounds (0.1 to 24, max 2 decimals)", () => {
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 0.1, otRate: 100 }).success).toBe(true);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 24, otRate: 100 }).success).toBe(true);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 24.1, otRate: 100 }).success).toBe(false);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 2.25, otRate: 100 }).success).toBe(true);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 2.333, otRate: 100 }).success).toBe(false);
+  });
+
+  it("enforces OT rate bounds (0.01 to 1000000, max 2 decimals)", () => {
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 2, otRate: 0.01 }).success).toBe(true);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 2, otRate: 1000000 }).success).toBe(true);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 2, otRate: 0 }).success).toBe(false);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 2, otRate: -50 }).success).toBe(false);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 2, otRate: 1000000.01 }).success).toBe(false);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 2, otRate: 150.55 }).success).toBe(true);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otPeopleCount: 2, otHours: 2, otRate: 150.555 }).success).toBe(false);
+  });
+
+  describe("updateLabourEntrySchema OT handling", () => {
+    it("accepts PATCH with OT omitted", () => {
+      const result = updateLabourEntrySchema.safeParse({ remarks: "only update remarks" });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts PATCH clearing OT via explicit nulls", () => {
+      const result = updateLabourEntrySchema.safeParse({
+        otPeopleCount: null,
+        otHours: null,
+        otRate: null,
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts PATCH with complete valid OT update", () => {
+      const result = updateLabourEntrySchema.safeParse({
+        otPeopleCount: 4,
+        otHours: 3.5,
+        otRate: 120,
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects PATCH with partial OT update", () => {
+      expect(updateLabourEntrySchema.safeParse({ otPeopleCount: 4 }).success).toBe(false);
+      expect(updateLabourEntrySchema.safeParse({ otPeopleCount: 4, otHours: null, otRate: 120 }).success).toBe(false);
+      expect(updateLabourEntrySchema.safeParse({ otPeopleCount: 4, otHours: 2, otRate: null }).success).toBe(false);
+    });
+  });
+});
+
 describe("material schemas", () => {
   it("exports the allowed material work stages", () => {
     expect(materialWorkStages).toEqual([
