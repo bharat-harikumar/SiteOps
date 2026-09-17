@@ -42,11 +42,11 @@ import { displayName } from "./displayName";
 
 describe("displayName", () => {
   it("prefers explicit fullName", () => {
-    expect(displayName({ fullName: "Lalit Sharma", designation: "PM" }, "x@y.com")).toBe("Lalit Sharma");
+    expect(displayName({ fullName: "Bharat Harikumar", designation: "PM" }, "x@y.com")).toBe("Bharat Harikumar");
   });
 
   it("derives a title-cased name from the email local-part", () => {
-    expect(displayName({ fullName: null, designation: null }, "lalit.sharma@procurie.com")).toBe("Lalit Sharma");
+    expect(displayName({ fullName: null, designation: null }, "bharat.harikumar@procurie.com")).toBe("Bharat Harikumar");
     expect(displayName({ fullName: null, designation: null }, "john_doe@x.com")).toBe("John Doe");
     expect(displayName({ fullName: null, designation: null }, "mary-jane+tag@x.com")).toBe("Mary Jane");
   });
