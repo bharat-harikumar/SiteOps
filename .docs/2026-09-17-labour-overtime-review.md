@@ -3,11 +3,11 @@
 **Date:** 2026-09-17
 **Status:** Revised & verified 2026-09-17 (not yet merged)
 **Original author:** Govindparameswar — commit `9f21d94` ("ot-new")
-**Revision by:** Lalit Sharma (tech lead)
+**Revision by:** Bharat Harikumar (tech lead)
 
 > **Revision history**
 > - v1 (2026-09-16, Govindparameswar): labour overtime as people × hours × rate, plus a material quantity chip on the category page.
-> - v2 (2026-09-17, Lalit Sharma): reviewed; OT reworked to a single lump-sum amount per the client's request; blockers and review findings fixed test-first; migration 0026 applied to production.
+> - v2 (2026-09-17, Bharat Harikumar): reviewed; OT reworked to a single lump-sum amount per the client's request; blockers and review findings fixed test-first; migration 0026 applied to production.
 
 ---
 
