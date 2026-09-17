@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { siteOperationSummary } from "@/lib/db/queries/entries";
 import { calculateSiteTrackedSpend } from "@/lib/db/queries/operationTotals";
@@ -14,6 +14,24 @@ import {
   materialEntries,
 } from "@/lib/db/schema";
 
+describe("siteTrackedSpend with OT (unit)", () => {
+  it("includes OT in calculateSiteTrackedSpend", () => {
+    const total = calculateSiteTrackedSpend({
+      labour: [
+        { peopleCount: 3, wagePerHead: "1300.00", salaryAmount: "3900.00", otTotalAmount: "400.00" },
+        { masonCount: 2, masonSalaryAmount: "1000.00", helperCount: 2, helperSalaryAmount: "500.00", otTotalAmount: "450.00" },
+      ],
+      material: [{ cost: "300.50" }],
+      machinery: [{ totalCost: "750.00" }],
+      expense: [{ amount: "40.00" }],
+    });
+    // labour: (3900 + 400) + (3000 + 450) = 7750
+    // material: 300.50, machinery: 750, expense: 40
+    // total = 7750 + 300.50 + 750 + 40 = 8840.50
+    expect(total).toBeCloseTo(8840.5, 2);
+  });
+});
+
 describeDb("siteTrackedSpend", () => {
   it("SQL total matches the row-based calculateSiteTrackedSpend", async () => {
     await withRollback(async (tx) => {
@@ -22,6 +40,7 @@ describeDb("siteTrackedSpend", () => {
         { siteId, createdBy: userId, date: "2026-06-22", workType: "A", peopleCount: 2, wagePerHead: "500.00" },
         { siteId, createdBy: userId, date: "2026-06-22", workType: "A", peopleCount: 1, salaryAmount: "1200.00" },
         { siteId, createdBy: userId, date: "2026-06-22", workType: "A", peopleCount: 0, masonCount: 2, masonSalaryAmount: "300.00", helperCount: 3, helperSalaryAmount: "200.00" },
+        { siteId, createdBy: userId, date: "2026-06-22", workType: "A", peopleCount: 2, wagePerHead: "500.00", salaryAmount: "1000.00", otTotalAmount: "400.00" },
       ]);
       await tx.insert(materialEntries).values([
         { siteId, createdBy: userId, date: "2026-06-22", materialType: "M", quantity: "1", cost: "300.50" },
@@ -44,8 +63,8 @@ describeDb("siteTrackedSpend", () => {
       const actual = Number(await siteTrackedSpend(tx, siteId));
 
       expect(actual).toBeCloseTo(expected, 2);
-      // labour (2*500 + 1200 + (2*300 + 3*200)) + material 300.50 + machinery 750 + expense 40
-      expect(actual).toBeCloseTo(4490.5, 2);
+      // labour (2*500 + 1200 + (2*300 + 3*200) + (1000 + 400)) + material 300.50 + machinery 750 + expense 40 = 5890.50
+      expect(actual).toBeCloseTo(5890.5, 2);
     });
   });
 
@@ -74,6 +93,9 @@ describeDb("labour spend SQL/TS parity", () => {
   // F: a per-person wage with no head count -> 0, in SQL as well as in TS. The
   //    multiplication has to be inside the WHEN guard too, or SQL reports the
   //    bare wage here while TS reports 0.
+  // G: regular labour + OT lump sum -> regular salary + ot_total_amount
+  // H: split labour + OT lump sum -> split cost + ot_total_amount (one amount
+  //    covering masons and helpers together)
   const rowsFor = (siteId: string, userId: string) => [
     { siteId, createdBy: userId, date: DATE, workType: "A", peopleCount: 10, wagePerHead: "1000.00", salaryAmount: "999.00", masonCount: 2, masonSalaryAmount: "5000.00", helperCount: 3, helperSalaryAmount: "3000.00" },
     { siteId, createdBy: userId, date: DATE, workType: "B", peopleCount: 10, wagePerHead: "1000.00", salaryAmount: "12345.00" },
@@ -81,9 +103,11 @@ describeDb("labour spend SQL/TS parity", () => {
     { siteId, createdBy: userId, date: DATE, workType: "D", peopleCount: 0, masonCount: 0, masonSalaryAmount: "0.00", helperCount: 0, helperSalaryAmount: "0.00", salaryAmount: "7000.00" },
     { siteId, createdBy: userId, date: DATE, workType: "E", peopleCount: 0 },
     { siteId, createdBy: userId, date: DATE, workType: "F", peopleCount: 0, masonCount: 0, masonSalaryAmount: "1500.00" },
+    { siteId, createdBy: userId, date: DATE, workType: "G", peopleCount: 3, wagePerHead: "1000.00", salaryAmount: "3000.00", otTotalAmount: "400.00" },
+    { siteId, createdBy: userId, date: DATE, workType: "H", peopleCount: 0, masonCount: 2, masonSalaryAmount: "1000.00", helperCount: 2, helperSalaryAmount: "500.00", otTotalAmount: "450.00" },
   ];
 
-  const EXPECTED = 19000 + 12345 + 2400 + 7000 + 0 + 0;
+  const EXPECTED = 19000 + 12345 + 2400 + 7000 + 0 + 0 + 3400 + 3450;
 
   it("siteOperationSummary's labour spend equals sum(labourSpend(row))", async () => {
     await withRollback(async (tx) => {
@@ -97,6 +121,9 @@ describeDb("labour spend SQL/TS parity", () => {
       const summary = await siteOperationSummary(tx, siteId, DATE);
       expect(Number(summary.labour.todaySpend)).toBeCloseTo(tsTotal, 2);
       expect(Number(summary.labour.totalSpend)).toBeCloseTo(tsTotal, 2);
+      // OT is also reported on its own, and is already inside the spend above.
+      expect(summary.labour.todayOtSpend).toBeCloseTo(850, 2);
+      expect(summary.labour.totalOtSpend).toBeCloseTo(850, 2);
     });
   });
 

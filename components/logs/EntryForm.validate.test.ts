@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { applyWorkStageRequirement, resolveEntryFields, type EntryField } from "./entryFieldRegistry";
-import { validateEntryValues } from "./EntryForm.validate";
+import { clearsFieldError, validateEntryValues } from "./EntryForm.validate";
 
 const dateField: EntryField = { name: "date", label: "Date", kind: "date", required: true };
 const workTypeField: EntryField = {
@@ -166,5 +166,57 @@ describe("work stage validation", () => {
         },
       }),
     ).toBeNull();
+  });
+});
+
+describe("overtime amount validation", () => {
+  const withOt = (otTotalAmount: unknown) => ({
+    ...base,
+    otEnabled: true,
+    values: { ...base.values, otTotalAmount },
+  });
+
+  it("ignores the OT box when OT is switched off", () => {
+    expect(validateEntryValues({ ...base, otEnabled: false, values: { ...base.values, otTotalAmount: "" } })).toBeNull();
+    expect(validateEntryValues({ ...base, values: { ...base.values, otTotalAmount: "abc" } })).toBeNull();
+  });
+
+  it("requires an amount when OT is switched on", () => {
+    expect(validateEntryValues(withOt(""))).toEqual({ field: "otTotalAmount", message: "OT amount is required" });
+    expect(validateEntryValues(withOt(undefined))).toEqual({ field: "otTotalAmount", message: "OT amount is required" });
+  });
+
+  it("rejects zero, negative, non-numeric and over-cap amounts", () => {
+    const outOfRange = { field: "otTotalAmount", message: "OT amount must be between ₹0.01 and ₹99,99,999.99" };
+    expect(validateEntryValues(withOt("0"))).toEqual(outOfRange);
+    expect(validateEntryValues(withOt("-5"))).toEqual(outOfRange);
+    expect(validateEntryValues(withOt("abc"))).toEqual(outOfRange);
+    expect(validateEntryValues(withOt("10000000"))).toEqual(outOfRange);
+  });
+
+  it("rejects more than 2 decimal places", () => {
+    expect(validateEntryValues(withOt("100.555"))).toEqual({
+      field: "otTotalAmount",
+      message: "OT amount must have at most 2 decimal places",
+    });
+  });
+
+  it("accepts a valid amount", () => {
+    expect(validateEntryValues(withOt("1250.50"))).toBeNull();
+    expect(validateEntryValues(withOt("9999999.99"))).toBeNull();
+  });
+});
+
+describe("clearsFieldError", () => {
+  it("clears an error when the field it points at is edited", () => {
+    expect(clearsFieldError("otTotalAmount", "otTotalAmount")).toBe(true);
+  });
+
+  it("keeps an OT error when a different field is edited", () => {
+    expect(clearsFieldError("otTotalAmount", "remarks")).toBe(false);
+  });
+
+  it("clears the split-labour aggregate error on any edit, as before", () => {
+    expect(clearsFieldError("masonCount", "helperSalaryAmount")).toBe(true);
   });
 });

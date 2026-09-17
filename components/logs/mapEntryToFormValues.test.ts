@@ -25,3 +25,28 @@ describe("mapEntryToFormValues — workStage prefill", () => {
     expect(values.workStage).toBe("Roof Level");
   });
 });
+
+describe("mapEntryToFormValues — overtime prefill", () => {
+  it("starts with OT off and an empty box when the entry has no OT", () => {
+    const values = mapEntryToFormValues({ peopleCount: 5, wagePerHead: "600" }, "labour", categoryId);
+    expect(values.otEnabled).toBe(false);
+    expect(values.otTotalAmount).toBe("");
+  });
+
+  it("starts with OT on and the saved amount when the entry has OT", () => {
+    const values = mapEntryToFormValues({ otTotalAmount: "500.00" }, "labour", categoryId);
+    expect(values.otEnabled).toBe(true);
+    expect(values.otTotalAmount).toBe("500.00");
+  });
+
+  it("does not prefill the reserved people/hours/rate fields", () => {
+    const values = mapEntryToFormValues(
+      { otTotalAmount: "500.00", otPeopleCount: 2, otHours: "2", otRate: "100" },
+      "labour",
+      categoryId,
+    );
+    expect(values).not.toHaveProperty("otPeopleCount");
+    expect(values).not.toHaveProperty("otHours");
+    expect(values).not.toHaveProperty("otRate");
+  });
+});

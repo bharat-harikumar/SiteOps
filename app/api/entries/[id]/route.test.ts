@@ -189,3 +189,46 @@ describe("PATCH material entries — unit resolution", () => {
     expect(data).not.toHaveProperty("unit");
   });
 });
+
+describe("PATCH labour — overtime amount", () => {
+  const existing = { siteId: "s1", createdBy: "u1", workType: "Plastering", otTotalAmount: "500.00" };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockRequireCapability.mockResolvedValue({ session: { user: { id: "u1", role: "supervisor" } } });
+    mockCheckOwnership.mockReturnValue(true);
+    mockFindSite.mockResolvedValue({ archivedAt: null });
+    mockGetEntryById.mockResolvedValue(existing);
+    mockUpdateEntryById.mockImplementation(async (_id: string, _type: string, data: unknown) => data);
+  });
+
+  it("saves a new OT amount as a decimal string", async () => {
+    const res = await PATCH(reqType("labour", { otTotalAmount: 750.25 }), ctx);
+    expect(res.status).toBe(200);
+    expect(mockUpdateEntryById).toHaveBeenCalledWith(
+      "some-id", "labour", expect.objectContaining({ otTotalAmount: "750.25" }),
+    );
+  });
+
+  it("clears OT when the amount is sent as null", async () => {
+    const res = await PATCH(reqType("labour", { otTotalAmount: null }), ctx);
+    expect(res.status).toBe(200);
+    expect(mockUpdateEntryById).toHaveBeenCalledWith(
+      "some-id", "labour", expect.objectContaining({ otTotalAmount: null }),
+    );
+  });
+
+  it("leaves OT alone when the PATCH does not mention it", async () => {
+    await PATCH(reqType("labour", { remarks: "late finish" }), ctx);
+    expect(mockUpdateEntryById.mock.calls[0][2]).not.toHaveProperty("otTotalAmount");
+  });
+
+  it("never writes the reserved people/hours/rate columns", async () => {
+    await PATCH(reqType("labour", { otTotalAmount: 400, otPeopleCount: 2, otHours: 2, otRate: 100 }), ctx);
+    const data = mockUpdateEntryById.mock.calls[0][2];
+    expect(data).not.toHaveProperty("otPeopleCount");
+    expect(data).not.toHaveProperty("otHours");
+    expect(data).not.toHaveProperty("otRate");
+  });
+});
+

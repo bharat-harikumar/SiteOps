@@ -15,6 +15,8 @@ import { isSplitLabourWorkType } from "@/lib/validation/schemas";
 import { entrySuccessDestination } from "@/components/operations/categoryView";
 import { formatCurrency, type Entry } from "@/components/operations/entryFormat";
 import { labourSpend } from "@/lib/services/labourSpend";
+import { Toggle } from "@/components/ui/Toggle";
+import { OT_AMOUNT_FIELD, overtimeHint, overtimePayload } from "@/components/logs/labourOvertime";
 
 import {
   applyWorkStageRequirement,
@@ -24,7 +26,7 @@ import {
   numericInputModeFor,
   type EntryField,
 } from "./entryFieldRegistry";
-import { validateEntryValues, type ValidationFailure } from "./EntryForm.validate";
+import { clearsFieldError, validateEntryValues, type ValidationFailure } from "./EntryForm.validate";
 import { SubcategoryCombobox, type SubcategoryOption } from "./SubcategoryCombobox";
 import { UnitSelect, type UnitOption } from "./UnitSelect";
 
@@ -113,6 +115,7 @@ export function EntryForm({
       "masonSalaryAmount",
       "helperCount",
       "helperSalaryAmount",
+      "otTotalAmount",
     ]) {
       if (initialValues?.[extra] !== undefined) {
         v[extra] = initialValues[extra] as FieldValue;
@@ -124,12 +127,26 @@ export function EntryForm({
   const [deleting, setDeleting] = useState(false);
   const [fieldError, setFieldError] = useState<ValidationFailure | null>(null);
 
+  const hadInitialOt = kind === "labour" && Boolean(initialValues?.otEnabled);
+  const [otEnabled, setOtEnabled] = useState(hadInitialOt);
+
+  async function handleToggleOt(next: boolean) {
+    // Switching OT off on a saved entry deletes its amount on save — confirm it.
+    if (!next && isEdit && hadInitialOt) {
+      const confirmed = await confirmDialog({
+        title: "Remove overtime from this entry?",
+        message: "The saved OT amount will be cleared when you save.",
+        confirmLabel: "Remove OT",
+        tone: "danger",
+      });
+      if (!confirmed) return;
+    }
+    setOtEnabled(next);
+    if (!next) setFieldError((prev) => (prev?.field === "otTotalAmount" ? null : prev));
+  }
+
   function update(name: string, val: FieldValue) {
-    // Any edit to the field we complained about clears the complaint — leaving a
-    // stale "X is required" under a now-filled field is worse than no message.
-    // The masonCount case covers the split-labour aggregate error, which is
-    // anchored to masonCount but satisfied by editing any of the four fields.
-    setFieldError((prev) => (prev && (prev.field === name || prev.field === "masonCount") ? null : prev));
+    setFieldError((prev) => (prev && clearsFieldError(prev.field, name) ? null : prev));
     setValues((s) => ({ ...s, [name]: val }));
   }
 
@@ -161,7 +178,14 @@ export function EntryForm({
   }
 
   function validate(): ValidationFailure | null {
-    return validateEntryValues({ fields, values, siteId: siteId ?? null, isEdit, splitLabour });
+    return validateEntryValues({
+      fields,
+      values,
+      siteId: siteId ?? null,
+      isEdit,
+      splitLabour,
+      otEnabled: kind === "labour" ? otEnabled : false,
+    });
   }
 
   // After edit/delete, return to the operation's logs list (e.g. .../operations/material)
@@ -212,6 +236,10 @@ export function EntryForm({
 
     if (kind === "labour" && !splitLabour && payload.peopleCount && payload.wagePerHead) {
       payload.salaryAmount = Number(payload.peopleCount) * Number(payload.wagePerHead);
+    }
+
+    if (kind === "labour") {
+      Object.assign(payload, overtimePayload({ otEnabled, isEdit, hadInitialOt, amount: values.otTotalAmount }));
     }
 
     // When the material type allows exactly one unit, auto-assign it; otherwise
@@ -296,7 +324,6 @@ export function EntryForm({
   return (
     <form onSubmit={handleSubmit} className="card-standard p-6 space-y-5">
       {fields.map((f) => {
-        if (splitLabour && f.name === "wagePerHead") return null;
         if (splitLabour && f.name === "peopleCount") {
           return (
             <SplitLabourFields
@@ -305,6 +332,37 @@ export function EntryForm({
               update={update}
               error={fieldError?.field === "masonCount" ? fieldError.message : undefined}
             />
+          );
+        }
+        // Overtime follows the cost fields for both labour layouts. wagePerHead
+        // is the anchor because it is the last cost field in either layout.
+        if (kind === "labour" && f.name === "wagePerHead") {
+          return (
+            <div key="labour-cost-and-overtime" className="space-y-5">
+              {splitLabour ? null : (
+                <FieldRow
+                  field={f}
+                  value={values[f.name]}
+                  onChange={(v) => update(f.name, v)}
+                  categoryId={catalogParentIdFor(f)}
+                  role={role}
+                  siteId={siteId}
+                  allowedUnitNames={undefined}
+                  error={fieldError?.field === f.name ? fieldError.message : undefined}
+                />
+              )}
+              <LabourOvertimeFields otEnabled={otEnabled} onToggle={handleToggleOt} hint={overtimeHint(splitLabour)}>
+                <FieldRow
+                  field={OT_AMOUNT_FIELD}
+                  value={values.otTotalAmount}
+                  onChange={(v) => update(OT_AMOUNT_FIELD.name, v)}
+                  categoryId=""
+                  role={role}
+                  siteId={siteId}
+                  error={fieldError?.field === OT_AMOUNT_FIELD.name ? fieldError.message : undefined}
+                />
+              </LabourOvertimeFields>
+            </div>
           );
         }
         return (
@@ -570,6 +628,36 @@ function SplitLabourFields({
         </span>
         <span className="text-sky-400">{formatCurrency(entryTotal)}</span>
       </p>
+    </div>
+  );
+}
+
+function LabourOvertimeFields({
+  otEnabled,
+  onToggle,
+  hint,
+  children,
+}: {
+  otEnabled: boolean;
+  onToggle: (next: boolean) => void;
+  hint: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="space-y-4">
+      <Toggle checked={otEnabled} onChange={onToggle} label="Enable OT" />
+      {otEnabled ? (
+        <section
+          aria-labelledby="overtime-heading"
+          className="space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-4"
+        >
+          <h3 id="overtime-heading" className="text-[10px] font-extrabold uppercase tracking-widest text-sky-400">
+            Overtime (OT)
+          </h3>
+          {children}
+          <p className="text-xs text-slate-400">{hint}</p>
+        </section>
+      ) : null}
     </div>
   );
 }

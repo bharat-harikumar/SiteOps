@@ -234,6 +234,15 @@ export default function StageSummaryClient({
                             <ManpowerLine role="Helper" count={d.helperCount} salary={d.helperSalary} />
                           </div>
                         ) : null}
+
+                        {d.otSpend ? (
+                          <div className="pl-4 mt-0.5 flex items-baseline justify-between gap-4">
+                            <span className="text-[11px] text-slate-400 font-medium">• Overtime (included)</span>
+                            <span className="text-[11px] font-semibold text-slate-400 shrink-0">
+                              {formatCurrency(d.otSpend)}
+                            </span>
+                          </div>
+                        ) : null}
                       </div>
                     ))}
                   </div>

@@ -79,6 +79,19 @@ export function formatCurrency(value: number) {
   }).format(value);
 }
 
+export function formatQuantityTotals(
+  totals: ReadonlyArray<{ unit: string | null; total: number }>,
+  maxShown = 3,
+): string | null {
+  if (totals.length === 0) return null;
+  const mixed = totals.length > 1;
+  const parts = totals.slice(0, maxShown).map(({ unit, total }) =>
+    `${total.toFixed(2)}${unit ? ` ${unit}` : mixed ? " (no unit)" : ""}`,
+  );
+  const hidden = totals.length - maxShown;
+  return parts.join(" · ") + (hidden > 0 ? ` +${hidden} more` : "");
+}
+
 export function entryId(entry: Entry, type: EntryType) {
   return entry[clientDescriptorFor(type).idField];
 }
@@ -101,6 +114,19 @@ export function entrySpend(entry: Entry, type: EntryType) {
 export function gridCategoryKey(entry: Entry, type: EntryType): string {
   const d = clientDescriptorFor(type);
   return String(entry[d.categoryField] ?? d.categoryFallback);
+}
+
+// One OT lump sum per entry; on split labour it covers masons and helpers
+// together, so the label says so rather than implying a per-role figure.
+function LabourOvertimeLine({ amount, splitRoles }: { amount: unknown; splitRoles: boolean }) {
+  const value = Number(amount ?? 0);
+  if (!Number.isFinite(value) || value <= 0) return null;
+  return (
+    <p className="text-xs text-slate-400">
+      {splitRoles ? "OT (masons + helpers)" : "OT"}:{" "}
+      <span className="font-semibold text-slate-200">{formatCurrency(value)}</span>
+    </p>
+  );
 }
 
 export function renderEntrySummary(entry: Entry, type: EntryType) {
@@ -137,6 +163,7 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
             {entry.peopleCount ?? 0} people{isMerged ? "" : ` x ${formatCurrency(wage)}`}
           </p>
         )}
+        <LabourOvertimeLine amount={entry.otTotalAmount} splitRoles={hasSplitRoles} />
         <p className="text-sm font-bold text-sky-400">{formatCurrency(entrySpend(entry, type))}</p>
         {entry.remarks ? <p className="text-xs text-slate-500">{entry.remarks}</p> : null}
       </div>

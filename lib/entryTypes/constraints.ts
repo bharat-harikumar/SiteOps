@@ -21,6 +21,9 @@ export const ENTRY_FIELD_CONSTRAINTS = {
   // labour
   peopleCount: { min: 1, max: 10000, step: 1 },
   wagePerHead: { min: 0.01, max: 1000000, step: 0.01 },
+  // labour overtime: one lump sum for the whole crew. The cap sits well under the
+  // numeric(12,2) column ceiling so an oversized value is a 400, not a 500.
+  otTotalAmount: { min: 0.01, max: 9999999.99, step: 0.01 },
   // material
   quantity: { min: 0.01, max: 1000000, step: 0.01 },
   cost: { min: 0.01, max: 100000000, step: 0.01 },

@@ -77,6 +77,17 @@ export function handleDbError(
         undefined,
         requestId
       );
+    case "22003":
+      // numeric field overflow: a value past a numeric(p,s) column's ceiling.
+      // Validation caps should stop this first; this keeps a missed cap a 400.
+      logWarn(requestId ?? "unknown", "Numeric overflow", {});
+      return errorResponse(
+        ERROR_CODES.VALIDATION_ERROR,
+        "Value is too large",
+        400,
+        undefined,
+        requestId
+      );
     default:
       return null;
   }

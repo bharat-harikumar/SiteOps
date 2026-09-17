@@ -86,3 +86,40 @@ describe("POST labour — no consolidation", () => {
     expect(mockInsertLabour).not.toHaveBeenCalled();
   });
 });
+
+describe("POST labour — overtime amount", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockRequireSiteAccess.mockResolvedValue({ session: { user: { id: "u1", role: "supervisor" } } });
+    mockAssertCatalog.mockResolvedValue({ ok: true, value: "Basement Level" });
+    mockFindSite.mockResolvedValue({ supervisorId: "u1", archivedAt: null });
+    mockCheckOwnership.mockReturnValue(true);
+    mockInsertLabour.mockImplementation(async (d: any) => ({ labourEntryId: "l-new", ...d }));
+  });
+
+  it("stores the OT amount the supervisor typed, as a decimal string", async () => {
+    const res = await POST(req({ ...base, otTotalAmount: 1250.5 }));
+    expect(res.status).toBe(201);
+    expect(mockInsertLabour).toHaveBeenCalledWith(expect.objectContaining({ otTotalAmount: "1250.5" }));
+  });
+
+  it("stores null when no OT is sent", async () => {
+    await POST(req(base));
+    expect(mockInsertLabour).toHaveBeenCalledWith(expect.objectContaining({ otTotalAmount: null }));
+  });
+
+  it("never writes the reserved people/hours/rate columns, even when sent", async () => {
+    await POST(req({ ...base, otTotalAmount: 400, otPeopleCount: 2, otHours: 2, otRate: 100 }));
+    const inserted = mockInsertLabour.mock.calls[0][0];
+    expect(inserted).not.toHaveProperty("otPeopleCount");
+    expect(inserted).not.toHaveProperty("otHours");
+    expect(inserted).not.toHaveProperty("otRate");
+  });
+
+  it("rejects an over-cap OT amount with a 400 instead of reaching the database", async () => {
+    const res = await POST(req({ ...base, otTotalAmount: 10_000_000 }));
+    expect(res.status).toBe(400);
+    expect(mockInsertLabour).not.toHaveBeenCalled();
+  });
+});
+

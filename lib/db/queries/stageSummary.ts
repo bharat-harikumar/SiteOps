@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 
-import { labourSpendSumExpr } from "@/lib/db/queries/labourSpendSql";
+import { labourOtSumExpr, labourSpendSumExpr } from "@/lib/db/queries/labourSpendSql";
 import { WORK_STAGE_LAUNCH_DATE } from "@/lib/entryTypes/workStageRequirement";
 
 // Accepts the shared db or a transaction handle (for rollback-scoped tests).
@@ -106,6 +106,8 @@ export type StageCompositionRow = {
   masonSalary: number | null;
   helperCount: number | null;
   helperSalary: number | null;
+  // Overtime lump sum, already included in `spend`. Null for material rows.
+  otSpend: number | null;
 };
 
 type RawCompositionRow = {
@@ -120,6 +122,7 @@ type RawCompositionRow = {
   mason_salary: number | string | null;
   helper_count: number | string | null;
   helper_salary: number | string | null;
+  ot_spend: number | string | null;
 };
 
 // Path sentinels for the two untagged buckets, mirroring the keys
@@ -158,7 +161,8 @@ export async function getStageComposition(
            coalesce(sum(quantity),0)::float8 as quantity, max(unit) as unit,
            null::int as head_count, coalesce(sum(coalesce(cost,0)),0)::float8 as spend,
            null::int as mason_count, null::float8 as mason_salary,
-           null::int as helper_count, null::float8 as helper_salary
+           null::int as helper_count, null::float8 as helper_salary,
+           null::float8 as ot_spend
       from material_entries
      where site_id = ${siteId}::uuid
        and work_stage is not distinct from ${stage}
@@ -172,7 +176,8 @@ export async function getStageComposition(
            coalesce(sum(coalesce(mason_count,0)),0)::int,
            coalesce(sum(coalesce(mason_count,0)*coalesce(mason_salary_amount,0)),0)::float8,
            coalesce(sum(coalesce(helper_count,0)),0)::int,
-           coalesce(sum(coalesce(helper_count,0)*coalesce(helper_salary_amount,0)),0)::float8
+           coalesce(sum(coalesce(helper_count,0)*coalesce(helper_salary_amount,0)),0)::float8,
+           coalesce(${labourOtSumExpr}, 0)::float8
       from labour_entries
      where site_id = ${siteId}::uuid
        and work_stage is not distinct from ${stage}
@@ -193,5 +198,6 @@ export async function getStageComposition(
     masonSalary: r.mason_salary == null ? null : Number(r.mason_salary),
     helperCount: r.helper_count == null ? null : Number(r.helper_count),
     helperSalary: r.helper_salary == null ? null : Number(r.helper_salary),
+    otSpend: r.ot_spend == null ? null : Number(r.ot_spend),
   }));
 }

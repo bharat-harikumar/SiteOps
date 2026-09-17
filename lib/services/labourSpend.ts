@@ -1,5 +1,6 @@
 // The one TS home for "what did this labour row cost?".
-// Precedence: mason+helper split → stored salaryAmount → peopleCount × wagePerHead.
+// Precedence: mason+helper split → stored salaryAmount → peopleCount × wagePerHead,
+// then any overtime lump sum (otTotalAmount) is added on top of whichever won.
 //
 // mason/helperSalaryAmount are PER-PERSON wages, exactly like wagePerHead on the
 // ordinary path — so a role costs count × wage. Summing the two wage columns
@@ -24,11 +25,26 @@ export type LabourSpendInput = {
   masonSalaryAmount?: string | number | null;
   helperCount?: number | null;
   helperSalaryAmount?: string | number | null;
+  otTotalAmount?: string | number | null;
 };
 
 function finiteNumber(value: string | number | null | undefined) {
   const next = Number(value ?? 0);
   return Number.isFinite(next) ? next : 0;
+}
+
+function regularLabourSpend(row: LabourSpendInput) {
+  const splitTotal =
+    finiteNumber(row.masonCount) * finiteNumber(row.masonSalaryAmount) +
+    finiteNumber(row.helperCount) * finiteNumber(row.helperSalaryAmount);
+  if (splitTotal > 0) return splitTotal;
+
+  const stored = finiteNumber(row.salaryAmount);
+  if (stored > 0) return stored;
+
+  const people = Number(row.peopleCount ?? 0);
+  const wageValue = finiteNumber(row.wagePerHead);
+  return Number.isFinite(people) && Number.isFinite(wageValue) ? people * wageValue : 0;
 }
 
 export function labourSpend(
@@ -41,15 +57,5 @@ export function labourSpend(
     return Number.isFinite(people) && Number.isFinite(wageValue) ? people * wageValue : 0;
   }
 
-  const splitTotal =
-    finiteNumber(rowOrPeople.masonCount) * finiteNumber(rowOrPeople.masonSalaryAmount) +
-    finiteNumber(rowOrPeople.helperCount) * finiteNumber(rowOrPeople.helperSalaryAmount);
-  if (splitTotal > 0) return splitTotal;
-
-  const stored = finiteNumber(rowOrPeople.salaryAmount);
-  if (stored > 0) return stored;
-
-  const people = Number(rowOrPeople.peopleCount ?? 0);
-  const wageValue = finiteNumber(rowOrPeople.wagePerHead);
-  return Number.isFinite(people) && Number.isFinite(wageValue) ? people * wageValue : 0;
+  return regularLabourSpend(rowOrPeople) + finiteNumber(rowOrPeople.otTotalAmount);
 }

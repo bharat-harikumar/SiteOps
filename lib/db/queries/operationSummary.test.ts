@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { calculateLabourTotal, calculateMachineryTotal } from "@/lib/db/queries/operationTotals";
 import { siteOperationSummary } from "@/lib/db/queries/entries";
@@ -73,5 +73,47 @@ describeDb("siteOperationSummary", () => {
       expect(summary.material.todaySpend).toBeCloseTo(300.5, 2);
       expect(summary.expense.todaySpend).toBeCloseTo(40, 2);
     });
+  });
+});
+
+describe("siteOperationSummary OT figures (unit)", () => {
+  const stubExecutor = (rows: unknown[]) => ({ execute: async () => rows });
+
+  it("reports OT spend separately, alongside the OT-inclusive labour spend", async () => {
+    const summary = await siteOperationSummary(
+      stubExecutor([
+        {
+          labour_count: "2",
+          labour_spend: "1600.00",
+          labour_total_count: "3",
+          labour_total_spend: "2800.00",
+          labour_ot_spend: "200.00",
+          labour_total_ot_spend: "350.00",
+          material_count: "1",
+          material_spend: "300.50",
+          material_total_count: "1",
+          material_total_spend: "300.50",
+          machinery_count: "0",
+          machinery_spend: "0",
+          machinery_total_count: "0",
+          machinery_total_spend: "0",
+          expense_count: "0",
+          expense_spend: "0",
+          expense_total_count: "0",
+          expense_total_spend: "0",
+          incident_count: "0",
+          incident_total_count: "0",
+        },
+      ]),
+      "11111111-1111-1111-1111-111111111111",
+      "2026-06-22",
+    );
+
+    expect(summary.labour.todayCount).toBe(2);
+    expect(summary.labour.totalCount).toBe(3);
+    expect(summary.labour.todaySpend).toBe(1600);
+    expect(summary.labour.totalSpend).toBe(2800);
+    expect(summary.labour.todayOtSpend).toBe(200);
+    expect(summary.labour.totalOtSpend).toBe(350);
   });
 });

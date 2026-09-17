@@ -78,6 +78,8 @@ export const POST = withApi(async ({ request, requestId }) => {
         splitLabour && "helperSalaryAmount" in validation.data
           ? String(validation.data.helperSalaryAmount)
           : null,
+      otTotalAmount:
+        validation.data.otTotalAmount != null ? String(validation.data.otTotalAmount) : null,
       remarks: remarks || null,
       workStage: canonicalWorkStage,
       createdBy: writable.session.user.id,

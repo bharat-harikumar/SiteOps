@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { buildCategorySummaries, entryMatchesSearch, buildGroupedRows, entrySuccessDestination } from "./categoryView";
+import {
+  buildCategorySummaries,
+  entryMatchesSearch,
+  buildGroupedRows,
+  entrySuccessDestination,
+  buildMaterialQuantityTotals,
+} from "./categoryView";
 
 const m = (over: Record<string, unknown>) => ({
   materialEntryId: Math.random().toString(), materialType: "Metals", workStage: "Foundation",
@@ -66,5 +72,67 @@ describe("entrySuccessDestination", () => {
   });
   it("falls back to site page when siteId missing", () => {
     expect(entrySuccessDestination({} as any, "expense", "")).toBe("/app/dashboard");
+  });
+});
+
+describe("buildMaterialQuantityTotals", () => {
+  it("returns no groups for no entries", () => {
+    expect(buildMaterialQuantityTotals([])).toEqual([]);
+  });
+
+  it("sums a single unit", () => {
+    const entries = [m({ quantity: "25", unit: "BAG" }), m({ quantity: 50, unit: "BAG" })];
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([{ unit: "BAG", total: 75 }]);
+  });
+
+  it("keeps every unit's total instead of hiding them when units differ", () => {
+    const entries = [
+      m({ quantity: "10", unit: "BAG" }),
+      m({ quantity: "20", unit: "BAG" }),
+      m({ quantity: "5", unit: "kg" }),
+    ];
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([
+      { unit: "BAG", total: 30 },
+      { unit: "KG", total: 5 },
+    ]);
+  });
+
+  it("treats unit spellings the catalog considers equal as one unit", () => {
+    const entries = [m({ quantity: "10", unit: "kg" }), m({ quantity: "15", unit: "kilogram" })];
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([{ unit: "KG", total: 25 }]);
+  });
+
+  it("labels a case-variant unit the same way regardless of row order", () => {
+    const forward = [m({ quantity: "1", unit: "Bag" }), m({ quantity: "1", unit: "BAG" })];
+    const backward = [...forward].reverse();
+    expect(buildMaterialQuantityTotals(forward as any)).toEqual(buildMaterialQuantityTotals(backward as any));
+  });
+
+  it("gives entries without a unit their own group instead of spoiling the rest", () => {
+    const entries = [m({ quantity: "25", unit: "BAG" }), m({ quantity: "50", unit: "" }), m({ quantity: "5", unit: null })];
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([
+      { unit: null, total: 55 },
+      { unit: "BAG", total: 25 },
+    ]);
+  });
+
+  it("counts a zero quantity instead of silently dropping the entry", () => {
+    expect(buildMaterialQuantityTotals([m({ quantity: "0", unit: "BAG" })] as any)).toEqual([{ unit: "BAG", total: 0 }]);
+  });
+
+  it("skips invalid and negative quantities without producing NaN", () => {
+    const entries = [
+      m({ quantity: "25", unit: "BAG" }),
+      m({ quantity: "invalid", unit: "BAG" }),
+      m({ quantity: -10, unit: "BAG" }),
+      m({ quantity: null, unit: "BAG" }),
+      m({ quantity: Infinity, unit: "BAG" }),
+    ];
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([{ unit: "BAG", total: 25 }]);
+  });
+
+  it("avoids floating point drift", () => {
+    const entries = [m({ quantity: "0.1", unit: "M3" }), m({ quantity: "0.2", unit: "M3" })];
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([{ unit: "M3", total: 0.3 }]);
   });
 });

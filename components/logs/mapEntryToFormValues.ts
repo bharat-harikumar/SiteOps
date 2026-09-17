@@ -54,6 +54,8 @@ export function mapEntryToFormValues(
         masonSalaryAmount: entry.masonSalaryAmount ?? "",
         helperCount: entry.helperCount ?? "",
         helperSalaryAmount: entry.helperSalaryAmount ?? "",
+        otTotalAmount: entry.otTotalAmount != null ? String(entry.otTotalAmount) : "",
+        otEnabled: Number(entry.otTotalAmount ?? 0) > 0,
         workStage: entry.workStage ?? "",
         remarks: entry.remarks ?? "",
       };

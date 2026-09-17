@@ -1,3 +1,4 @@
+import { displayUnitName } from "@/lib/catalog/units";
 import {
   type Entry, type EntryType,
   entrySpend, entryDate, entryId, gridCategoryKey,
@@ -109,4 +110,34 @@ export function entrySuccessDestination(entry: Entry, type: EntryType, siteId: s
   const category = gridCategoryKey(entry, type);
   const base = `/app/sites/${siteId}/operations/${type}/${encodeURIComponent(category)}`;
   return id ? `${base}?highlight=${id}` : base;
+}
+
+export type QuantityTotal = { unit: string | null; total: number };
+
+// Total quantity per unit for the visible material entries. Units are never
+// added together, so each keeps its own total; entries without a unit form their
+// own group rather than hiding everyone else's numbers.
+export function buildMaterialQuantityTotals(entries: Entry[]): QuantityTotal[] {
+  const groups = new Map<string, { labels: Set<string>; total: number }>();
+
+  for (const entry of entries) {
+    const qty = Number(entry.quantity ?? NaN);
+    if (entry.quantity === "" || !Number.isFinite(qty) || qty < 0) continue;
+
+    const raw = typeof entry.unit === "string" ? entry.unit.trim() : "";
+    const label = raw ? displayUnitName(raw) : "";
+    const key = label.toLowerCase();
+    const group = groups.get(key) ?? { labels: new Set<string>(), total: 0 };
+    if (label) group.labels.add(label);
+    group.total += qty;
+    groups.set(key, group);
+  }
+
+  return [...groups.values()]
+    .map((group) => ({
+      // Smallest spelling wins so "Bag"/"BAG" label the same whatever the row order.
+      unit: group.labels.size ? [...group.labels].sort()[0] : null,
+      total: Math.round((group.total + Number.EPSILON) * 100) / 100,
+    }))
+    .sort((a, b) => b.total - a.total || String(a.unit).localeCompare(String(b.unit)));
 }

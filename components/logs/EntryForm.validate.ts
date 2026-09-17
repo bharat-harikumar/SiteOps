@@ -1,6 +1,10 @@
+import { ENTRY_FIELD_CONSTRAINTS } from "@/lib/entryTypes/constraints";
 import { labourSplitPairingIssues } from "@/lib/validation/schemas";
 
 import type { EntryField } from "./entryFieldRegistry";
+
+const rupees = (value: number) =>
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 2 }).format(value);
 
 export type ValidationFailure = { field: string; message: string };
 
@@ -10,6 +14,7 @@ export type ValidateInput = {
   siteId: string | null;
   isEdit: boolean;
   splitLabour: boolean;
+  otEnabled?: boolean;
 };
 
 // Pure mirror of the checks EntryForm used to run inline. Returns the FIRST
@@ -17,7 +22,7 @@ export type ValidateInput = {
 // Message strings are user-visible and are intentionally identical to the
 // pre-extraction strings — changing them changes what supervisors read.
 export function validateEntryValues(input: ValidateInput): ValidationFailure | null {
-  const { fields, values, siteId, isEdit, splitLabour } = input;
+  const { fields, values, siteId, isEdit, splitLabour, otEnabled } = input;
 
   if (!siteId && !isEdit) {
     return { field: "siteId", message: "Site is required" };
@@ -58,5 +63,28 @@ export function validateEntryValues(input: ValidateInput): ValidationFailure | n
     if (pairing) return { field: "masonCount", message: pairing.message };
   }
 
+  if (otEnabled) {
+    const raw = values.otTotalAmount;
+    if (raw === "" || raw === null || raw === undefined) {
+      return { field: "otTotalAmount", message: "OT amount is required" };
+    }
+    const { min, max } = ENTRY_FIELD_CONSTRAINTS.otTotalAmount;
+    const amount = Number(raw);
+    if (!Number.isFinite(amount) || amount < min || amount > max) {
+      return { field: "otTotalAmount", message: `OT amount must be between ${rupees(min)} and ${rupees(max)}` };
+    }
+    if (Number(amount.toFixed(2)) !== amount) {
+      return { field: "otTotalAmount", message: "OT amount must have at most 2 decimal places" };
+    }
+  }
+
   return null;
+}
+
+// Editing the field an error points at clears that error — a stale "X is
+// required" under a now-filled field is worse than no message. The split-labour
+// aggregate error is anchored to masonCount but satisfied by editing any of the
+// four role fields, so it clears on any edit.
+export function clearsFieldError(errorField: string, editedField: string): boolean {
+  return errorField === editedField || errorField === "masonCount";
 }

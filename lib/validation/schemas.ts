@@ -159,9 +159,18 @@ export function labourSplitPairingIssues(value: {
   return issues;
 }
 
+// Overtime is a single lump-sum amount for the whole crew (masons and helpers
+// together on split work). ot_people_count / ot_hours / ot_rate exist in the
+// table but are reserved: they are deliberately absent here, so zod strips them
+// and nothing can write to them.
+const labourOtShape = z.object({
+  otTotalAmount: positiveDecimalSchema(ENTRY_FIELD_CONSTRAINTS.otTotalAmount.max).nullable().optional(),
+});
+
 export const labourEntrySchema = labourCommonCreateShape
   .and(z.union([labourLegacyShape, labourDefaultMode, labourCustomMode]))
   .and(z.union([labourOrdinaryCostShape, labourSplitCostShape]))
+  .and(labourOtShape)
   .superRefine((value, ctx) => {
     const workType = labourWorkTypeFromPayload(value);
     const hasSplitFields =
@@ -188,6 +197,7 @@ export const updateLabourEntrySchema = z.object({
   masonSalaryAmount: nonNegativeMoneySchema.optional(),
   helperCount: z.number().int().min(0).max(10000).optional(),
   helperSalaryAmount: nonNegativeMoneySchema.optional(),
+  otTotalAmount: labourOtShape.shape.otTotalAmount,
   remarks: z.string().max(500).optional(),
   workType: z.string().min(1).max(50).optional(),
   workTypeMode: z.enum(["default_enum", "custom"]).optional(),

@@ -129,6 +129,80 @@ describe("labour schemas", () => {
   });
 });
 
+describe("labour overtime amount", () => {
+  const baseLabour = {
+    siteId: validSiteId,
+    date: validEntryDate,
+    workTypeMode: "default_enum" as const,
+    workTypeEnum: "Steel work" as const,
+    peopleCount: 3,
+    wagePerHead: 1300,
+    workStage: "Basement Level",
+  };
+  const OT_MAX = ENTRY_FIELD_CONSTRAINTS.otTotalAmount.max;
+
+  it("accepts a create with an OT amount", () => {
+    const result = labourEntrySchema.safeParse({ ...baseLabour, otTotalAmount: 1500.5 });
+    expect(result.success).toBe(true);
+    expect(result.success && result.data.otTotalAmount).toBe(1500.5);
+  });
+
+  it("accepts a create with no OT, or OT explicitly null", () => {
+    expect(labourEntrySchema.safeParse(baseLabour).success).toBe(true);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otTotalAmount: null }).success).toBe(true);
+  });
+
+  it("rejects a zero or negative OT amount", () => {
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otTotalAmount: 0 }).success).toBe(false);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otTotalAmount: -10 }).success).toBe(false);
+  });
+
+  it("caps the OT amount below the numeric(12,2) column ceiling", () => {
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otTotalAmount: OT_MAX }).success).toBe(true);
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otTotalAmount: OT_MAX + 1 }).success).toBe(false);
+    expect(OT_MAX).toBeLessThan(9_999_999_999.99);
+  });
+
+  it("rejects an OT amount with more than 2 decimal places", () => {
+    expect(labourEntrySchema.safeParse({ ...baseLabour, otTotalAmount: 100.555 }).success).toBe(false);
+  });
+
+  it("drops people/hours/rate so the reserved columns can never be filled", () => {
+    const result = labourEntrySchema.safeParse({
+      ...baseLabour, otTotalAmount: 400, otPeopleCount: 2, otHours: 2, otRate: 100,
+    });
+    expect(result.success).toBe(true);
+    const keys = result.success ? Object.keys(result.data) : [];
+    expect(keys).not.toContain("otPeopleCount");
+    expect(keys).not.toContain("otHours");
+    expect(keys).not.toContain("otRate");
+  });
+
+  describe("updateLabourEntrySchema", () => {
+    it("leaves OT untouched when the PATCH omits it", () => {
+      const result = updateLabourEntrySchema.safeParse({ remarks: "only remarks" });
+      expect(result.success && "otTotalAmount" in result.data).toBe(false);
+    });
+
+    it("accepts null to clear OT and a positive amount to set it", () => {
+      expect(updateLabourEntrySchema.safeParse({ otTotalAmount: null }).success).toBe(true);
+      expect(updateLabourEntrySchema.safeParse({ otTotalAmount: 750 }).success).toBe(true);
+    });
+
+    it("rejects zero and over-cap amounts", () => {
+      expect(updateLabourEntrySchema.safeParse({ otTotalAmount: 0 }).success).toBe(false);
+      expect(updateLabourEntrySchema.safeParse({ otTotalAmount: OT_MAX + 1 }).success).toBe(false);
+    });
+
+    it("drops people/hours/rate on update too", () => {
+      const result = updateLabourEntrySchema.safeParse({ otPeopleCount: 4, otHours: 3, otRate: 120 });
+      expect(result.success).toBe(true);
+      const keys = result.success ? Object.keys(result.data) : [];
+      expect(keys).toEqual([]);
+    });
+  });
+});
+
 describe("material schemas", () => {
   it("exports the allowed material work stages", () => {
     expect(materialWorkStages).toEqual([

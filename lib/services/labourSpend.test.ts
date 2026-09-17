@@ -53,4 +53,76 @@ describe("labourSpend", () => {
     expect(labourSpend({ salaryAmount: "1234567.89" })).toBe(1234567.89);
     expect(labourSpend({ masonCount: 3, masonSalaryAmount: "1234.56" })).toBeCloseTo(3703.68, 2);
   });
+
+  // --- Overtime (OT) tests ---
+
+  it("calculates regular labour without OT correctly", () => {
+    expect(labourSpend({
+      peopleCount: 3,
+      wagePerHead: "1300.00",
+      salaryAmount: "3900.00",
+      otTotalAmount: null,
+    })).toBe(3900);
+  });
+
+  it("adds OT cost to regular labour (fallback people × wage)", () => {
+    expect(labourSpend({
+      peopleCount: 3,
+      wagePerHead: "1300.00",
+      otTotalAmount: "400.00",
+    })).toBe(4300);
+  });
+
+  it("adds OT cost to stored regular salary", () => {
+    expect(labourSpend({
+      peopleCount: 3,
+      wagePerHead: "1300.00",
+      salaryAmount: "3900.00",
+      otTotalAmount: "400.00",
+    })).toBe(4300);
+  });
+
+  it("adds OT cost to split labour without modifying split precedence", () => {
+    expect(labourSpend({
+      masonCount: 2,
+      masonSalaryAmount: "1300.00",
+      helperCount: 2,
+      helperSalaryAmount: "1100.00",
+      otTotalAmount: "450.00",
+    })).toBe(5250);
+  });
+
+  it("handles fractional OT amounts from fractional hours", () => {
+    // e.g. 2 people * 1.5 hours * 100 rate = 300
+    expect(labourSpend({
+      salaryAmount: "3900.00",
+      otTotalAmount: "300.00",
+    })).toBe(4200);
+  });
+
+  it("keeps historical NULL OT fields identical to regular cost", () => {
+    expect(labourSpend({
+      peopleCount: 5,
+      wagePerHead: "500.00",
+      otTotalAmount: null,
+    })).toBe(2500);
+
+    expect(labourSpend({
+      peopleCount: 5,
+      wagePerHead: "500.00",
+      otTotalAmount: undefined,
+    })).toBe(2500);
+  });
+
+  it("does not mutate or alter regular headcount logic when OT is present", () => {
+    const row = {
+      peopleCount: 3,
+      wagePerHead: "1000.00",
+      salaryAmount: "3000.00",
+      otTotalAmount: "400.00",
+    };
+    // Headcount is derived exclusively from peopleCount:
+    expect(row.peopleCount).toBe(3);
+    expect(labourSpend(row)).toBe(3400);
+  });
 });

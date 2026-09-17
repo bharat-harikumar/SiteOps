@@ -210,6 +210,14 @@ export const labourEntries = pgTable("labour_entries", {
   masonSalaryAmount: decimal("mason_salary_amount", { precision: 12, scale: 2 }),
   helperCount: integer("helper_count"),
   helperSalaryAmount: decimal("helper_salary_amount", { precision: 12, scale: 2 }),
+  // Overtime (optional). otTotalAmount is the one value the app reads and writes:
+  // a lump sum for the whole crew, entered by the supervisor. otPeopleCount /
+  // otHours / otRate are reserved for a future per-head breakdown and stay NULL —
+  // the zod schemas do not accept them.
+  otPeopleCount: integer("ot_people_count"),
+  otHours: decimal("ot_hours", { precision: 6, scale: 2 }),
+  otRate: decimal("ot_rate", { precision: 12, scale: 2 }),
+  otTotalAmount: decimal("ot_total_amount", { precision: 12, scale: 2 }),
   // Global work stage (managed catalog list "Work Stage"), optional on labour.
   workStage: varchar("work_stage", { length: 100 }),
   remarks: text("remarks"),

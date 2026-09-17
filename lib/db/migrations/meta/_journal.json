@@ -183,6 +183,13 @@
       "when": 1784182667449,
       "tag": "0025_global_work_stage",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1789660800000,
+      "tag": "0026_add_labour_overtime",
+      "breakpoints": true
     }
   ]
 }
