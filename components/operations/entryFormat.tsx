@@ -116,6 +116,19 @@ export function gridCategoryKey(entry: Entry, type: EntryType): string {
   return String(entry[d.categoryField] ?? d.categoryFallback);
 }
 
+// One OT lump sum per entry; on split labour it covers masons and helpers
+// together, so the label says so rather than implying a per-role figure.
+function LabourOvertimeLine({ amount, splitRoles }: { amount: unknown; splitRoles: boolean }) {
+  const value = Number(amount ?? 0);
+  if (!Number.isFinite(value) || value <= 0) return null;
+  return (
+    <p className="text-xs text-slate-400">
+      {splitRoles ? "OT (masons + helpers)" : "OT"}:{" "}
+      <span className="font-semibold text-slate-200">{formatCurrency(value)}</span>
+    </p>
+  );
+}
+
 export function renderEntrySummary(entry: Entry, type: EntryType) {
   const isMerged = Number(entry._mergedEntryCount ?? 0) > 1;
   if (type === "labour") {
@@ -150,36 +163,7 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
             {entry.peopleCount ?? 0} people{isMerged ? "" : ` x ${formatCurrency(wage)}`}
           </p>
         )}
-        {(() => {
-          if (
-            entry.otPeopleCount == null ||
-            entry.otHours == null ||
-            entry.otRate == null ||
-            entry.otTotalAmount == null
-          ) {
-            return null;
-          }
-
-          const otPeople = Number(entry.otPeopleCount);
-          const otHours = Number(entry.otHours);
-          const otRate = Number(entry.otRate);
-          const otTotal = Number(entry.otTotalAmount);
-
-          const isValid =
-            Number.isFinite(otPeople) && otPeople > 0 &&
-            Number.isFinite(otHours) && otHours > 0 &&
-            Number.isFinite(otRate) && otRate > 0 &&
-            Number.isFinite(otTotal) && otTotal > 0;
-
-          if (!isValid) return null;
-
-          return (
-            <p className="text-xs text-slate-400">
-              OT: {otPeople} {otPeople === 1 ? "person" : "people"} × {otHours} hrs × {formatCurrency(otRate)} ={" "}
-              <span className="font-semibold text-slate-200">{formatCurrency(otTotal)}</span>
-            </p>
-          );
-        })()}
+        <LabourOvertimeLine amount={entry.otTotalAmount} splitRoles={hasSplitRoles} />
         <p className="text-sm font-bold text-sky-400">{formatCurrency(entrySpend(entry, type))}</p>
         {entry.remarks ? <p className="text-xs text-slate-500">{entry.remarks}</p> : null}
       </div>

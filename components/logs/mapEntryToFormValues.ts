@@ -41,14 +41,7 @@ export function mapEntryToFormValues(
   categoryId: string,
 ): Record<string, unknown> {
   switch (type) {
-    case "labour": {
-      const hasExistingOt = Boolean(
-        (entry.otPeopleCount != null && entry.otPeopleCount !== "") ||
-        (entry.otHours != null && entry.otHours !== "") ||
-        (entry.otRate != null && entry.otRate !== "") ||
-        (entry.otTotalAmount != null && entry.otTotalAmount !== "")
-      );
-
+    case "labour":
       return {
         date: entry.date ?? "",
         workType:
@@ -61,15 +54,11 @@ export function mapEntryToFormValues(
         masonSalaryAmount: entry.masonSalaryAmount ?? "",
         helperCount: entry.helperCount ?? "",
         helperSalaryAmount: entry.helperSalaryAmount ?? "",
-        otPeopleCount: entry.otPeopleCount != null ? String(entry.otPeopleCount) : "",
-        otHours: entry.otHours != null ? String(entry.otHours) : "",
-        otRate: entry.otRate != null ? String(entry.otRate) : "",
         otTotalAmount: entry.otTotalAmount != null ? String(entry.otTotalAmount) : "",
-        otEnabled: hasExistingOt,
+        otEnabled: Number(entry.otTotalAmount ?? 0) > 0,
         workStage: entry.workStage ?? "",
         remarks: entry.remarks ?? "",
       };
-    }
     case "material":
       return {
         date: entry.date ?? "",

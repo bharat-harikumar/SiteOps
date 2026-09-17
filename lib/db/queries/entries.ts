@@ -1,7 +1,7 @@
 import { and, asc, desc, eq, gte, lte, sql, type SQL } from "drizzle-orm";
 
 import { db } from "@/lib/db/client";
-import { labourSpendSumExpr } from "@/lib/db/queries/labourSpendSql";
+import { labourOtSumExpr, labourSpendSumExpr } from "@/lib/db/queries/labourSpendSql";
 import {
   expenseEntries,
   incidentReports,
@@ -54,9 +54,6 @@ export async function insertLabourEntry(data: {
   masonSalaryAmount?: string | null;
   helperCount?: number | null;
   helperSalaryAmount?: string | null;
-  otPeopleCount?: number | null;
-  otHours?: string | null;
-  otRate?: string | null;
   otTotalAmount?: string | null;
   remarks: string | null;
   workStage?: string | null;
@@ -348,6 +345,9 @@ export type SiteOperationSummary = Record<EntryType, {
   todaySpend: number | null;
   totalCount: number;
   totalSpend: number | null;
+  // Labour only: the overtime share of todaySpend / totalSpend (already included).
+  todayOtSpend?: number;
+  totalOtSpend?: number;
 }>;
 
 // The next three functions used to be five-case switches each. They are now
@@ -562,6 +562,8 @@ export async function siteOperationSummary(
       coalesce((select ${labourSpendSumExpr} from labour_entries where site_id=${siteId}::uuid and date=${date}),0) as labour_spend,
       (select count(*)::int from labour_entries where site_id=${siteId}::uuid) as labour_total_count,
       coalesce((select ${labourSpendSumExpr} from labour_entries where site_id=${siteId}::uuid),0) as labour_total_spend,
+      coalesce((select ${labourOtSumExpr} from labour_entries where site_id=${siteId}::uuid and date=${date}),0) as labour_ot_spend,
+      coalesce((select ${labourOtSumExpr} from labour_entries where site_id=${siteId}::uuid),0) as labour_total_ot_spend,
       (select count(*)::int from material_entries where site_id=${siteId}::uuid and date=${date}) as material_count,
       coalesce((select sum(coalesce(cost,0)) from material_entries where site_id=${siteId}::uuid and date=${date}),0) as material_spend,
       (select count(*)::int from material_entries where site_id=${siteId}::uuid) as material_total_count,
@@ -581,7 +583,7 @@ export async function siteOperationSummary(
   const r = rows[0] ?? {};
   const num = (v: string | number | undefined) => Number(v ?? 0);
   return {
-    labour: { todayCount: num(r.labour_count), todaySpend: num(r.labour_spend), totalCount: num(r.labour_total_count), totalSpend: num(r.labour_total_spend) },
+    labour: { todayCount: num(r.labour_count), todaySpend: num(r.labour_spend), totalCount: num(r.labour_total_count), totalSpend: num(r.labour_total_spend), todayOtSpend: num(r.labour_ot_spend), totalOtSpend: num(r.labour_total_ot_spend) },
     material: { todayCount: num(r.material_count), todaySpend: num(r.material_spend), totalCount: num(r.material_total_count), totalSpend: num(r.material_total_spend) },
     machinery: { todayCount: num(r.machinery_count), todaySpend: num(r.machinery_spend), totalCount: num(r.machinery_total_count), totalSpend: num(r.machinery_total_spend) },
     expense: { todayCount: num(r.expense_count), todaySpend: num(r.expense_spend), totalCount: num(r.expense_total_count), totalSpend: num(r.expense_total_spend) },

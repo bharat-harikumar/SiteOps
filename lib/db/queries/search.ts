@@ -108,7 +108,7 @@ export async function searchRemarks(params: {
                       + COALESCE(le.helper_count, 0) * COALESCE(le.helper_salary_amount, 0)
                  WHEN COALESCE(le.salary_amount, 0) > 0 THEN le.salary_amount
                  ELSE le.people_count * COALESCE(le.wage_per_head, 0)
-               END + COALESCE((to_jsonb(le)->>'ot_total_amount')::numeric, 0) AS amount
+               END + COALESCE(le.ot_total_amount, 0) AS amount
         FROM labour_entries le JOIN sites s ON s.site_id = le.site_id
         WHERE le.remarks IS NOT NULL
           AND (le.remarks % ${q} OR le.remarks ILIKE ${like})

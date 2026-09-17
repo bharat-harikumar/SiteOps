@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, Save, Trash2 } from 'lucide-react';
-import { useState, useEffect, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { useNavRouter } from '@/lib/nav/useNavRouter';
 import { toast } from "sonner";
 import { confirmDialog } from "@/lib/ui/confirm";
@@ -14,8 +14,9 @@ import { pickCategoryIdByName, type CategoryRowLike } from "@/lib/catalog/select
 import { isSplitLabourWorkType } from "@/lib/validation/schemas";
 import { entrySuccessDestination } from "@/components/operations/categoryView";
 import { formatCurrency, type Entry } from "@/components/operations/entryFormat";
-import { calculateOtAmount, labourSpend } from "@/lib/services/labourSpend";
+import { labourSpend } from "@/lib/services/labourSpend";
 import { Toggle } from "@/components/ui/Toggle";
+import { OT_AMOUNT_FIELD, overtimeHint, overtimePayload } from "@/components/logs/labourOvertime";
 
 import {
   applyWorkStageRequirement,
@@ -25,7 +26,7 @@ import {
   numericInputModeFor,
   type EntryField,
 } from "./entryFieldRegistry";
-import { validateEntryValues, type ValidationFailure } from "./EntryForm.validate";
+import { clearsFieldError, validateEntryValues, type ValidationFailure } from "./EntryForm.validate";
 import { SubcategoryCombobox, type SubcategoryOption } from "./SubcategoryCombobox";
 import { UnitSelect, type UnitOption } from "./UnitSelect";
 
@@ -114,9 +115,7 @@ export function EntryForm({
       "masonSalaryAmount",
       "helperCount",
       "helperSalaryAmount",
-      "otPeopleCount",
-      "otHours",
-      "otRate",
+      "otTotalAmount",
     ]) {
       if (initialValues?.[extra] !== undefined) {
         v[extra] = initialValues[extra] as FieldValue;
@@ -129,41 +128,25 @@ export function EntryForm({
   const [fieldError, setFieldError] = useState<ValidationFailure | null>(null);
 
   const hadInitialOt = kind === "labour" && Boolean(initialValues?.otEnabled);
-  const [otEnabled, setOtEnabled] = useState<boolean>(() => hadInitialOt);
+  const [otEnabled, setOtEnabled] = useState(hadInitialOt);
 
-  useEffect(() => {
-    setOtEnabled(kind === "labour" && Boolean(initialValues?.otEnabled));
-  }, [initialValues?.otEnabled, entryId, kind]);
-
-  function handleToggleOt(next: boolean) {
-    setOtEnabled(next);
-    if (!next) {
-      setFieldError((prev) =>
-        prev &&
-        (prev.field === "otPeopleCount" ||
-          prev.field === "otHours" ||
-          prev.field === "otRate")
-          ? null
-          : prev,
-      );
+  async function handleToggleOt(next: boolean) {
+    // Switching OT off on a saved entry deletes its amount on save — confirm it.
+    if (!next && isEdit && hadInitialOt) {
+      const confirmed = await confirmDialog({
+        title: "Remove overtime from this entry?",
+        message: "The saved OT amount will be cleared when you save.",
+        confirmLabel: "Remove OT",
+        tone: "danger",
+      });
+      if (!confirmed) return;
     }
+    setOtEnabled(next);
+    if (!next) setFieldError((prev) => (prev?.field === "otTotalAmount" ? null : prev));
   }
 
   function update(name: string, val: FieldValue) {
-    // Any edit to the field we complained about clears the complaint — leaving a
-    // stale "X is required" under a now-filled field is worse than no message.
-    // The masonCount case covers the split-labour aggregate error, which is
-    // anchored to masonCount but satisfied by editing any of the four fields.
-    setFieldError((prev) =>
-      prev &&
-      (prev.field === name ||
-        prev.field === "masonCount" ||
-        prev.field === "otPeopleCount" ||
-        prev.field === "otHours" ||
-        prev.field === "otRate")
-        ? null
-        : prev,
-    );
+    setFieldError((prev) => (prev && clearsFieldError(prev.field, name) ? null : prev));
     setValues((s) => ({ ...s, [name]: val }));
   }
 
@@ -256,15 +239,7 @@ export function EntryForm({
     }
 
     if (kind === "labour") {
-      if (otEnabled) {
-        payload.otPeopleCount = Number(values.otPeopleCount);
-        payload.otHours = Number(values.otHours);
-        payload.otRate = Number(values.otRate);
-      } else if (isEdit && hadInitialOt) {
-        payload.otPeopleCount = null;
-        payload.otHours = null;
-        payload.otRate = null;
-      }
+      Object.assign(payload, overtimePayload({ otEnabled, isEdit, hadInitialOt, amount: values.otTotalAmount }));
     }
 
     // When the material type allows exactly one unit, auto-assign it; otherwise
@@ -349,46 +324,44 @@ export function EntryForm({
   return (
     <form onSubmit={handleSubmit} className="card-standard p-6 space-y-5">
       {fields.map((f) => {
-        if (splitLabour && f.name === "wagePerHead") return null;
         if (splitLabour && f.name === "peopleCount") {
           return (
-            <div key="split-labour-container" className="space-y-5">
-              <SplitLabourFields
-                key="split-labour-fields"
-                values={values}
-                update={update}
-                error={fieldError?.field === "masonCount" ? fieldError.message : undefined}
-              />
-              <LabourOvertimeFields
-                otEnabled={otEnabled}
-                onToggle={handleToggleOt}
-                values={values}
-                update={update}
-                fieldError={fieldError}
-              />
-            </div>
+            <SplitLabourFields
+              key="split-labour-fields"
+              values={values}
+              update={update}
+              error={fieldError?.field === "masonCount" ? fieldError.message : undefined}
+            />
           );
         }
-        if (!splitLabour && kind === "labour" && f.name === "wagePerHead") {
+        // Overtime follows the cost fields for both labour layouts. wagePerHead
+        // is the anchor because it is the last cost field in either layout.
+        if (kind === "labour" && f.name === "wagePerHead") {
           return (
-            <div key={f.name} className="space-y-5">
-              <FieldRow
-                field={f}
-                value={values[f.name]}
-                onChange={(v) => update(f.name, v)}
-                categoryId={catalogParentIdFor(f)}
-                role={role}
-                siteId={siteId}
-                allowedUnitNames={undefined}
-                error={fieldError?.field === f.name ? fieldError.message : undefined}
-              />
-              <LabourOvertimeFields
-                otEnabled={otEnabled}
-                onToggle={handleToggleOt}
-                values={values}
-                update={update}
-                fieldError={fieldError}
-              />
+            <div key="labour-cost-and-overtime" className="space-y-5">
+              {splitLabour ? null : (
+                <FieldRow
+                  field={f}
+                  value={values[f.name]}
+                  onChange={(v) => update(f.name, v)}
+                  categoryId={catalogParentIdFor(f)}
+                  role={role}
+                  siteId={siteId}
+                  allowedUnitNames={undefined}
+                  error={fieldError?.field === f.name ? fieldError.message : undefined}
+                />
+              )}
+              <LabourOvertimeFields otEnabled={otEnabled} onToggle={handleToggleOt} hint={overtimeHint(splitLabour)}>
+                <FieldRow
+                  field={OT_AMOUNT_FIELD}
+                  value={values.otTotalAmount}
+                  onChange={(v) => update(OT_AMOUNT_FIELD.name, v)}
+                  categoryId=""
+                  role={role}
+                  siteId={siteId}
+                  error={fieldError?.field === OT_AMOUNT_FIELD.name ? fieldError.message : undefined}
+                />
+              </LabourOvertimeFields>
             </div>
           );
         }
@@ -662,121 +635,27 @@ function SplitLabourFields({
 function LabourOvertimeFields({
   otEnabled,
   onToggle,
-  values,
-  update,
-  fieldError,
+  hint,
+  children,
 }: {
   otEnabled: boolean;
   onToggle: (next: boolean) => void;
-  values: Record<string, FieldValue>;
-  update: (name: string, val: FieldValue) => void;
-  fieldError: ValidationFailure | null;
+  hint: string;
+  children: ReactNode;
 }) {
-  const people = Number(values.otPeopleCount || 0);
-  const hours = Number(values.otHours || 0);
-  const rate = Number(values.otRate || 0);
-  const otTotal = calculateOtAmount(people, hours, rate);
-
   return (
-    <div className="space-y-4 pt-1">
-      <div className="flex items-center justify-between">
-        <Toggle
-          checked={otEnabled}
-          onChange={onToggle}
-          label="Enable OT"
-        />
-      </div>
-
+    <div className="space-y-4">
+      <Toggle checked={otEnabled} onChange={onToggle} label="Enable OT" />
       {otEnabled ? (
-        <section className="space-y-4 rounded-xl border border-white/10 bg-white/[0.03] p-4">
-          <p className="text-[10px] font-extrabold uppercase tracking-widest text-sky-400">
+        <section
+          aria-labelledby="overtime-heading"
+          className="space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-4"
+        >
+          <h3 id="overtime-heading" className="text-[10px] font-extrabold uppercase tracking-widest text-sky-400">
             Overtime (OT)
-          </p>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="space-y-2" id="fieldrow-otPeopleCount">
-              <label htmlFor="field-otPeopleCount" className={labelClass}>
-                OT People Count *
-              </label>
-              <input
-                id="field-otPeopleCount"
-                type="number"
-                inputMode="numeric"
-                min={1}
-                max={10000}
-                step={1}
-                placeholder="e.g. 2"
-                value={String(values.otPeopleCount ?? "")}
-                onChange={(e) => update("otPeopleCount", e.target.value)}
-                className={inputClass}
-              />
-              {fieldError?.field === "otPeopleCount" ? (
-                <p role="alert" className="text-xs font-semibold text-rose-400">
-                  {fieldError.message}
-                </p>
-              ) : null}
-            </div>
-
-            <div className="space-y-2" id="fieldrow-otHours">
-              <label htmlFor="field-otHours" className={labelClass}>
-                OT Hours *
-              </label>
-              <input
-                id="field-otHours"
-                type="number"
-                inputMode="decimal"
-                min={0.1}
-                max={24}
-                step={0.1}
-                placeholder="e.g. 2.0"
-                value={String(values.otHours ?? "")}
-                onChange={(e) => update("otHours", e.target.value)}
-                className={inputClass}
-              />
-              {fieldError?.field === "otHours" ? (
-                <p role="alert" className="text-xs font-semibold text-rose-400">
-                  {fieldError.message}
-                </p>
-              ) : null}
-            </div>
-
-            <div className="space-y-2" id="fieldrow-otRate">
-              <label htmlFor="field-otRate" className={labelClass}>
-                OT Rate / Head / Hour *
-              </label>
-              <input
-                id="field-otRate"
-                type="number"
-                inputMode="decimal"
-                min={0.01}
-                max={1000000}
-                step={0.01}
-                placeholder="e.g. 100"
-                value={String(values.otRate ?? "")}
-                onChange={(e) => update("otRate", e.target.value)}
-                className={inputClass}
-              />
-              {fieldError?.field === "otRate" ? (
-                <p role="alert" className="text-xs font-semibold text-rose-400">
-                  {fieldError.message}
-                </p>
-              ) : null}
-            </div>
-          </div>
-
-          <div
-            aria-live="polite"
-            className="flex items-center justify-between rounded-xl border border-sky-500/20 bg-sky-500/10 px-4 py-3 text-sm font-bold text-slate-200"
-          >
-            <div className="flex flex-col">
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-sky-400">
-                OT Total
-              </span>
-              <span className="text-xs text-slate-400 font-normal">
-                {people} {people === 1 ? "person" : "people"} × {hours} hrs × {formatCurrency(rate)}
-              </span>
-            </div>
-            <span className="text-sky-400 text-base font-extrabold">{formatCurrency(otTotal)}</span>
-          </div>
+          </h3>
+          {children}
+          <p className="text-xs text-slate-400">{hint}</p>
         </section>
       ) : null}
     </div>

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { applyWorkStageRequirement, resolveEntryFields, type EntryField } from "./entryFieldRegistry";
-import { validateEntryValues } from "./EntryForm.validate";
+import { clearsFieldError, validateEntryValues } from "./EntryForm.validate";
 
 const dateField: EntryField = { name: "date", label: "Date", kind: "date", required: true };
 const workTypeField: EntryField = {
@@ -169,140 +169,54 @@ describe("work stage validation", () => {
   });
 });
 
-describe("overtime validation", () => {
-  it("ignores OT fields when otEnabled is false or omitted", () => {
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: false,
-        values: { ...base.values, otPeopleCount: "", otHours: "", otRate: "" },
-      }),
-    ).toBeNull();
-
-    expect(
-      validateEntryValues({
-        ...base,
-        values: { ...base.values, otPeopleCount: "", otHours: "", otRate: "" },
-      }),
-    ).toBeNull();
+describe("overtime amount validation", () => {
+  const withOt = (otTotalAmount: unknown) => ({
+    ...base,
+    otEnabled: true,
+    values: { ...base.values, otTotalAmount },
   });
 
-  it("requires otPeopleCount when otEnabled is true", () => {
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "", otHours: "2", otRate: "100" },
-      }),
-    ).toEqual({ field: "otPeopleCount", message: "OT people count is required" });
+  it("ignores the OT box when OT is switched off", () => {
+    expect(validateEntryValues({ ...base, otEnabled: false, values: { ...base.values, otTotalAmount: "" } })).toBeNull();
+    expect(validateEntryValues({ ...base, values: { ...base.values, otTotalAmount: "abc" } })).toBeNull();
   });
 
-  it("validates otPeopleCount is a whole number between 1 and 10000", () => {
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "1.5", otHours: "2", otRate: "100" },
-      }),
-    ).toEqual({ field: "otPeopleCount", message: "OT people count must be a whole number between 1 and 10,000" });
-
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "0", otHours: "2", otRate: "100" },
-      }),
-    ).toEqual({ field: "otPeopleCount", message: "OT people count must be a whole number between 1 and 10,000" });
-
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "10001", otHours: "2", otRate: "100" },
-      }),
-    ).toEqual({ field: "otPeopleCount", message: "OT people count must be a whole number between 1 and 10,000" });
+  it("requires an amount when OT is switched on", () => {
+    expect(validateEntryValues(withOt(""))).toEqual({ field: "otTotalAmount", message: "OT amount is required" });
+    expect(validateEntryValues(withOt(undefined))).toEqual({ field: "otTotalAmount", message: "OT amount is required" });
   });
 
-  it("requires otHours when otEnabled is true", () => {
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "2", otHours: "", otRate: "100" },
-      }),
-    ).toEqual({ field: "otHours", message: "OT hours is required" });
+  it("rejects zero, negative, non-numeric and over-cap amounts", () => {
+    const outOfRange = { field: "otTotalAmount", message: "OT amount must be between ₹0.01 and ₹99,99,999.99" };
+    expect(validateEntryValues(withOt("0"))).toEqual(outOfRange);
+    expect(validateEntryValues(withOt("-5"))).toEqual(outOfRange);
+    expect(validateEntryValues(withOt("abc"))).toEqual(outOfRange);
+    expect(validateEntryValues(withOt("10000000"))).toEqual(outOfRange);
   });
 
-  it("validates otHours is between 0.1 and 24 with max 2 decimal places", () => {
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "2", otHours: "0.05", otRate: "100" },
-      }),
-    ).toEqual({ field: "otHours", message: "OT hours must be between 0.1 and 24" });
-
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "2", otHours: "25", otRate: "100" },
-      }),
-    ).toEqual({ field: "otHours", message: "OT hours must be between 0.1 and 24" });
-
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "2", otHours: "2.123", otRate: "100" },
-      }),
-    ).toEqual({ field: "otHours", message: "OT hours must have at most 2 decimal places" });
+  it("rejects more than 2 decimal places", () => {
+    expect(validateEntryValues(withOt("100.555"))).toEqual({
+      field: "otTotalAmount",
+      message: "OT amount must have at most 2 decimal places",
+    });
   });
 
-  it("requires otRate when otEnabled is true", () => {
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "2", otHours: "2", otRate: "" },
-      }),
-    ).toEqual({ field: "otRate", message: "OT rate is required" });
-  });
-
-  it("validates otRate is between 0.01 and 1000000 with max 2 decimal places", () => {
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "2", otHours: "2", otRate: "0" },
-      }),
-    ).toEqual({ field: "otRate", message: "OT rate must be between 0.01 and 1,000,000" });
-
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "2", otHours: "2", otRate: "1000001" },
-      }),
-    ).toEqual({ field: "otRate", message: "OT rate must be between 0.01 and 1,000,000" });
-
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "2", otHours: "2", otRate: "100.555" },
-      }),
-    ).toEqual({ field: "otRate", message: "OT rate must have at most 2 decimal places" });
-  });
-
-  it("accepts valid OT values when otEnabled is true", () => {
-    expect(
-      validateEntryValues({
-        ...base,
-        otEnabled: true,
-        values: { ...base.values, otPeopleCount: "2", otHours: "2.5", otRate: "100.50" },
-      }),
-    ).toBeNull();
+  it("accepts a valid amount", () => {
+    expect(validateEntryValues(withOt("1250.50"))).toBeNull();
+    expect(validateEntryValues(withOt("9999999.99"))).toBeNull();
   });
 });
 
+describe("clearsFieldError", () => {
+  it("clears an error when the field it points at is edited", () => {
+    expect(clearsFieldError("otTotalAmount", "otTotalAmount")).toBe(true);
+  });
+
+  it("keeps an OT error when a different field is edited", () => {
+    expect(clearsFieldError("otTotalAmount", "remarks")).toBe(false);
+  });
+
+  it("clears the split-labour aggregate error on any edit, as before", () => {
+    expect(clearsFieldError("masonCount", "helperSalaryAmount")).toBe(true);
+  });
+});

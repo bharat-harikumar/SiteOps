@@ -1,42 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { calculateOtAmount, labourSpend } from "./labourSpend";
-
-describe("calculateOtAmount", () => {
-  it("calculates people × hours × rate correctly", () => {
-    expect(calculateOtAmount(2, 2, 100)).toBe(400);
-    expect(calculateOtAmount(3, 1.5, 100)).toBe(450);
-    expect(calculateOtAmount(4, 2.5, 150.5)).toBe(1505);
-  });
-
-  it("rounds to 2 decimal places", () => {
-    // 1 person * 1.33 hours * 100 rate = 133
-    expect(calculateOtAmount(1, 1.33, 100)).toBe(133);
-    // 3 * 2.33 * 50 = 349.5
-    expect(calculateOtAmount(3, 2.33, 50)).toBe(349.5);
-  });
-
-  it("returns 0 for missing, null, or undefined inputs", () => {
-    expect(calculateOtAmount(null, 2, 100)).toBe(0);
-    expect(calculateOtAmount(2, null, 100)).toBe(0);
-    expect(calculateOtAmount(2, 2, null)).toBe(0);
-    expect(calculateOtAmount(undefined, undefined, undefined)).toBe(0);
-  });
-
-  it("returns 0 for zero or negative values", () => {
-    expect(calculateOtAmount(0, 2, 100)).toBe(0);
-    expect(calculateOtAmount(2, 0, 100)).toBe(0);
-    expect(calculateOtAmount(2, 2, 0)).toBe(0);
-    expect(calculateOtAmount(-1, 2, 100)).toBe(0);
-    expect(calculateOtAmount(2, -1, 100)).toBe(0);
-    expect(calculateOtAmount(2, 2, -100)).toBe(0);
-  });
-
-  it("returns 0 for non-finite inputs", () => {
-    expect(calculateOtAmount(NaN, 2, 100)).toBe(0);
-    expect(calculateOtAmount(2, Infinity, 100)).toBe(0);
-  });
-});
+import { labourSpend } from "./labourSpend";
 
 describe("labourSpend", () => {
   it("multiplies each split role's head count by its per-person wage", () => {

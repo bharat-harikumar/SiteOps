@@ -76,10 +76,10 @@ describeDb("siteOperationSummary", () => {
   });
 });
 
-describe("siteOperationSummary with OT (unit)", () => {
+describe("siteOperationSummary OT figures (unit)", () => {
   const stubExecutor = (rows: unknown[]) => ({ execute: async () => rows });
 
-  it("coerces SQL output into SiteOperationSummary with OT spend included while entry counts remain separate", async () => {
+  it("reports OT spend separately, alongside the OT-inclusive labour spend", async () => {
     const summary = await siteOperationSummary(
       stubExecutor([
         {
@@ -87,6 +87,8 @@ describe("siteOperationSummary with OT (unit)", () => {
           labour_spend: "1600.00",
           labour_total_count: "3",
           labour_total_spend: "2800.00",
+          labour_ot_spend: "200.00",
+          labour_total_ot_spend: "350.00",
           material_count: "1",
           material_spend: "300.50",
           material_total_count: "1",
@@ -107,12 +109,11 @@ describe("siteOperationSummary with OT (unit)", () => {
       "2026-06-22",
     );
 
-    // Entry count remains strictly entry count (not mixed with peopleCount or otPeopleCount)
     expect(summary.labour.todayCount).toBe(2);
     expect(summary.labour.totalCount).toBe(3);
-
-    // Spend correctly reflects OT-inclusive spend from SQL
     expect(summary.labour.todaySpend).toBe(1600);
     expect(summary.labour.totalSpend).toBe(2800);
+    expect(summary.labour.todayOtSpend).toBe(200);
+    expect(summary.labour.totalOtSpend).toBe(350);
   });
 });

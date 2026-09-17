@@ -152,7 +152,7 @@ describe("list-view projection (listColumns)", () => {
       "id", "labourEntryId", "siteId", "date", "workType", "workStage",
       "peopleCount", "wagePerHead", "salaryAmount", "masonCount",
       "masonSalaryAmount", "helperCount", "helperSalaryAmount",
-      "otPeopleCount", "otHours", "otRate", "otTotalAmount",
+      "otTotalAmount",
       "createdBy", "createdAt", "remarks",
     ],
     material: [

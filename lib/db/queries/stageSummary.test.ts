@@ -209,6 +209,34 @@ describeDb("getStageComposition", () => {
     });
   });
 
+  it("reports the OT lump sum per work type, already inside spend", async () => {
+    await withRollback(async (tx) => {
+      const { userId, siteId } = await seedSite(tx);
+      await tx.insert(materialEntries).values({
+        siteId, date: "2026-08-01", materialType: "Cement", quantity: "10",
+        unit: "Bag", workStage: "Basement Level", cost: "5000", createdBy: userId,
+      });
+      await tx.insert(labourEntries).values([
+        // One OT amount covers masons and helpers together.
+        { siteId, date: "2026-08-01", workType: "Brick work", peopleCount: 0,
+          wagePerHead: "0", masonCount: 2, masonSalaryAmount: "1300.00",
+          helperCount: 3, helperSalaryAmount: "1100.00", otTotalAmount: "800.00",
+          workStage: "Basement Level", createdBy: userId },
+        { siteId, date: "2026-08-02", workType: "Brick work", peopleCount: 0,
+          wagePerHead: "0", masonCount: 1, masonSalaryAmount: "1300.00",
+          workStage: "Basement Level", createdBy: userId },
+      ]);
+
+      const rows = await getStageComposition(tx, siteId, "Basement Level");
+
+      expect(rows.find((r) => r.name === "Brick work")).toMatchObject({
+        otSpend: 800,
+        spend: 2600 + 3300 + 800 + 1300,
+      });
+      expect(rows.find((r) => r.name === "Cement")).toMatchObject({ otSpend: null });
+    });
+  });
+
   it("reports no manpower for material rows or ordinary people-count labour", async () => {
     await withRollback(async (tx) => {
       const { userId, siteId } = await seedSite(tx);
@@ -282,10 +310,12 @@ describe("getStageComposition row mapping", () => {
       stubExecutor([
         { entry_type: "material", name: "Cement", entry_count: "2", quantity: "275",
           unit: "Bag", head_count: null, spend: "88000",
-          mason_count: null, mason_salary: null, helper_count: null, helper_salary: null },
+          mason_count: null, mason_salary: null, helper_count: null, helper_salary: null,
+          ot_spend: null },
         { entry_type: "labour", name: "Brick work", entry_count: "2", quantity: null,
           unit: null, head_count: "0", spend: "10700",
-          mason_count: "4", mason_salary: "5200", helper_count: "5", helper_salary: "5500" },
+          mason_count: "4", mason_salary: "5200", helper_count: "5", helper_salary: "5500",
+          ot_spend: "0" },
       ]),
       "11111111-1111-1111-1111-111111111111",
       "Basement Level",
@@ -293,11 +323,11 @@ describe("getStageComposition row mapping", () => {
 
     expect(rows[0]).toMatchObject({
       entryType: "material", quantity: 275, spend: 88000,
-      masonCount: null, masonSalary: null, helperCount: null, helperSalary: null,
+      masonCount: null, masonSalary: null, helperCount: null, helperSalary: null, otSpend: null,
     });
     expect(rows[1]).toMatchObject({
       entryType: "labour", spend: 10700,
-      masonCount: 4, masonSalary: 5200, helperCount: 5, helperSalary: 5500,
+      masonCount: 4, masonSalary: 5200, helperCount: 5, helperSalary: 5500, otSpend: 0,
     });
   });
 });

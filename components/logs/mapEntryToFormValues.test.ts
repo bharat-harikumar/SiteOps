@@ -27,46 +27,26 @@ describe("mapEntryToFormValues — workStage prefill", () => {
 });
 
 describe("mapEntryToFormValues — overtime prefill", () => {
-  it("prefills OT as disabled and empty strings when OT is not present", () => {
-    const values = mapEntryToFormValues(
-      { peopleCount: 5, wagePerHead: "600" },
-      "labour",
-      categoryId,
-    );
+  it("starts with OT off and an empty box when the entry has no OT", () => {
+    const values = mapEntryToFormValues({ peopleCount: 5, wagePerHead: "600" }, "labour", categoryId);
     expect(values.otEnabled).toBe(false);
-    expect(values.otPeopleCount).toBe("");
-    expect(values.otHours).toBe("");
-    expect(values.otRate).toBe("");
     expect(values.otTotalAmount).toBe("");
   });
 
-  it("prefills OT as enabled with stringified values when OT fields exist", () => {
-    const values = mapEntryToFormValues(
-      {
-        peopleCount: 5,
-        wagePerHead: "600",
-        otPeopleCount: 2,
-        otHours: "2.50",
-        otRate: "100.00",
-        otTotalAmount: "500.00",
-      },
-      "labour",
-      categoryId,
-    );
+  it("starts with OT on and the saved amount when the entry has OT", () => {
+    const values = mapEntryToFormValues({ otTotalAmount: "500.00" }, "labour", categoryId);
     expect(values.otEnabled).toBe(true);
-    expect(values.otPeopleCount).toBe("2");
-    expect(values.otHours).toBe("2.50");
-    expect(values.otRate).toBe("100.00");
     expect(values.otTotalAmount).toBe("500.00");
   });
 
-  it("detects otEnabled when any OT field is populated", () => {
+  it("does not prefill the reserved people/hours/rate fields", () => {
     const values = mapEntryToFormValues(
-      { otTotalAmount: "400.00" },
+      { otTotalAmount: "500.00", otPeopleCount: 2, otHours: "2", otRate: "100" },
       "labour",
       categoryId,
     );
-    expect(values.otEnabled).toBe(true);
+    expect(values).not.toHaveProperty("otPeopleCount");
+    expect(values).not.toHaveProperty("otHours");
+    expect(values).not.toHaveProperty("otRate");
   });
 });
-

@@ -1,6 +1,10 @@
+import { ENTRY_FIELD_CONSTRAINTS } from "@/lib/entryTypes/constraints";
 import { labourSplitPairingIssues } from "@/lib/validation/schemas";
 
 import type { EntryField } from "./entryFieldRegistry";
+
+const rupees = (value: number) =>
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 2 }).format(value);
 
 export type ValidationFailure = { field: string; message: string };
 
@@ -60,39 +64,27 @@ export function validateEntryValues(input: ValidateInput): ValidationFailure | n
   }
 
   if (otEnabled) {
-    const rawPeople = values.otPeopleCount;
-    if (rawPeople === "" || rawPeople === null || rawPeople === undefined) {
-      return { field: "otPeopleCount", message: "OT people count is required" };
+    const raw = values.otTotalAmount;
+    if (raw === "" || raw === null || raw === undefined) {
+      return { field: "otTotalAmount", message: "OT amount is required" };
     }
-    const people = Number(rawPeople);
-    if (!Number.isFinite(people) || !Number.isInteger(people) || people < 1 || people > 10000) {
-      return { field: "otPeopleCount", message: "OT people count must be a whole number between 1 and 10,000" };
+    const { min, max } = ENTRY_FIELD_CONSTRAINTS.otTotalAmount;
+    const amount = Number(raw);
+    if (!Number.isFinite(amount) || amount < min || amount > max) {
+      return { field: "otTotalAmount", message: `OT amount must be between ${rupees(min)} and ${rupees(max)}` };
     }
-
-    const rawHours = values.otHours;
-    if (rawHours === "" || rawHours === null || rawHours === undefined) {
-      return { field: "otHours", message: "OT hours is required" };
-    }
-    const hours = Number(rawHours);
-    if (!Number.isFinite(hours) || hours < 0.1 || hours > 24) {
-      return { field: "otHours", message: "OT hours must be between 0.1 and 24" };
-    }
-    if (Number(hours.toFixed(2)) !== hours) {
-      return { field: "otHours", message: "OT hours must have at most 2 decimal places" };
-    }
-
-    const rawRate = values.otRate;
-    if (rawRate === "" || rawRate === null || rawRate === undefined) {
-      return { field: "otRate", message: "OT rate is required" };
-    }
-    const rate = Number(rawRate);
-    if (!Number.isFinite(rate) || rate < 0.01 || rate > 1000000) {
-      return { field: "otRate", message: "OT rate must be between 0.01 and 1,000,000" };
-    }
-    if (Number(rate.toFixed(2)) !== rate) {
-      return { field: "otRate", message: "OT rate must have at most 2 decimal places" };
+    if (Number(amount.toFixed(2)) !== amount) {
+      return { field: "otTotalAmount", message: "OT amount must have at most 2 decimal places" };
     }
   }
 
   return null;
+}
+
+// Editing the field an error points at clears that error — a stale "X is
+// required" under a now-filled field is worse than no message. The split-labour
+// aggregate error is anchored to masonCount but satisfied by editing any of the
+// four role fields, so it clears on any edit.
+export function clearsFieldError(errorField: string, editedField: string): boolean {
+  return errorField === editedField || errorField === "masonCount";
 }

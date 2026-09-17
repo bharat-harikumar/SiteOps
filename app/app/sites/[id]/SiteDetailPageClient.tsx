@@ -49,6 +49,8 @@ type OperationSummary = Record<OperationType, {
   todaySpend: number | null;
   totalCount: number;
   totalSpend: number | null;
+  todayOtSpend?: number;
+  totalOtSpend?: number;
 }>;
 
 type Supervisor = { userId: string; displayName: string };
@@ -335,6 +337,11 @@ export default function SiteDetailPageClient({
                   <span className="font-bold text-slate-300 shrink-0">{totalSpend}</span>
                 ) : null}
               </div>
+              {summary.totalOtSpend ? (
+                <p className="mt-1 text-right text-[11px] font-semibold text-slate-500">
+                  incl. OT {formatCompactCurrency(summary.totalOtSpend)}
+                </p>
+              ) : null}
             </Link>
           );
         })}

@@ -82,135 +82,36 @@ describe("swapDateRangeIfInverted", () => {
 });
 
 describe("renderEntrySummary — labour overtime", () => {
-  it("renders OT breakdown when all OT fields are valid and positive", async () => {
+  async function labourHtml(entry: Record<string, unknown>) {
     const { renderToStaticMarkup } = await import("react-dom/server");
     const { renderEntrySummary } = await import("./entryFormat");
-    const jsx = renderEntrySummary({
-      workType: "General",
-      peopleCount: 2,
-      wagePerHead: "600",
-      otPeopleCount: 2,
-      otHours: "2",
-      otRate: "100",
-      otTotalAmount: "400.00",
-    }, "labour");
-    const html = renderToStaticMarkup(jsx);
-    expect(html).toContain("OT: 2 people × 2 hrs");
+    return renderToStaticMarkup(renderEntrySummary({ workType: "General", peopleCount: 2, wagePerHead: "600", ...entry }, "labour"));
+  }
+
+  it("shows the OT lump sum on its own line", async () => {
+    const html = await labourHtml({ otTotalAmount: "400.00" });
+    expect(html).toContain("OT: <span");
     expect(html).toContain("₹400");
   });
 
-  it("renders singular 'person' when otPeopleCount is 1", async () => {
-    const { renderToStaticMarkup } = await import("react-dom/server");
-    const { renderEntrySummary } = await import("./entryFormat");
-    const jsx = renderEntrySummary({
-      workType: "General",
-      peopleCount: 1,
-      wagePerHead: "600",
-      otPeopleCount: 1,
-      otHours: "3",
-      otRate: "150",
-      otTotalAmount: "450.00",
-    }, "labour");
-    const html = renderToStaticMarkup(jsx);
-    expect(html).toContain("OT: 1 person × 3 hrs");
-    expect(html).toContain("₹450");
+  it("says the amount covers masons and helpers on split labour", async () => {
+    const html = await labourHtml({
+      workType: "Plastering", peopleCount: 0, masonCount: 2, masonSalaryAmount: "1000",
+      helperCount: 1, helperSalaryAmount: "500", otTotalAmount: "300.00",
+    });
+    expect(html).toContain("OT (masons + helpers): <span");
   });
 
-  it("does not render OT breakdown when OT fields are absent", async () => {
-    const { renderToStaticMarkup } = await import("react-dom/server");
-    const { renderEntrySummary } = await import("./entryFormat");
-    const jsx = renderEntrySummary({
-      workType: "General",
-      peopleCount: 2,
-      wagePerHead: "600",
-    }, "labour");
-    const html = renderToStaticMarkup(jsx);
-    expect(html).not.toContain("OT:");
+  it("includes OT in the entry total", async () => {
+    const html = await labourHtml({ otTotalAmount: "400.00" });
+    expect(html).toContain("₹1,600");
   });
 
-  it("suppresses OT breakdown when otTotalAmount is present but triad is missing or null", async () => {
-    const { renderToStaticMarkup } = await import("react-dom/server");
-    const { renderEntrySummary } = await import("./entryFormat");
-    const jsx = renderEntrySummary({
-      workType: "General",
-      peopleCount: 2,
-      wagePerHead: "600",
-      otTotalAmount: "500.00",
-    }, "labour");
-    const html = renderToStaticMarkup(jsx);
-    expect(html).not.toContain("OT:");
-    expect(html).not.toContain("0 people");
-  });
-
-  it("suppresses OT breakdown on partial triad (missing hours or rate)", async () => {
-    const { renderToStaticMarkup } = await import("react-dom/server");
-    const { renderEntrySummary } = await import("./entryFormat");
-    const jsx = renderEntrySummary({
-      workType: "General",
-      peopleCount: 2,
-      wagePerHead: "600",
-      otPeopleCount: 2,
-      otHours: null,
-      otRate: "100",
-      otTotalAmount: "200.00",
-    }, "labour");
-    const html = renderToStaticMarkup(jsx);
-    expect(html).not.toContain("OT:");
-  });
-
-  it("suppresses OT breakdown when otTotalAmount is missing even if triad is present", async () => {
-    const { renderToStaticMarkup } = await import("react-dom/server");
-    const { renderEntrySummary } = await import("./entryFormat");
-    const jsx = renderEntrySummary({
-      workType: "General",
-      peopleCount: 2,
-      wagePerHead: "600",
-      otPeopleCount: 2,
-      otHours: "2",
-      otRate: "100",
-      otTotalAmount: null,
-    }, "labour");
-    const html = renderToStaticMarkup(jsx);
-    expect(html).not.toContain("OT:");
-  });
-
-  it("suppresses OT breakdown and never renders NaN or ₹NaN when values are non-numeric", async () => {
-    const { renderToStaticMarkup } = await import("react-dom/server");
-    const { renderEntrySummary } = await import("./entryFormat");
-    const jsx = renderEntrySummary({
-      workType: "General",
-      peopleCount: 2,
-      wagePerHead: "600",
-      otPeopleCount: "invalid",
-      otHours: "abc",
-      otRate: "xyz",
-      otTotalAmount: "invalid",
-    }, "labour");
-    const html = renderToStaticMarkup(jsx);
-    expect(html).not.toContain("OT:");
-    expect(html).not.toContain("NaN");
-  });
-
-  it("suppresses OT breakdown when any OT field is zero or negative", async () => {
-    const { renderToStaticMarkup } = await import("react-dom/server");
-    const { renderEntrySummary } = await import("./entryFormat");
-    for (const corrupt of [
-      { otPeopleCount: 0, otHours: "2", otRate: "100", otTotalAmount: "0" },
-      { otPeopleCount: 2, otHours: "0", otRate: "100", otTotalAmount: "0" },
-      { otPeopleCount: 2, otHours: "2", otRate: "0", otTotalAmount: "0" },
-      { otPeopleCount: 2, otHours: "2", otRate: "100", otTotalAmount: "0" },
-      { otPeopleCount: -1, otHours: "2", otRate: "100", otTotalAmount: "-200" },
-      { otPeopleCount: 2, otHours: "-1", otRate: "100", otTotalAmount: "-200" },
-      { otPeopleCount: 2, otHours: "2", otRate: "-100", otTotalAmount: "-400" },
-    ]) {
-      const jsx = renderEntrySummary({
-        workType: "General",
-        peopleCount: 2,
-        wagePerHead: "600",
-        ...corrupt,
-      }, "labour");
-      const html = renderToStaticMarkup(jsx);
-      expect(html).not.toContain("OT:");
+  it("hides the OT line when there is no OT, a zero amount, or a non-numeric value", async () => {
+    for (const otTotalAmount of [undefined, null, "0", "0.00", "abc"]) {
+      const html = await labourHtml({ otTotalAmount });
+      expect(html).not.toContain("OT");
+      expect(html).not.toContain("NaN");
     }
   });
 });

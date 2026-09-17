@@ -6,27 +6,13 @@ import { calculateSiteTrackedSpend } from "@/lib/db/queries/operationTotals";
 import { searchRemarks } from "@/lib/db/queries/search";
 import { getSiteTrackedSpend, siteTrackedSpend } from "@/lib/db/queries/sites";
 import { labourSpend } from "@/lib/services/labourSpend";
-import { describeDb, hasDb, seedSite, withRollback } from "@/lib/db/testing";
+import { describeDb, seedSite, withRollback } from "@/lib/db/testing";
 import {
   expenseEntries,
   labourEntries,
   machineryEntries,
   materialEntries,
 } from "@/lib/db/schema";
-
-let hasOtColumns = false;
-if (hasDb && process.env.DATABASE_URL) {
-  try {
-    const postgres = (await import("postgres")).default;
-    const client = postgres(process.env.DATABASE_URL, { max: 1 });
-    const cols = await client`select column_name from information_schema.columns where table_name = 'labour_entries' and column_name = 'ot_people_count'`;
-    hasOtColumns = cols.length > 0;
-    await client.end({ timeout: 2 });
-  } catch {
-    hasOtColumns = false;
-  }
-}
-const describeOtDb = hasDb && hasOtColumns ? describe : describe.skip;
 
 describe("siteTrackedSpend with OT (unit)", () => {
   it("includes OT in calculateSiteTrackedSpend", () => {
@@ -44,24 +30,9 @@ describe("siteTrackedSpend with OT (unit)", () => {
     // total = 7750 + 300.50 + 750 + 40 = 8840.50
     expect(total).toBeCloseTo(8840.5, 2);
   });
-
-  it("mirrors SQL labour spend logic in TS labourSpend", () => {
-    const fixtures = [
-      { name: "regular + OT", row: { peopleCount: 3, wagePerHead: "1000.00", salaryAmount: "3000.00", otPeopleCount: 2, otHours: "2.00", otRate: "100.00", otTotalAmount: "400.00" }, expected: 3400 },
-      { name: "split + OT", row: { masonCount: 2, masonSalaryAmount: "1000.00", helperCount: 2, helperSalaryAmount: "500.00", otPeopleCount: 3, otHours: "1.50", otRate: "100.00", otTotalAmount: "450.00" }, expected: 3450 },
-      { name: "stored salary + OT", row: { salaryAmount: "12345.00", otTotalAmount: "655.00" }, expected: 13000 },
-      { name: "people * wage fallback + OT", row: { peopleCount: 4, wagePerHead: "600.00", otTotalAmount: "200.00" }, expected: 2600 },
-      { name: "historical without OT", row: { peopleCount: 4, wagePerHead: "600.00", otTotalAmount: null }, expected: 2400 },
-      { name: "zero OT", row: { peopleCount: 4, wagePerHead: "600.00", otTotalAmount: "0.00" }, expected: 2400 },
-    ];
-
-    for (const { row, expected } of fixtures) {
-      expect(labourSpend(row)).toBe(expected);
-    }
-  });
 });
 
-describeOtDb("siteTrackedSpend", () => {
+describeDb("siteTrackedSpend", () => {
   it("SQL total matches the row-based calculateSiteTrackedSpend", async () => {
     await withRollback(async (tx) => {
       const { userId, siteId } = await seedSite(tx);
@@ -69,7 +40,7 @@ describeOtDb("siteTrackedSpend", () => {
         { siteId, createdBy: userId, date: "2026-06-22", workType: "A", peopleCount: 2, wagePerHead: "500.00" },
         { siteId, createdBy: userId, date: "2026-06-22", workType: "A", peopleCount: 1, salaryAmount: "1200.00" },
         { siteId, createdBy: userId, date: "2026-06-22", workType: "A", peopleCount: 0, masonCount: 2, masonSalaryAmount: "300.00", helperCount: 3, helperSalaryAmount: "200.00" },
-        { siteId, createdBy: userId, date: "2026-06-22", workType: "A", peopleCount: 2, wagePerHead: "500.00", salaryAmount: "1000.00", otPeopleCount: 2, otHours: "2.00", otRate: "100.00", otTotalAmount: "400.00" },
+        { siteId, createdBy: userId, date: "2026-06-22", workType: "A", peopleCount: 2, wagePerHead: "500.00", salaryAmount: "1000.00", otTotalAmount: "400.00" },
       ]);
       await tx.insert(materialEntries).values([
         { siteId, createdBy: userId, date: "2026-06-22", materialType: "M", quantity: "1", cost: "300.50" },
@@ -108,7 +79,7 @@ describeOtDb("siteTrackedSpend", () => {
 // to one that is not mirrored in labourSpend() makes list totals silently
 // disagree with summary totals. This inserts rows exercising every precedence
 // branch and asserts each SQL sum equals the TS sum.
-describeOtDb("labour spend SQL/TS parity", () => {
+describeDb("labour spend SQL/TS parity", () => {
   const DATE = "2026-06-23";
 
   // A: split wins over both the stored salary and people × wage, and each role
@@ -122,8 +93,9 @@ describeOtDb("labour spend SQL/TS parity", () => {
   // F: a per-person wage with no head count -> 0, in SQL as well as in TS. The
   //    multiplication has to be inside the WHEN guard too, or SQL reports the
   //    bare wage here while TS reports 0.
-  // G: regular labour + OT -> regular salary + ot_total_amount
-  // H: split labour + OT -> split cost + ot_total_amount
+  // G: regular labour + OT lump sum -> regular salary + ot_total_amount
+  // H: split labour + OT lump sum -> split cost + ot_total_amount (one amount
+  //    covering masons and helpers together)
   const rowsFor = (siteId: string, userId: string) => [
     { siteId, createdBy: userId, date: DATE, workType: "A", peopleCount: 10, wagePerHead: "1000.00", salaryAmount: "999.00", masonCount: 2, masonSalaryAmount: "5000.00", helperCount: 3, helperSalaryAmount: "3000.00" },
     { siteId, createdBy: userId, date: DATE, workType: "B", peopleCount: 10, wagePerHead: "1000.00", salaryAmount: "12345.00" },
@@ -131,8 +103,8 @@ describeOtDb("labour spend SQL/TS parity", () => {
     { siteId, createdBy: userId, date: DATE, workType: "D", peopleCount: 0, masonCount: 0, masonSalaryAmount: "0.00", helperCount: 0, helperSalaryAmount: "0.00", salaryAmount: "7000.00" },
     { siteId, createdBy: userId, date: DATE, workType: "E", peopleCount: 0 },
     { siteId, createdBy: userId, date: DATE, workType: "F", peopleCount: 0, masonCount: 0, masonSalaryAmount: "1500.00" },
-    { siteId, createdBy: userId, date: DATE, workType: "G", peopleCount: 3, wagePerHead: "1000.00", salaryAmount: "3000.00", otPeopleCount: 2, otHours: "2.00", otRate: "100.00", otTotalAmount: "400.00" },
-    { siteId, createdBy: userId, date: DATE, workType: "H", peopleCount: 0, masonCount: 2, masonSalaryAmount: "1000.00", helperCount: 2, helperSalaryAmount: "500.00", otPeopleCount: 3, otHours: "1.50", otRate: "100.00", otTotalAmount: "450.00" },
+    { siteId, createdBy: userId, date: DATE, workType: "G", peopleCount: 3, wagePerHead: "1000.00", salaryAmount: "3000.00", otTotalAmount: "400.00" },
+    { siteId, createdBy: userId, date: DATE, workType: "H", peopleCount: 0, masonCount: 2, masonSalaryAmount: "1000.00", helperCount: 2, helperSalaryAmount: "500.00", otTotalAmount: "450.00" },
   ];
 
   const EXPECTED = 19000 + 12345 + 2400 + 7000 + 0 + 0 + 3400 + 3450;
@@ -149,6 +121,9 @@ describeOtDb("labour spend SQL/TS parity", () => {
       const summary = await siteOperationSummary(tx, siteId, DATE);
       expect(Number(summary.labour.todaySpend)).toBeCloseTo(tsTotal, 2);
       expect(Number(summary.labour.totalSpend)).toBeCloseTo(tsTotal, 2);
+      // OT is also reported on its own, and is already inside the spend above.
+      expect(summary.labour.todayOtSpend).toBeCloseTo(850, 2);
+      expect(summary.labour.totalOtSpend).toBeCloseTo(850, 2);
     });
   });
 

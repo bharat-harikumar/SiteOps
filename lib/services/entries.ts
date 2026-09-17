@@ -2,7 +2,6 @@ import { serverDescriptorFor } from "@/lib/entryTypes/server";
 import type { EntryType } from "@/lib/types/entry";
 import { displayUnitName, type MaterialUnitRule } from "@/lib/catalog/units";
 import type { LabourEntryRow } from "@/lib/types/entry";
-import { calculateOtAmount } from "@/lib/services/labourSpend";
 import { isSplitLabourWorkType, labourSplitPairingIssues } from "@/lib/validation/schemas";
 
 // Decimal (string-backed) columns per entry type that the client sends as
@@ -117,75 +116,7 @@ export function evaluateLabourSplit(
     patch.salaryAmount = String(people * wage);
   }
 
-  const ot = evaluateLabourOvertime(updateData);
-  if (!ot.ok) return ot;
-  Object.assign(patch, ot.patch);
-
   return { ok: true, patch };
-}
-
-export type LabourOtResult =
-  | { ok: true; patch: Record<string, unknown> }
-  | { ok: false; message: string };
-
-// Evaluates overtime fields on update/PATCH:
-// - Case 1: omitted entirely -> patch is empty, existing DB values preserved.
-// - Case 2: all three present -> calculate server-authoritative otTotalAmount.
-// - Case 3: all three explicit null -> clear all 4 OT columns in DB.
-// - Partial OT -> rejected.
-export function evaluateLabourOvertime(
-  updateData: Record<string, unknown>,
-): LabourOtResult {
-  const hasPeople = "otPeopleCount" in updateData;
-  const hasHours = "otHours" in updateData;
-  const hasRate = "otRate" in updateData;
-  const hasTotal = "otTotalAmount" in updateData;
-
-  if (!hasPeople && !hasHours && !hasRate && !hasTotal) {
-    return { ok: true, patch: {} };
-  }
-
-  const isAllNull =
-    (hasPeople ? updateData.otPeopleCount === null : false) &&
-    (hasHours ? updateData.otHours === null : false) &&
-    (hasRate ? updateData.otRate === null : false);
-
-  if (isAllNull) {
-    return {
-      ok: true,
-      patch: {
-        otPeopleCount: null,
-        otHours: null,
-        otRate: null,
-        otTotalAmount: null,
-      },
-    };
-  }
-
-  if (
-    updateData.otPeopleCount != null &&
-    updateData.otHours != null &&
-    updateData.otRate != null
-  ) {
-    const people = Number(updateData.otPeopleCount);
-    const hours = Number(updateData.otHours);
-    const rate = Number(updateData.otRate);
-    const otAmount = calculateOtAmount(people, hours, rate);
-    return {
-      ok: true,
-      patch: {
-        otPeopleCount: people,
-        otHours: String(hours),
-        otRate: String(rate),
-        otTotalAmount: otAmount.toFixed(2),
-      },
-    };
-  }
-
-  return {
-    ok: false,
-    message: "Overtime requires people count, hours, and rate",
-  };
 }
 
 // Reads a field from the patch when the request carries it, else from the
