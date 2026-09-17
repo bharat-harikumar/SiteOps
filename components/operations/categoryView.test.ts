@@ -4,7 +4,7 @@ import {
   entryMatchesSearch,
   buildGroupedRows,
   entrySuccessDestination,
-  buildMaterialQuantitySummary,
+  buildMaterialQuantityTotals,
 } from "./categoryView";
 
 const m = (over: Record<string, unknown>) => ({
@@ -75,183 +75,64 @@ describe("entrySuccessDestination", () => {
   });
 });
 
-describe("buildMaterialQuantitySummary", () => {
-  it("returns safe empty result for empty entries", () => {
-    const result = buildMaterialQuantitySummary([]);
-    expect(result).toEqual({
-      totalQuantity: null,
-      formattedQuantity: null,
-      unit: null,
-      isMixed: false,
-      displayText: null,
-    });
+describe("buildMaterialQuantityTotals", () => {
+  it("returns no groups for no entries", () => {
+    expect(buildMaterialQuantityTotals([])).toEqual([]);
   });
 
-  it("handles a single entry with unit", () => {
-    const entries = [m({ quantity: "25.00", unit: "BAG" })];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result).toEqual({
-      totalQuantity: 25,
-      formattedQuantity: "25.00",
-      unit: "BAG",
-      isMixed: false,
-      displayText: "25.00 BAG",
-    });
+  it("sums a single unit", () => {
+    const entries = [m({ quantity: "25", unit: "BAG" }), m({ quantity: 50, unit: "BAG" })];
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([{ unit: "BAG", total: 75 }]);
   });
 
-  it("sums multiple same-unit entries with exact 2-decimal formatting", () => {
-    const entries = [
-      m({ quantity: "25", unit: "BAG" }),
-      m({ quantity: "50", unit: "BAG" }),
-      m({ quantity: 100, unit: "BAG" }),
-    ];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result).toEqual({
-      totalQuantity: 175,
-      formattedQuantity: "175.00",
-      unit: "BAG",
-      isMixed: false,
-      displayText: "175.00 BAG",
-    });
-  });
-
-  it("handles decimal precision without floating point inaccuracies", () => {
-    const entries = [
-      m({ quantity: "12.25", unit: "M³" }),
-      m({ quantity: "0.25", unit: "M³" }),
-    ];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result).toEqual({
-      totalQuantity: 12.5,
-      formattedQuantity: "12.50",
-      unit: "M³",
-      isMixed: false,
-      displayText: "12.50 M³",
-    });
-  });
-
-  it("formats very small quantities with 2 decimals", () => {
-    const entries = [
-      m({ quantity: "0.01", unit: "BAG" }),
-      m({ quantity: "0.01", unit: "BAG" }),
-    ];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result.displayText).toBe("0.02 BAG");
-  });
-
-  it("safely detects mixed units and returns MIXED UNITS without combining quantities", () => {
+  it("keeps every unit's total instead of hiding them when units differ", () => {
     const entries = [
       m({ quantity: "10", unit: "BAG" }),
       m({ quantity: "20", unit: "BAG" }),
-      m({ quantity: "5", unit: "KG" }),
+      m({ quantity: "5", unit: "kg" }),
     ];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result).toEqual({
-      totalQuantity: null,
-      formattedQuantity: null,
-      unit: null,
-      isMixed: true,
-      displayText: "MIXED UNITS",
-    });
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([
+      { unit: "BAG", total: 30 },
+      { unit: "KG", total: 5 },
+    ]);
   });
 
-  it("normalizes units consistently according to displayUnitName behavior", () => {
-    // Bag, BAG, bag are treated as the same unit and not flagged as mixed
-    const entries = [
-      m({ quantity: "25", unit: "Bag" }),
-      m({ quantity: "50", unit: "BAG" }),
-      m({ quantity: "100", unit: "bag" }),
-    ];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result.isMixed).toBe(false);
-    expect(result.totalQuantity).toBe(175);
-    expect(result.formattedQuantity).toBe("175.00");
-    expect(result.displayText).toBe("175.00 Bag");
+  it("treats unit spellings the catalog considers equal as one unit", () => {
+    const entries = [m({ quantity: "10", unit: "kg" }), m({ quantity: "15", unit: "kilogram" })];
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([{ unit: "KG", total: 25 }]);
   });
 
-  it("normalizes display overrides like kg and kilogram to KG", () => {
-    const entries = [
-      m({ quantity: "10", unit: "kg" }),
-      m({ quantity: "15", unit: "kilogram" }),
-    ];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result.isMixed).toBe(false);
-    expect(result.totalQuantity).toBe(25);
-    expect(result.unit).toBe("KG");
-    expect(result.displayText).toBe("25.00 KG");
+  it("labels a case-variant unit the same way regardless of row order", () => {
+    const forward = [m({ quantity: "1", unit: "Bag" }), m({ quantity: "1", unit: "BAG" })];
+    const backward = [...forward].reverse();
+    expect(buildMaterialQuantityTotals(forward as any)).toEqual(buildMaterialQuantityTotals(backward as any));
   });
 
-  it("protects against invalid numeric values without producing NaN or Infinity", () => {
+  it("gives entries without a unit their own group instead of spoiling the rest", () => {
+    const entries = [m({ quantity: "25", unit: "BAG" }), m({ quantity: "50", unit: "" }), m({ quantity: "5", unit: null })];
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([
+      { unit: null, total: 55 },
+      { unit: "BAG", total: 25 },
+    ]);
+  });
+
+  it("counts a zero quantity instead of silently dropping the entry", () => {
+    expect(buildMaterialQuantityTotals([m({ quantity: "0", unit: "BAG" })] as any)).toEqual([{ unit: "BAG", total: 0 }]);
+  });
+
+  it("skips invalid and negative quantities without producing NaN", () => {
     const entries = [
+      m({ quantity: "25", unit: "BAG" }),
       m({ quantity: "invalid", unit: "BAG" }),
-      m({ quantity: NaN, unit: "BAG" }),
-      m({ quantity: Infinity, unit: "BAG" }),
       m({ quantity: -10, unit: "BAG" }),
       m({ quantity: null, unit: "BAG" }),
+      m({ quantity: Infinity, unit: "BAG" }),
     ];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result.displayText).toBeNull();
-    expect(result.totalQuantity).toBeNull();
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([{ unit: "BAG", total: 25 }]);
   });
 
-  it("safely sums valid entries while ignoring invalid ones", () => {
-    const entries = [
-      m({ quantity: "25", unit: "BAG" }),
-      m({ quantity: "invalid", unit: "BAG" }),
-      m({ quantity: null, unit: "BAG" }),
-    ];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result).toEqual({
-      totalQuantity: 25,
-      formattedQuantity: "25.00",
-      unit: "BAG",
-      isMixed: false,
-      displayText: "25.00 BAG",
-    });
-  });
-
-  it("handles missing/empty unit gracefully without crashing or showing undefined/null", () => {
-    const entries = [
-      m({ quantity: "25", unit: "" }),
-      m({ quantity: "50", unit: null }),
-    ];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result.isMixed).toBe(false);
-    expect(result.totalQuantity).toBe(75);
-    expect(result.formattedQuantity).toBe("75.00");
-    expect(result.displayText).toBe("75.00");
-  });
-
-  it("flags mixed units if some entries have a unit and others have empty unit", () => {
-    const entries = [
-      m({ quantity: "25", unit: "BAG" }),
-      m({ quantity: "50", unit: "" }),
-    ];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result.isMixed).toBe(true);
-    expect(result.displayText).toBe("MIXED UNITS");
-  });
-
-  it("returns null displayText when all quantities are zero", () => {
-    const entries = [
-      m({ quantity: "0", unit: "BAG" }),
-      m({ quantity: 0, unit: "BAG" }),
-    ];
-    const result = buildMaterialQuantitySummary(entries as any);
-    expect(result.displayText).toBeNull();
-    expect(result.totalQuantity).toBeNull();
-  });
-
-  it("updates correctly with search-filtered entries", () => {
-    const allEntries = [
-      m({ quantity: "25", unit: "BAG", remarks: "supplier A" }),
-      m({ quantity: "50", unit: "BAG", remarks: "supplier B" }),
-    ];
-    // Filter simulating active search
-    const filtered = allEntries.filter((e) => entryMatchesSearch(e as any, "material", "supplier A"));
-    const result = buildMaterialQuantitySummary(filtered as any);
-    expect(result.displayText).toBe("25.00 BAG");
-    expect(result.totalQuantity).toBe(25);
+  it("avoids floating point drift", () => {
+    const entries = [m({ quantity: "0.1", unit: "M3" }), m({ quantity: "0.2", unit: "M3" })];
+    expect(buildMaterialQuantityTotals(entries as any)).toEqual([{ unit: "M3", total: 0.3 }]);
   });
 });
-

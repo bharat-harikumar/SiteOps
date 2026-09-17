@@ -79,6 +79,19 @@ export function formatCurrency(value: number) {
   }).format(value);
 }
 
+export function formatQuantityTotals(
+  totals: ReadonlyArray<{ unit: string | null; total: number }>,
+  maxShown = 3,
+): string | null {
+  if (totals.length === 0) return null;
+  const mixed = totals.length > 1;
+  const parts = totals.slice(0, maxShown).map(({ unit, total }) =>
+    `${total.toFixed(2)}${unit ? ` ${unit}` : mixed ? " (no unit)" : ""}`,
+  );
+  const hidden = totals.length - maxShown;
+  return parts.join(" · ") + (hidden > 0 ? ` +${hidden} more` : "");
+}
+
 export function entryId(entry: Entry, type: EntryType) {
   return entry[clientDescriptorFor(type).idField];
 }

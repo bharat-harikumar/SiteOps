@@ -112,78 +112,32 @@ export function entrySuccessDestination(entry: Entry, type: EntryType, siteId: s
   return id ? `${base}?highlight=${id}` : base;
 }
 
-export type MaterialQuantitySummary = {
-  totalQuantity: number | null;
-  formattedQuantity: string | null;
-  unit: string | null;
-  isMixed: boolean;
-  displayText: string | null;
-};
+export type QuantityTotal = { unit: string | null; total: number };
 
-export function buildMaterialQuantitySummary(entries: Entry[]): MaterialQuantitySummary {
-  const emptyResult: MaterialQuantitySummary = {
-    totalQuantity: null,
-    formattedQuantity: null,
-    unit: null,
-    isMixed: false,
-    displayText: null,
-  };
-
-  if (!entries || entries.length === 0) {
-    return emptyResult;
-  }
-
-  let total = 0;
-  let validEntryCount = 0;
-  const normalizedUnits = new Set<string>();
-  let canonicalUnitDisplay = "";
+// Total quantity per unit for the visible material entries. Units are never
+// added together, so each keeps its own total; entries without a unit form their
+// own group rather than hiding everyone else's numbers.
+export function buildMaterialQuantityTotals(entries: Entry[]): QuantityTotal[] {
+  const groups = new Map<string, { labels: Set<string>; total: number }>();
 
   for (const entry of entries) {
-    if (!entry || entry.quantity == null || entry.quantity === "") {
-      continue;
-    }
-    const qty = Number(entry.quantity);
-    if (!Number.isFinite(qty) || qty <= 0) {
-      continue;
-    }
+    const qty = Number(entry.quantity ?? NaN);
+    if (entry.quantity === "" || !Number.isFinite(qty) || qty < 0) continue;
 
-    validEntryCount += 1;
-    total += qty;
-
-    const rawUnit = typeof entry.unit === "string" ? entry.unit.trim() : "";
-    const displayUnit = rawUnit ? displayUnitName(rawUnit) : "";
-    const normalizedKey = displayUnit.toLowerCase();
-
-    normalizedUnits.add(normalizedKey);
-    if (!canonicalUnitDisplay && displayUnit) {
-      canonicalUnitDisplay = displayUnit;
-    }
+    const raw = typeof entry.unit === "string" ? entry.unit.trim() : "";
+    const label = raw ? displayUnitName(raw) : "";
+    const key = label.toLowerCase();
+    const group = groups.get(key) ?? { labels: new Set<string>(), total: 0 };
+    if (label) group.labels.add(label);
+    group.total += qty;
+    groups.set(key, group);
   }
 
-  if (validEntryCount === 0) {
-    return emptyResult;
-  }
-
-  if (normalizedUnits.size > 1) {
-    return {
-      totalQuantity: null,
-      formattedQuantity: null,
-      unit: null,
-      isMixed: true,
-      displayText: "MIXED UNITS",
-    };
-  }
-
-  const rounded = Math.round((total + Number.EPSILON) * 100) / 100;
-  const formattedQuantity = rounded.toFixed(2);
-  const unit = canonicalUnitDisplay || null;
-  const displayText = unit ? `${formattedQuantity} ${unit}` : formattedQuantity;
-
-  return {
-    totalQuantity: rounded,
-    formattedQuantity,
-    unit,
-    isMixed: false,
-    displayText,
-  };
+  return [...groups.values()]
+    .map((group) => ({
+      // Smallest spelling wins so "Bag"/"BAG" label the same whatever the row order.
+      unit: group.labels.size ? [...group.labels].sort()[0] : null,
+      total: Math.round((group.total + Number.EPSILON) * 100) / 100,
+    }))
+    .sort((a, b) => b.total - a.total || String(a.unit).localeCompare(String(b.unit)));
 }

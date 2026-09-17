@@ -10,13 +10,14 @@ import { DateFilterField } from "@/components/operations/DateFilterField";
 import EntryLogList from "@/components/operations/EntryLogList";
 import {
   buildGroupedRows,
-  buildMaterialQuantitySummary,
+  buildMaterialQuantityTotals,
   entryMatchesSearch,
 } from "@/components/operations/categoryView";
 import type { EntryType } from "@/lib/db/queries/entries";
 import {
   type Entry,
   formatCurrency,
+  formatQuantityTotals,
   workStages,
 } from "@/components/operations/entryFormat";
 
@@ -72,8 +73,8 @@ export default function CategoryDetailPageClient({
     [shown, type, filters.sort],
   );
 
-  const quantitySummary = useMemo(
-    () => (type === "material" ? buildMaterialQuantitySummary(shown) : null),
+  const quantityText = useMemo(
+    () => (type === "material" ? formatQuantityTotals(buildMaterialQuantityTotals(shown)) : null),
     [shown, type],
   );
 
@@ -120,9 +121,10 @@ export default function CategoryDetailPageClient({
             <p className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Entries</p>
             <p className="mt-2 text-sm font-bold text-sky-400">{formatCurrency(totalSpend)}</p>
-            {type === "material" && visibleLogCount > 0 && quantitySummary?.displayText ? (
+            {quantityText ? (
               <p className="mt-1 text-xs font-bold text-slate-300">
-                {quantitySummary.displayText}
+                <span className="text-[10px] uppercase tracking-widest text-slate-500">Total qty </span>
+                {quantityText}
               </p>
             ) : null}
           </div>
