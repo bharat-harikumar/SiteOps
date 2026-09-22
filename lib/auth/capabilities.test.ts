@@ -9,6 +9,7 @@ describe("capabilities map", () => {
     expect(can(ROLES.ADMIN, "user:create")).toBe(true);
     expect(can(ROLES.ADMIN, "user:list")).toBe(true);
     expect(can(ROLES.ADMIN, "user:manage_roles")).toBe(true);
+    expect(can(ROLES.ADMIN, "user:reset_password")).toBe(true);
     expect(can(ROLES.ADMIN, "data:export")).toBe(true);
   });
 
@@ -18,6 +19,7 @@ describe("capabilities map", () => {
       "user:create",
       "user:list",
       "user:manage_roles",
+      "user:reset_password",
       "site:create",
       "site:update",
       "site:delete",

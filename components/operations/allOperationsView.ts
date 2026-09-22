@@ -1,4 +1,4 @@
-import { SPEND_TYPES, type CombinedRow, type SpendType } from "./entryFormat";
+import { SPEND_TYPES, compareNewestFirst, type CombinedRow, type SpendType } from "./entryFormat";
 import type { EntryType } from "@/lib/db/queries/entries";
 
 export type AllOperationsSort = "newest" | "oldest" | "highest_spend" | "lowest_spend";
@@ -15,6 +15,14 @@ export type OperationsView = {
   visibleLogCount: number;
   groupedRows: DayGroup[];
 };
+
+// Ids are per-table, so a cross-type tie falls back to a fixed type order.
+function compareCombinedNewestFirst(a: CombinedRow, b: CombinedRow): number {
+  return (
+    compareNewestFirst(a.entry, b.entry) ||
+    SPEND_TYPES.indexOf(a.type) - SPEND_TYPES.indexOf(b.type)
+  );
+}
 
 // Filter by enabled types, group by date, compute grand + day totals, and
 // order day groups per the active sort. Type filtering is client-side (the
@@ -35,7 +43,10 @@ export function deriveOperationsView(
 
   const groupedRows: DayGroup[] = [...byDate.entries()].map(([date, dateRows]) => ({
     date,
-    rows: dateRows,
+    // Latest entry on top within a day, across types; "oldest" flips it.
+    rows: [...dateRows].sort((a, b) =>
+      sort === "oldest" ? compareCombinedNewestFirst(b, a) : compareCombinedNewestFirst(a, b),
+    ),
     dayTotal: dateRows.reduce((sum, row) => sum + row.spend, 0),
   }));
 

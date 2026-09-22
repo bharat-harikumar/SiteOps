@@ -3,8 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import { can } from '@/lib/auth/capabilities';
 import { safeGetSessionFromHeaders } from '@/lib/auth/session';
-import { db } from '@/lib/db/client';
-import { fieldRequests } from '@/lib/db/schema';
+import { listFieldRequests } from '@/lib/db/queries/fieldRequests';
 
 import { FieldRequestsPageClient } from './FieldRequestsPageClient';
 
@@ -20,6 +19,6 @@ export default async function FieldRequestsPage() {
   }
   if (!can(session.user.role, 'field_request:read')) notFound();
 
-  const initialRequests = await db.select().from(fieldRequests);
+  const initialRequests = await listFieldRequests();
   return <FieldRequestsPageClient initialRequests={initialRequests} />;
 }

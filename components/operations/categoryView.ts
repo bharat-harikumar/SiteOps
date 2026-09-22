@@ -1,7 +1,7 @@
 import { displayUnitName } from "@/lib/catalog/units";
 import {
   type Entry, type EntryType,
-  entrySpend, entryDate, entryId, gridCategoryKey,
+  compareNewestFirst, entrySpend, entryDate, entryId, gridCategoryKey,
 } from "./entryFormat";
 
 export type CategorySummary = {
@@ -61,11 +61,10 @@ export function buildGroupedRows(
     byDate.set(dateKey, [...(byDate.get(dateKey) ?? []), entry]);
   }
   let groupedRows: GroupedDate[] = [...byDate.entries()].map(([date, dateEntries]) => {
-    const sorted = [...dateEntries].sort((a, b) => {
-      const at = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const bt = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return at - bt;
-    });
+    // Latest entry on top within a day; "oldest" flips the whole list.
+    const sorted = [...dateEntries].sort((a, b) =>
+      sort === "oldest" ? compareNewestFirst(b, a) : compareNewestFirst(a, b),
+    );
     return {
       date,
       rows: sorted.map((entry) => ({
@@ -91,7 +90,9 @@ export function buildGroupedRows(
   const runningTotals = new Map<string, number>();
   const runningByCategory = new Map<string, number>();
   for (const group of chronological) {
-    for (const row of group.rows) {
+    // Running totals accumulate oldest → newest regardless of display order.
+    const oldestFirst = [...group.rows].sort((a, b) => compareNewestFirst(b.primary, a.primary));
+    for (const row of oldestFirst) {
       const categoryKey = gridCategoryKey(row.primary, type);
       const id = entryId(row.primary, type);
       const key = id ? String(id) : `${group.date}|${categoryKey}`;

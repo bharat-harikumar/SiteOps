@@ -1,6 +1,7 @@
 'use client';
 
-import { CircleUserRound, LogOut, Save } from 'lucide-react';
+import { CircleUserRound, KeyRound, LogOut, Save } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabaseBrowserClient } from '@/lib/auth/browserClient';
@@ -154,6 +155,18 @@ export function ProfilePageClient({
           {saving ? 'Saving…' : 'Save'}
         </button>
       </form>
+
+      <section className="card-standard rounded-2xl p-4 flex flex-col gap-3">
+        <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Security</h3>
+        <p className="text-xs text-on-surface-variant">Change the password you use to sign in.</p>
+        <Link
+          href="/auth/change-password"
+          className="flex h-11 w-full items-center justify-center gap-2 rounded border border-outline bg-surface-container-lowest text-xs font-semibold uppercase text-on-surface hover:border-primary transition-all active:scale-[0.98]"
+        >
+          <KeyRound className="w-[18px] h-[18px]" />
+          Change password
+        </Link>
+      </section>
 
       <section className="card-standard rounded-2xl p-4 flex flex-col gap-3">
         <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Session Operations</h3>

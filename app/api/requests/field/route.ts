@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireAdmin, requireSiteAccess } from "@/lib/auth/guards";
 import { checkOwnership } from "@/lib/auth/ownership";
 import { db } from "@/lib/db/client";
+import { listFieldRequests } from "@/lib/db/queries/fieldRequests";
 import { fieldRequests } from "@/lib/db/schema";
 import { ERROR_CODES } from "@/lib/errors/codes";
 import { handleDbError } from "@/lib/errors/db";
@@ -71,6 +72,6 @@ export const GET = withApi(async ({ request, requestId }) => {
     return errorResponse(auth.error, "Admin access required", auth.status, undefined, requestId);
   }
 
-  const result = await db.select().from(fieldRequests);
+  const result = await listFieldRequests();
   return successResponse(result, 200, requestId);
 });

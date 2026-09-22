@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildCombinedRows, computeCappedTypes, formatQuantityTotals, swapDateRangeIfInverted } from "./entryFormat";
+import { buildCombinedRows, compareNewestFirst, computeCappedTypes, formatQuantityTotals, swapDateRangeIfInverted } from "./entryFormat";
 
 const grouped = {
   labour: [
@@ -142,3 +142,23 @@ describe("formatQuantityTotals", () => {
   });
 });
 
+
+describe("compareNewestFirst", () => {
+  it("puts the later createdAt first", () => {
+    const morning = { id: 1, createdAt: "2026-07-10T09:00:00Z" };
+    const evening = { id: 2, createdAt: "2026-07-10T17:00:00Z" };
+    expect([morning, evening].sort(compareNewestFirst)).toEqual([evening, morning]);
+  });
+
+  it("breaks a createdAt tie with the higher id first", () => {
+    const a = { id: 5, createdAt: "2026-07-10T09:00:00Z" };
+    const b = { id: 9, createdAt: "2026-07-10T09:00:00Z" };
+    expect([a, b].sort(compareNewestFirst)).toEqual([b, a]);
+  });
+
+  it("sorts an entry without createdAt as the oldest", () => {
+    const legacy = { id: 99 };
+    const dated = { id: 1, createdAt: "2026-07-10T09:00:00Z" };
+    expect([legacy, dated].sort(compareNewestFirst)).toEqual([dated, legacy]);
+  });
+});

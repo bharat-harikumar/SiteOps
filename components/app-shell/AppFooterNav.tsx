@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { can } from '@/lib/auth/capabilities';
 import type { Role } from '@/lib/auth/roles';
+import { newLogHref } from '@/lib/nav/siteFromPath';
 
 function cn(...classes: (string | boolean | undefined | null)[]) {
   return classes.filter(Boolean).join(' ');
@@ -17,7 +18,7 @@ export function AppFooterNav({ role }: { role: Role }) {
   const navItems = [
     { label: 'Home', icon: Home, href: '/app/dashboard', active: pathname === '/app/dashboard' || pathname.startsWith('/app/tools') },
     { label: 'Requests', icon: FileText, href: '/app/requests/resource', active: pathname.startsWith('/app/requests') },
-    { label: 'New Log', icon: Plus, href: '/app/logs/new', active: pathname.startsWith('/app/logs'), primary: true },
+    { label: 'New Log', icon: Plus, href: newLogHref(pathname), active: pathname.startsWith('/app/logs'), primary: true },
     { label: 'Transfers', icon: ArrowRightLeft, href: '/app/transfers/new', active: pathname.startsWith('/app/transfers') },
     ...(can(role, 'resource:manage_all')
       ? [{ label: 'Admin', icon: BarChart3, href: '/app/admin/approvals', active: pathname.startsWith('/app/admin') }]
@@ -30,7 +31,7 @@ export function AppFooterNav({ role }: { role: Role }) {
         {navItems.map((item) =>
           item.primary ? (
             <button
-              key={item.href}
+              key={item.label}
               onClick={() => router.push(item.href)}
               aria-label={item.label}
               className="-mt-8 grid h-16 w-16 shrink-0 place-items-center rounded-full bg-blue-600 text-white shadow-[0_0_24px] shadow-blue-600/50 ring-8 ring-[#020617] transition-all duration-200 hover:bg-blue-500 active:scale-95"

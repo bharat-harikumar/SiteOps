@@ -5,6 +5,7 @@ import { getActorRoleFromDb } from "@/lib/auth/actorRole";
 import { can } from "@/lib/auth/capabilities";
 import { createSupabaseServiceClient } from "@/lib/auth/config";
 import { requireCapability } from "@/lib/auth/guards";
+import { passwordSchema } from "@/lib/auth/passwordPolicy";
 import { ROLES_TUPLE } from "@/lib/auth/roles";
 import { db } from "@/lib/db/client";
 import { listAdminUsers } from "@/lib/db/queries/adminUsers";
@@ -21,7 +22,7 @@ const roleEnum = z.enum(ROLES_TUPLE);
 const createUserSchema = z
   .object({
     email: z.string().email().max(255),
-    tempPassword: z.string().min(10).max(72), // bcrypt hard-caps at 72 bytes
+    tempPassword: passwordSchema,
     role: roleEnum,
     designation: z.string().max(100).optional(),
     phone: z.string().max(20).optional(),

@@ -104,6 +104,15 @@ export function entryDate(entry: Entry, type: EntryType) {
   return d.dateField === "createdAt" ? raw.slice(0, 10) : raw;
 }
 
+// Newest first: createdAt desc, then numeric identity id desc so same-instant
+// rows still order deterministically. A missing createdAt sorts as oldest.
+export function compareNewestFirst(a: Entry, b: Entry): number {
+  const at = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+  const bt = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+  if (at !== bt) return bt - at;
+  return Number(b.id ?? 0) - Number(a.id ?? 0);
+}
+
 export function entrySpend(entry: Entry, type: EntryType) {
   return clientDescriptorFor(type).spendOf(entry);
 }
