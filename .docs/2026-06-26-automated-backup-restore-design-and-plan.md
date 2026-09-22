@@ -4,7 +4,7 @@
 
 Date: 2026-06-26
 Status: Approved design, ready to implement
-Owner: lalit.sharma@procurie.com
+Owner: Bharat Harikumar
 
 ## 1. Problem
 

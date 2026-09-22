@@ -30,7 +30,7 @@ Supabase `auth.users`.
 - **Display helper:** `lib/users/displayName.ts` exporting
   `displayName({ fullName, designation }, email)`:
   1. `fullName` if set,
-  2. else title-cased email local-part (`lalit.sharma` → `Lalit Sharma`,
+  2. else title-cased email local-part (`bharat.harikumar` → `Bharat Harikumar`,
      split on `.`/`_`/`-`/`+`),
   3. else `designation`,
   4. else email,

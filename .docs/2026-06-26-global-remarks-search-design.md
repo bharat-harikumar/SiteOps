@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-26
 **Status:** Ready for implementation. Scope finalized (see §2, §12).
-**Owner:** lalit.sharma@procurie.com
+**Owner:** Bharat Harikumar
 
 ---
 
