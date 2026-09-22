@@ -8,6 +8,7 @@ import { safeGetSessionFromHeaders } from "@/lib/auth/session";
 import { db } from "@/lib/db/client";
 import { categories } from "@/lib/db/schema";
 import { getAllSites, getSitesBySupervisor } from "@/lib/db/queries/sites";
+import { allowedSiteId } from "@/lib/nav/siteFromPath";
 
 import { LogsNewPageClient } from "./LogsNewPageClient";
 
@@ -47,7 +48,7 @@ export default async function LogsNewPage({
     <LogsNewPageClient
       initialCategories={initialCategories}
       initialSites={initialSites}
-      siteId={siteId}
+      siteId={allowedSiteId(siteId, initialSites)}
       role={session.user.role as "Admin" | "Supervisor"}
     />
   );

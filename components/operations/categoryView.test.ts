@@ -57,6 +57,34 @@ describe("buildGroupedRows", () => {
   });
 });
 
+describe("buildGroupedRows within-day order", () => {
+  const day = [
+    { expenseEntryId: "e1", id: 1, category: "Materials", amount: "100", date: "2026-07-10", createdAt: "2026-07-10T09:00:00Z" },
+    { expenseEntryId: "e2", id: 2, category: "Materials", amount: "200", date: "2026-07-10", createdAt: "2026-07-10T12:00:00Z" },
+    { expenseEntryId: "e3", id: 3, category: "Materials", amount: "400", date: "2026-07-10", createdAt: "2026-07-10T17:00:00Z" },
+  ];
+  const ids = (rows: { primary: Record<string, unknown> }[]) => rows.map((r) => r.primary.expenseEntryId);
+
+  it("shows the latest entry of a day first by default", () => {
+    const { groupedRows } = buildGroupedRows(day as any, "expense", "newest");
+    expect(ids(groupedRows[0].rows)).toEqual(["e3", "e2", "e1"]);
+  });
+
+  it("flips the day's entries to oldest first under the oldest sort", () => {
+    const { groupedRows } = buildGroupedRows(day as any, "expense", "oldest");
+    expect(ids(groupedRows[0].rows)).toEqual(["e1", "e2", "e3"]);
+  });
+
+  it("keeps running totals accumulating oldest to newest whatever the display order", () => {
+    for (const sort of ["newest", "oldest"]) {
+      const { runningTotals } = buildGroupedRows(day as any, "expense", sort);
+      expect(runningTotals.get("e1")).toBe(100);
+      expect(runningTotals.get("e2")).toBe(300);
+      expect(runningTotals.get("e3")).toBe(700);
+    }
+  });
+});
+
 describe("entrySuccessDestination", () => {
   it("routes a created material to its category detail with highlight", () => {
     const entry = { materialEntryId: "m1", materialType: "Ready Mix" };

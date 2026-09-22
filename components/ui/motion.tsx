@@ -115,16 +115,24 @@ export function Popover({
   );
 }
 
+const MODAL_OVERLAY_CLASS =
+  "fixed inset-0 z-[60] flex items-end justify-center bg-black/40 p-4 sm:items-center sm:p-0";
+
 export function ModalShell({
   open,
   onClose,
   children,
   className,
+  ariaLabelledBy,
+  overlayClassName = MODAL_OVERLAY_CLASS,
 }: {
   open: boolean;
   onClose?: () => void;
   children: ReactNode;
   className?: string;
+  ariaLabelledBy?: string;
+  // Overrides the overlay layout, e.g. `justify-end` for a side drawer.
+  overlayClassName?: string;
 }) {
   // Escape closes the overlay, matching the click-outside affordance already
   // wired below. Without this, a keyboard user had no way out of any of the
@@ -156,7 +164,8 @@ export function ModalShell({
         <motion.div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 p-4 sm:items-center sm:p-0"
+          aria-labelledby={ariaLabelledBy}
+          className={overlayClassName}
           {...overlayFade}
           onClick={(e) => {
             if (e.target === e.currentTarget) {

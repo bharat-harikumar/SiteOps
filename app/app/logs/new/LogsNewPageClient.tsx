@@ -108,15 +108,13 @@ export function LogsNewPageClient({ initialCategories, initialSites, siteId, rol
                     <p className="text-xs text-slate-500 italic">{selectedSite?.location}</p>
                   </div>
                 </div>
-                {!siteId ? (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedSiteId(null)}
-                    className="btn-secondary px-3 py-2 shrink-0"
-                  >
-                    Change
-                  </button>
-                ) : null}
+                <button
+                  type="button"
+                  onClick={() => setSelectedSiteId(null)}
+                  className="btn-secondary px-3 py-2 shrink-0"
+                >
+                  Change
+                </button>
               </div>
             </div>
 

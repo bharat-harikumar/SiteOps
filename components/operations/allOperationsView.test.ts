@@ -220,3 +220,28 @@ describe("load-more helpers", () => {
     });
   });
 });
+
+describe("deriveOperationsView within-day order", () => {
+  const all = new Set(["labour", "material", "machinery", "expense"] as const);
+  const sameDay: CombinedRow[] = [
+    { type: "labour", id: "l1", date: "2026-07-02", spend: 100, entry: { id: 1, createdAt: "2026-07-02T10:00:00Z" } },
+    { type: "material", id: "m1", date: "2026-07-02", spend: 200, entry: { id: 1, createdAt: "2026-07-02T15:00:00Z" } },
+    { type: "expense", id: "e1", date: "2026-07-02", spend: 50, entry: { id: 1, createdAt: "2026-07-02T12:00:00Z" } },
+  ];
+
+  it("orders a day's rows newest first across types", () => {
+    const view = deriveOperationsView(sameDay, new Set(all), "newest");
+    expect(view.groupedRows[0].rows.map((r) => r.id)).toEqual(["m1", "e1", "l1"]);
+  });
+
+  it("orders a day's rows oldest first under the oldest sort", () => {
+    const view = deriveOperationsView(sameDay, new Set(all), "oldest");
+    expect(view.groupedRows[0].rows.map((r) => r.id)).toEqual(["l1", "e1", "m1"]);
+  });
+
+  it("leaves the flat rows array in its server order (load-more cursors read it)", () => {
+    const input = [...sameDay];
+    deriveOperationsView(input, new Set(all), "newest");
+    expect(input.map((r) => r.id)).toEqual(["l1", "m1", "e1"]);
+  });
+});

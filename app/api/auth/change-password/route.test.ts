@@ -94,6 +94,21 @@ describe("POST /api/auth/change-password", () => {
     expect(mockRevokeSessions).not.toHaveBeenCalled();
   });
 
+  it("rejects a new password equal to the current one after re-auth succeeds", async () => {
+    const res = await post({ currentPassword: "samepassword1", newPassword: "samepassword1" });
+    const body = await res.json();
+    expect(res.status).toBe(400);
+    expect(JSON.stringify(body)).toContain("must be different");
+    expect(mockSignInWithPassword).toHaveBeenCalled();
+    expect(mockUpdateUserById).not.toHaveBeenCalled();
+  });
+
+  it("reports a wrong current password even when both passwords match", async () => {
+    mockSignInWithPassword.mockResolvedValue({ error: { message: "Invalid login" } });
+    const res = await post({ currentPassword: "samepassword1", newPassword: "samepassword1" });
+    expect(res.status).toBe(401);
+  });
+
   it("updates the password, clears the flag, and revokes sessions on success", async () => {
     const res = await post(validBody);
     expect(res.status).toBe(200);

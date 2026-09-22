@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { requireAuth } from "@/lib/auth/guards";
+import { passwordSchema } from "@/lib/auth/passwordPolicy";
 import { createSupabaseAuthClient, createSupabaseServiceClient } from "@/lib/auth/config";
 import { invalidateUserClaims } from "@/lib/auth/refreshClaims";
 import { revokeUserSessions } from "@/lib/auth/sessions";
@@ -21,7 +22,7 @@ const changePasswordSchema = z
     // hijacked-session takeover vector (S1) — no session can set a new password
     // without proof.
     currentPassword: z.string().min(1).max(72),
-    newPassword: z.string().min(10).max(72),
+    newPassword: passwordSchema,
   })
   .strict();
 
@@ -67,6 +68,19 @@ export const POST = withApi(async ({ request, requestId }) => {
   if (reauthError) {
     return withNoStore(
       errorResponse(ERROR_CODES.UNAUTHORIZED, "Current password is incorrect", 401, undefined, requestId),
+    );
+  }
+
+  // Checked only after re-auth, so this can't be used to probe the current password.
+  if (validation.data.newPassword === validation.data.currentPassword) {
+    return withNoStore(
+      errorResponse(
+        ERROR_CODES.VALIDATION_ERROR,
+        "New password must be different from your current password",
+        400,
+        undefined,
+        requestId,
+      ),
     );
   }
 

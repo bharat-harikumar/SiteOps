@@ -21,7 +21,7 @@ Legend: ✅ visible/allowed · ❌ hidden/denied · 🔒 server-enforced gate.
 | Danger Zone (Delete Everything) | `site:delete` | ✅ | ❌ not rendered | `user.role==='Admin'` client; `POST /api/admin/purge` requires `site:delete` + actor-role recheck 🔒 | ✅ |
 | Admin subtree `/app/admin/*` | `resource:manage_all` | ✅ | ❌ 404 | `AdminLayout` server `notFound` 🔒 + footer hides link | ✅ |
 | Approvals | `*_request:approve`, `transfer:approve` | ✅ | ❌ | under admin subtree 🔒 | ✅ |
-| Users management | `user:list/create/manage_roles` | ✅ | ❌ | admin subtree + per-route actor-role recheck 🔒 | ✅ |
+| Users management | `user:list/create/manage_roles/reset_password` | ✅ | ❌ | admin subtree + per-route actor-role recheck 🔒 | ✅ |
 | Analytics | `analytics:read` | ✅ | ❌ | admin subtree 🔒 | ✅ |
 | Live Feed | `live_feed:read` | ✅ | ❌ | admin subtree 🔒 | ✅ |
 | Footer nav | — | Home/Requests/New Log/Transfers/**Admin** | Home/Requests/New Log/Transfers/**Profile** | `AppFooterNav` role branch | ✅ (admins reach Profile via header avatar) |

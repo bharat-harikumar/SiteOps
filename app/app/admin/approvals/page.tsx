@@ -3,10 +3,9 @@ import { notFound, redirect } from 'next/navigation';
 
 import { can } from '@/lib/auth/capabilities';
 import { safeGetSessionFromHeaders } from '@/lib/auth/session';
-import { db } from '@/lib/db/client';
+import { listFieldRequests } from '@/lib/db/queries/fieldRequests';
 import { getResourceRequestsFor } from '@/lib/db/queries/resourceRequests';
 import { listTransfersFor } from '@/lib/db/queries/transfersList';
-import { fieldRequests } from '@/lib/db/schema';
 
 import { FieldRequests } from './FieldRequests';
 import { ResourceRequests } from './ResourceRequests';
@@ -31,7 +30,7 @@ export default async function AdminApprovalsPage() {
 
   const [initialResource, initialField, initialTransfers] = await Promise.all([
     getResourceRequestsFor(session.user),
-    db.select().from(fieldRequests),
+    listFieldRequests(),
     listTransfersFor(session.user),
   ]);
 

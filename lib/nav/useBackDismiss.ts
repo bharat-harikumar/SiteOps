@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 
-import { popOverlayEntry, pushOverlayEntry } from "./overlayHistory";
+import { attachBackDismiss } from "./backDismiss";
 
 type Options = {
   /**
@@ -31,22 +31,23 @@ export function useBackDismiss(
   onClose: (() => void) | undefined,
   { navigatingRef }: Options = {},
 ): void {
+  // Latest onClose via a ref: the effect must depend on `open` only, or every
+  // re-render with a new inline onClose re-attaches and closes the overlay.
+  const onCloseRef = useRef(onClose);
   useEffect(() => {
-    if (!open || !onClose) return undefined;
+    onCloseRef.current = onClose;
+  });
+  const hasOnClose = Boolean(onClose);
+
+  useEffect(() => {
+    if (!open || !hasOnClose) return undefined;
     if (typeof window === "undefined") return undefined;
 
     if (navigatingRef) navigatingRef.current = false;
-    pushOverlayEntry(window.history);
-
-    function handlePopState() {
-      onClose?.();
-    }
-
-    window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-      popOverlayEntry(window.history, { navigating: navigatingRef?.current ?? false });
-    };
-  }, [open, onClose, navigatingRef]);
+    return attachBackDismiss(
+      window,
+      () => onCloseRef.current,
+      () => navigatingRef?.current ?? false,
+    );
+  }, [open, hasOnClose, navigatingRef]);
 }

@@ -1,11 +1,9 @@
-import { eq } from "drizzle-orm";
-
-import { can } from "@/lib/auth/capabilities";
 import { requireSiteAccess } from "@/lib/auth/guards";
 import { checkOwnership } from "@/lib/auth/ownership";
 import { db } from "@/lib/db/client";
 import { resourceRequests } from "@/lib/db/schema";
 import { createNotification, getAllAdmins } from "@/lib/db/queries/notifications";
+import { getResourceRequestsFor } from "@/lib/db/queries/resourceRequests";
 import { ERROR_CODES } from "@/lib/errors/codes";
 import { handleDbError } from "@/lib/errors/db";
 import { errorResponse, successResponse } from "@/lib/errors/response";
@@ -84,15 +82,6 @@ export const GET = withApi(async ({ request, requestId }) => {
     return errorResponse(auth.error, "Authentication required", auth.status, undefined, requestId);
   }
 
-  if (can(auth.session.user.role, "resource:manage_all")) {
-    const result = await db.select().from(resourceRequests);
-    return successResponse(result, 200, requestId);
-  }
-
-  const result = await db
-    .select()
-    .from(resourceRequests)
-    .where(eq(resourceRequests.requestedBy, auth.session.user.id));
-
+  const result = await getResourceRequestsFor(auth.session.user);
   return successResponse(result, 200, requestId);
 });

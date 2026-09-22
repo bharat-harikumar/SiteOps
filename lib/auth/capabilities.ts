@@ -45,6 +45,7 @@ export type Capability =
   | "user:list"
   | "user:create"
   | "user:manage_roles"
+  | "user:reset_password"
   | "resource:manage_all"
   | "data:export"
   | "tool:read"
@@ -99,6 +100,7 @@ const ADMIN_CAPABILITIES: readonly Capability[] = [
   "user:list",
   "user:create",
   "user:manage_roles",
+  "user:reset_password", // set a temp password for another user
   "resource:manage_all",
   "data:export", // admin-only: full data egress (PII) — supervisors excluded
   // Tools inventory (v1: Admin-only). To enable site-scoped supervisor read

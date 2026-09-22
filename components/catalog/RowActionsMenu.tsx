@@ -5,6 +5,8 @@ import { MoreHorizontal } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { shouldOpenUp } from "./menuPlacement";
+
 export type RowAction = {
   label: string;
   onSelect: () => void;
@@ -22,7 +24,11 @@ export type RowAction = {
  */
 export function RowActionsMenu({ actions, label = "Row actions" }: { actions: RowAction[]; label?: string }) {
   const [open, setOpen] = useState(false);
+  const [openUp, setOpenUp] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  // Focus goes back to the trigger on Escape or a pick, so a dialog an action
+  // opens can hand focus back to "⋯" when it closes.
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -30,7 +36,10 @@ export function RowActionsMenu({ actions, label = "Row actions" }: { actions: Ro
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     }
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
     }
     document.addEventListener("pointerdown", onPointer);
     document.addEventListener("keydown", onKey);
@@ -43,11 +52,26 @@ export function RowActionsMenu({ actions, label = "Row actions" }: { actions: Ro
   return (
     <div ref={ref} className="relative">
       <button
+        ref={triggerRef}
         type="button"
         aria-label={label}
         aria-haspopup="menu"
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          const rect = triggerRef.current?.getBoundingClientRect();
+          if (!open && rect) {
+            // ~44px per item + padding; flip up near the bottom nav.
+            setOpenUp(
+              shouldOpenUp({
+                triggerTop: rect.top,
+                triggerBottom: rect.bottom,
+                viewportHeight: window.innerHeight,
+                menuHeight: actions.length * 44 + 12,
+              }),
+            );
+          }
+          setOpen((v) => !v);
+        }}
         className={`grid h-10 w-10 cursor-pointer place-items-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/50 ${
           open
             ? "border-sky-500/50 bg-sky-500/10 text-sky-400"
@@ -60,12 +84,12 @@ export function RowActionsMenu({ actions, label = "Row actions" }: { actions: Ro
       <AnimatePresence>
         {open ? (
           <motion.div
-            initial={{ opacity: 0, y: -4, scale: 0.97 }}
+            initial={{ opacity: 0, y: openUp ? 4 : -4, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.97 }}
+            exit={{ opacity: 0, y: openUp ? 4 : -4, scale: 0.97 }}
             transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
             role="menu"
-            className="absolute right-0 top-full z-[60] mt-2 min-w-52 origin-top-right overflow-hidden rounded-2xl border border-white/10 bg-[#0d1526]/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-xl"
+            className={`absolute right-0 z-[60] min-w-52 overflow-hidden ${openUp ? "bottom-full mb-2 origin-bottom-right" : "top-full mt-2 origin-top-right"} rounded-2xl border border-white/10 bg-[#0d1526]/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-xl`}
           >
             {actions.map((action) => {
               const Icon = action.icon;
@@ -76,6 +100,7 @@ export function RowActionsMenu({ actions, label = "Row actions" }: { actions: Ro
                   role="menuitem"
                   disabled={action.disabled}
                   onClick={() => {
+                    triggerRef.current?.focus();
                     setOpen(false);
                     action.onSelect();
                   }}

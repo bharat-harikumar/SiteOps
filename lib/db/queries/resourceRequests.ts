@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 import { can } from "@/lib/auth/capabilities";
 import { db } from "@/lib/db/client";
@@ -18,12 +18,15 @@ export async function getResourceRequestsFor(
   user: { id: string; role: Role },
   executor: Executor = db,
 ) {
+  const newestFirst = [desc(resourceRequests.createdAt), desc(resourceRequests.id)];
+
   if (can(user.role, "resource:manage_all")) {
-    return executor.select().from(resourceRequests);
+    return executor.select().from(resourceRequests).orderBy(...newestFirst);
   }
 
   return executor
     .select()
     .from(resourceRequests)
-    .where(eq(resourceRequests.requestedBy, user.id));
+    .where(eq(resourceRequests.requestedBy, user.id))
+    .orderBy(...newestFirst);
 }

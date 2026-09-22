@@ -21,5 +21,5 @@ export default async function AdminUsersPage() {
   const result = await listAdminUsers(session.user.id);
   if (!result.ok) notFound();
 
-  return <AdminUsersPageClient initialUsers={result.users} />;
+  return <AdminUsersPageClient initialUsers={result.users} currentUserId={session.user.id} />;
 }
