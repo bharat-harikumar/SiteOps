@@ -46,7 +46,7 @@ export function SiteRow({ site }: { site: SiteRowData }) {
   return (
     <Link
       href={`/app/sites/${site.id}`}
-      className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/5 focus-visible:bg-white/5 focus-visible:outline-none"
+      className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/5 active:bg-white/[0.08] focus-visible:bg-white/5 focus-visible:outline-none"
     >
       {/* Live status dot */}
       <span aria-hidden className={`h-2.5 w-2.5 shrink-0 rounded-full ${styles.dot} shadow-[0_0_8px] shadow-current`} />
@@ -64,15 +64,16 @@ export function SiteRow({ site }: { site: SiteRowData }) {
         <span className="block truncate text-[15px] font-bold uppercase tracking-tight text-white transition-colors group-hover:text-sky-400">
           {site.name}
         </span>
-        <div className="mt-1.5 flex items-center gap-2 text-[11px] leading-none text-slate-500">
-          <span className="inline-flex items-center gap-1">
+        <div className="mt-1.5 flex items-center gap-2 text-xs leading-none text-slate-400">
+          {/* min-w-0 + truncate: a long location used to push the badge off-row. */}
+          <span className="inline-flex min-w-0 items-center gap-1">
             <MapPin className="h-3 w-3 text-slate-500 shrink-0" />
-            <span className="leading-none">{site.location}</span>
+            <span className="truncate leading-none">{site.location}</span>
           </span>
           {updated ? (
             <>
               <span aria-hidden className="text-slate-500/60 leading-none">•</span>
-              <span className="leading-none">{updated}</span>
+              <span className="shrink-0 whitespace-nowrap leading-none">{updated}</span>
             </>
           ) : null}
         </div>

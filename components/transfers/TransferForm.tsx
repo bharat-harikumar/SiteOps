@@ -179,7 +179,7 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
               <button
                 type="button"
                 onClick={() => setResourceType('Materials')}
-                className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all uppercase tracking-widest text-[10px] font-bold ${
+                className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition uppercase tracking-widest text-[10px] font-bold ${
                   resourceType === 'Materials' ? 'bg-sky-500/10 border-sky-500 text-sky-400' : 'bg-white/5 border-white/5 text-slate-500'
                 }`}
               >
@@ -188,7 +188,7 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
               <button
                 type="button"
                 onClick={() => setResourceType('Labour')}
-                className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all uppercase tracking-widest text-[10px] font-bold ${
+                className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition uppercase tracking-widest text-[10px] font-bold ${
                   resourceType === 'Labour' ? 'bg-sky-500/10 border-sky-500 text-sky-400' : 'bg-white/5 border-white/5 text-slate-500'
                 }`}
               >

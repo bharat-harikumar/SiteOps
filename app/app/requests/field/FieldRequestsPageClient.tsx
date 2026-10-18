@@ -7,6 +7,7 @@ import { ApiUnavailableBanner } from '@/components/ui/ApiUnavailableBanner';
 import { requestJson, type ClientResult } from '@/lib/http/client';
 import { useApiResult } from '@/lib/http/useApiQuery';
 import { toastClientError, toastSuccess } from '@/lib/ui/toast';
+import { friendlyErrorMessage } from '@/lib/ui/toastMessages';
 
 type FieldRequest = {
   // `id` is the numeric identity column; `fieldRequestId` is the uuid every
@@ -128,7 +129,7 @@ export function FieldRequestsPageClient({
       ) : null}
       {result && !result.ok && result.kind !== 'endpoint_unavailable' ? (
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          {result.message}
+          {friendlyErrorMessage(result.code)}
         </div>
       ) : null}
 
@@ -212,7 +213,7 @@ export function FieldRequestsPageClient({
                       type="button"
                       disabled={pendingId === request.fieldRequestId}
                       onClick={() => review(request.fieldRequestId, 'Approved')}
-                      className="flex h-9 items-center gap-1 rounded bg-primary px-3 text-xs font-semibold uppercase text-on-primary disabled:opacity-60"
+                      className="flex h-11 items-center gap-1 rounded bg-primary px-3 text-xs font-semibold uppercase text-on-primary disabled:opacity-60"
                     >
                       <Check className="w-4 h-4" />
                       Approve
@@ -221,7 +222,7 @@ export function FieldRequestsPageClient({
                       type="button"
                       disabled={pendingId === request.fieldRequestId}
                       onClick={() => review(request.fieldRequestId, 'Declined')}
-                      className="flex h-9 items-center gap-1 rounded border border-outline px-3 text-xs font-semibold uppercase text-on-surface-variant disabled:opacity-60"
+                      className="flex h-11 items-center gap-1 rounded border border-outline px-3 text-xs font-semibold uppercase text-on-surface-variant disabled:opacity-60"
                     >
                       <X className="w-4 h-4" />
                       Decline
@@ -230,7 +231,7 @@ export function FieldRequestsPageClient({
                       type="button"
                       disabled={pendingId === request.fieldRequestId}
                       onClick={() => withdraw(request.fieldRequestId)}
-                      className="flex h-9 items-center gap-1 rounded px-3 text-xs font-semibold uppercase text-on-surface-variant hover:bg-surface-container disabled:opacity-60"
+                      className="flex h-11 items-center gap-1 rounded px-3 text-xs font-semibold uppercase text-on-surface-variant hover:bg-surface-container disabled:opacity-60"
                     >
                       <Undo2 className="w-4 h-4" />
                       Withdraw

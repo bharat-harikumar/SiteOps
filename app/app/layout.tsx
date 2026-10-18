@@ -22,7 +22,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AppShell role={role} initialUnread={initialUnread}>
+    <AppShell role={role} email={session?.user.email ?? ''} initialUnread={initialUnread}>
       {children}
     </AppShell>
   );

@@ -221,7 +221,7 @@ export function SubcategoryCombobox({
             onClick={() => void handleDelete(selectedCatalogValue)}
             disabled={deletingId === selectedCatalogValue.subcategoryId}
             aria-label={`Delete ${itemNounLower}`}
-            className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all disabled:opacity-40"
+            className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition disabled:opacity-40"
           >
             <Trash2 className="w-[18px] h-[18px]" />
           </button>

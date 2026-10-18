@@ -17,6 +17,8 @@ type Props = {
   // branches below are label-only (display copy), not access gates — anything
   // access-relevant must go through can() (lib/auth/capabilities).
   role: Role;
+  // Signed-in account, shown next to the avatar on wider screens.
+  email?: string;
   // Server-seeded unread count so the badge renders instantly on first paint
   // (no cold client fetch); SWR revalidates in the background.
   initialUnread?: number;
@@ -24,10 +26,11 @@ type Props = {
 
 type UnreadResponse = { total: number };
 
-export function AppHeader({ role, initialUnread = 0 }: Props) {
+export function AppHeader({ role, email = '', initialUnread = 0 }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const isDashboard = pathname === '/app/dashboard';
+  const onProfile = pathname === '/app/profile';
 
   // Records the route stack the chevron reads below.
   useNavStack(pathname);
@@ -108,7 +111,7 @@ export function AppHeader({ role, initialUnread = 0 }: Props) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setSearchOpen(true)}
-            className="p-3 text-slate-500 hover:text-sky-400 transition-colors"
+            className="p-3 text-slate-400 hover:text-sky-400 transition-colors"
             aria-label="Search remarks"
           >
             <Search className="w-5 h-5" />
@@ -116,15 +119,19 @@ export function AppHeader({ role, initialUnread = 0 }: Props) {
 
           <button
             onClick={() => router.push('/app/notifications')}
-            className="p-3 text-slate-500 hover:text-sky-400 transition-colors relative"
-            aria-label="Notifications"
+            className="p-3 text-slate-400 hover:text-sky-400 transition-colors relative"
+            // The count lives in the button's own name: an aria-label on a
+            // child span is ignored once the button has one.
+            aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
           >
             <Bell className="w-5 h-5" />
             {unread > 0 ? (
               <span
-                className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-600 rounded-full border-2 border-slate-950"
-                aria-label={`${unread} unread notification${unread === 1 ? '' : 's'}`}
-              />
+                aria-hidden
+                className="absolute top-1.5 right-1 min-w-[18px] h-[18px] px-1 grid place-items-center bg-blue-600 text-white text-[11px] font-bold leading-none tabular-nums rounded-full border-2 border-slate-950"
+              >
+                {unread > 99 ? '99+' : unread}
+              </span>
             ) : null}
           </button>
 
@@ -134,13 +141,18 @@ export function AppHeader({ role, initialUnread = 0 }: Props) {
             onClick={() => router.push('/app/profile')}
             className="flex items-center gap-3 pl-2 group"
             aria-label="Profile"
+            aria-current={onProfile ? 'page' : undefined}
           >
             <div className="text-right hidden sm:block">
-              <p className="text-xs font-bold text-white leading-none">Operator</p>
-              <p className="text-[9px] text-slate-500 uppercase tracking-widest mt-1">{role}</p>
+              <p className="max-w-[14rem] truncate text-xs font-bold text-white leading-none">{email || 'Signed in'}</p>
+              <p className="text-[11px] text-slate-400 uppercase tracking-widest mt-1">{role}</p>
             </div>
-            <div className="w-9 h-9 bg-white/5 rounded-full border border-white/5 flex items-center justify-center group-hover:border-sky-500 transition-all overflow-hidden shadow-lg">
-              <User className="w-5 h-5 text-slate-500" />
+            <div
+              className={`w-9 h-9 bg-white/5 rounded-full border flex items-center justify-center group-hover:border-sky-500 transition-colors overflow-hidden shadow-lg ${
+                onProfile ? 'border-sky-500' : 'border-white/5'
+              }`}
+            >
+              <User className={`w-5 h-5 ${onProfile ? 'text-sky-400' : 'text-slate-400'}`} />
             </div>
           </button>
         </div>

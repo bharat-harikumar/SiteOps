@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { ApiUnavailableBanner } from '@/components/ui/ApiUnavailableBanner';
 import type { ClientResult } from '@/lib/http/client';
 import { useApiResult } from '@/lib/http/useApiQuery';
+import { friendlyErrorMessage } from '@/lib/ui/toastMessages';
 
 type AnalyticsResponse = {
   period: '7d' | '30d' | '90d';
@@ -53,7 +54,7 @@ export function AdminAnalyticsPageClient({
       ) : null}
       {result && !result.ok && result.kind !== 'endpoint_unavailable' ? (
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-300">
-          {result.message}
+          {friendlyErrorMessage(result.code)}
         </div>
       ) : null}
 

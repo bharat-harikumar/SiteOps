@@ -16,7 +16,7 @@ export function ToolRow({
   const assigned = tool.assignments.reduce((s, a) => s + a.qty, 0);
 
   return (
-    <div className="rounded-xl border border-white/10 bg-slate-900/80 p-3.5 shadow-sm transition-all hover:border-white/20">
+    <div className="rounded-xl border border-white/10 bg-slate-900/80 p-3.5 shadow-sm transition hover:border-white/20">
       {/* Top Row: Tool Name + Category & Manage Action */}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">

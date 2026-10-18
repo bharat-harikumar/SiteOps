@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { requestJson } from "@/lib/http/client";
 import { useApiResult } from "@/lib/http/useApiQuery";
+import { friendlyErrorMessage } from "@/lib/ui/toastMessages";
 
 // Entry form for custom ("dynamic") categories — those not in the static
 // entryFieldRegistry. The form is driven by the category's approved
@@ -105,10 +106,11 @@ export function DynamicEntryForm({ categoryId, categoryName, siteId }: Props) {
       });
       if (!res.ok) {
         setSubmitting(false);
+        // Friendly copy by code, never the raw backend string (see lib/ui/toast).
         toast.error(
           created > 0
-            ? `Saved ${created} field(s); "${field.label}" failed: ${res.message}`
-            : res.message,
+            ? `Saved ${created} field(s); "${field.label}" failed: ${friendlyErrorMessage(res.code)}`
+            : friendlyErrorMessage(res.code),
         );
         return;
       }
@@ -180,6 +182,8 @@ export function DynamicEntryForm({ categoryId, categoryName, siteId }: Props) {
               <input
                 id={id}
                 type={field.fieldType === "Number" ? "number" : "text"}
+                inputMode={field.fieldType === "Number" ? "decimal" : undefined}
+                step={field.fieldType === "Number" ? "any" : undefined}
                 value={values[field.fieldDefinitionId] ?? ""}
                 onChange={(e) => setValue(field.fieldDefinitionId, e.target.value)}
                 className="input-standard"

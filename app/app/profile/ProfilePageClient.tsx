@@ -10,6 +10,7 @@ import { requestJson, type ClientResult } from '@/lib/http/client';
 import { useApiResult } from '@/lib/http/useApiQuery';
 import { toastClientError, toastSuccess } from '@/lib/ui/toast';
 import { DangerZone } from './DangerZone';
+import { friendlyErrorMessage } from '@/lib/ui/toastMessages';
 
 type ProfileResponse = {
   // /api/users/me derives `user` from JWT claims — only id, email, role exist.
@@ -114,7 +115,7 @@ export function ProfilePageClient({
       ) : null}
       {result && !result.ok && result.kind !== 'endpoint_unavailable' ? (
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          {result.message}
+          {friendlyErrorMessage(result.code)}
         </div>
       ) : null}
 
@@ -161,7 +162,7 @@ export function ProfilePageClient({
         <p className="text-xs text-on-surface-variant">Change the password you use to sign in.</p>
         <Link
           href="/auth/change-password"
-          className="flex h-11 w-full items-center justify-center gap-2 rounded border border-outline bg-surface-container-lowest text-xs font-semibold uppercase text-on-surface hover:border-primary transition-all active:scale-[0.98]"
+          className="flex h-11 w-full items-center justify-center gap-2 rounded border border-outline bg-surface-container-lowest text-xs font-semibold uppercase text-on-surface hover:border-primary transition active:scale-[0.98]"
         >
           <KeyRound className="w-[18px] h-[18px]" />
           Change password
@@ -174,7 +175,7 @@ export function ProfilePageClient({
         <button
           type="button"
           onClick={handleSignOut}
-          className="flex h-11 w-full items-center justify-center gap-2 rounded border border-red-500/30 bg-red-500/10 text-xs font-semibold uppercase text-error hover:bg-red-500/20 transition-all active:scale-[0.98]"
+          className="flex h-11 w-full items-center justify-center gap-2 rounded border border-red-500/30 bg-red-500/10 text-xs font-semibold uppercase text-error hover:bg-red-500/20 transition active:scale-[0.98]"
         >
           <LogOut className="w-[18px] h-[18px]" />
           Sign Out

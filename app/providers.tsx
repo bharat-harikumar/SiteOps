@@ -83,7 +83,17 @@ export default function Providers({ children }: { children: ReactNode }) {
         <ConfirmHost />
         <InstallPrompt />
         <SyncStatus />
-        <Toaster position="top-right" richColors closeButton />
+        {/* Dark to match the app (sonner defaults to light). Top-center keeps
+            toasts off the header's search/bell/profile buttons; the offset
+            clears the notch in the installed PWA. */}
+        <Toaster
+          theme="dark"
+          position="top-center"
+          richColors
+          closeButton
+          offset={{ top: 'calc(env(safe-area-inset-top) + 16px)' }}
+          mobileOffset={{ top: 'calc(env(safe-area-inset-top) + 12px)' }}
+        />
       </SWRConfig>
     </MotionConfig>
   );

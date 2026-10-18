@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { SearchHitRow } from '@/components/search/SearchHitRow';
 import { useBackDismiss } from '@/lib/nav/useBackDismiss';
+import { useFocusTrap } from '@/lib/ui/useFocusTrap';
 import { hitHref, useGlobalSearch } from '@/components/search/useGlobalSearch';
 import type { SearchHit, SearchSource } from '@/components/search/useGlobalSearch';
 
@@ -66,6 +67,9 @@ export function GlobalSearchOverlay({ open, onClose }: Props) {
   // sentinel when the close was itself a navigation to a hit.
   useBackDismiss(open, onClose, { navigatingRef });
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(open, dialogRef);
+
   const handleSelect = (hit: SearchHit) => {
     navigatingRef.current = true;
     onClose();
@@ -118,6 +122,7 @@ export function GlobalSearchOverlay({ open, onClose }: Props) {
     <AnimatePresence>
       {open ? (
         <motion.div
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-label="Search remarks"
@@ -164,7 +169,7 @@ export function GlobalSearchOverlay({ open, onClose }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white shadow-xs transition-all hover:bg-white/20 hover:border-white/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
+              className="relative before:absolute before:-inset-1.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white shadow-xs transition hover:bg-white/20 hover:border-white/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
               aria-label="Close search"
             >
               <X className="w-4 h-4" />

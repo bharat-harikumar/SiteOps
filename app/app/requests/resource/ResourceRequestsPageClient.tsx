@@ -7,6 +7,7 @@ import { ApiUnavailableBanner } from '@/components/ui/ApiUnavailableBanner';
 import { requestJson, type ClientResult } from '@/lib/http/client';
 import { useApiResult } from '@/lib/http/useApiQuery';
 import { toastClientError, toastSuccess } from '@/lib/ui/toast';
+import { friendlyErrorMessage } from '@/lib/ui/toastMessages';
 
 type ResourceRequest = {
   // `id` is the numeric identity column; `requestId` is the uuid every
@@ -120,7 +121,7 @@ export function ResourceRequestsPageClient({
       ) : null}
       {result && !result.ok && result.kind !== 'endpoint_unavailable' ? (
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          {result.message}
+          {friendlyErrorMessage(result.code)}
         </div>
       ) : null}
 
@@ -199,7 +200,7 @@ export function ResourceRequestsPageClient({
                       type="button"
                       disabled={pendingId === request.requestId}
                       onClick={() => review(request.requestId, 'Approved')}
-                      className="flex h-9 items-center gap-1 rounded bg-primary px-3 text-xs font-semibold uppercase text-on-primary disabled:opacity-60"
+                      className="flex h-11 items-center gap-1 rounded bg-primary px-3 text-xs font-semibold uppercase text-on-primary disabled:opacity-60"
                     >
                       <Check className="w-4 h-4" />
                       Approve
@@ -208,7 +209,7 @@ export function ResourceRequestsPageClient({
                       type="button"
                       disabled={pendingId === request.requestId}
                       onClick={() => review(request.requestId, 'Declined')}
-                      className="flex h-9 items-center gap-1 rounded border border-outline px-3 text-xs font-semibold uppercase text-on-surface-variant disabled:opacity-60"
+                      className="flex h-11 items-center gap-1 rounded border border-outline px-3 text-xs font-semibold uppercase text-on-surface-variant disabled:opacity-60"
                     >
                       <X className="w-4 h-4" />
                       Decline

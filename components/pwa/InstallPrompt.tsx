@@ -107,7 +107,7 @@ export function InstallPrompt() {
           type="button"
           onClick={dismiss}
           aria-label="Dismiss install prompt"
-          className="shrink-0 rounded-lg p-2 text-on-surface-variant hover:text-on-surface transition-colors"
+          className="shrink-0 rounded-lg p-3 -m-1 text-on-surface-variant hover:text-on-surface transition-colors"
         >
           <X className="h-4 w-4" />
         </button>

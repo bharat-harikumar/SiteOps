@@ -4,6 +4,9 @@ import { AlertTriangle, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
+import { lockBodyScroll } from '@/lib/ui/scrollLock';
+import { useFocusTrap } from '@/lib/ui/useFocusTrap';
+
 export type ConfirmTone = 'default' | 'danger';
 
 export interface ConfirmOptions {
@@ -44,6 +47,10 @@ function resolvePending(value: boolean) {
 export function ConfirmHost() {
   const [request, setRequest] = useState<ConfirmRequest | null>(null);
   const confirmRef = useRef<HTMLButtonElement | null>(null);
+  const cancelRef = useRef<HTMLButtonElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  // Declared before the focus effect below so it records the opener first.
+  useFocusTrap(Boolean(request), panelRef);
 
   useEffect(() => {
     listener = setRequest;
@@ -54,15 +61,18 @@ export function ConfirmHost() {
 
   useEffect(() => {
     if (!request) return;
-    confirmRef.current?.focus();
+    // A danger confirm lands on Cancel, so a stray Enter cannot delete.
+    (request.tone === 'danger' ? cancelRef : confirmRef).current?.focus();
     function handleKey(event: KeyboardEvent) {
       if (event.key === 'Escape') resolvePending(false);
     }
     document.addEventListener('keydown', handleKey);
-    document.body.style.overflow = 'hidden';
+    // Shared ref-counted lock: setting body overflow directly here unlocked the
+    // page behind a still-open modal when the confirm closed over it.
+    const releaseScroll = lockBodyScroll();
     return () => {
       document.removeEventListener('keydown', handleKey);
-      document.body.style.overflow = '';
+      releaseScroll();
     };
   }, [request]);
 
@@ -102,7 +112,9 @@ export function ConfirmHost() {
           />
 
           <motion.div
-            className="relative w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl border border-white/10 bg-slate-950 p-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] sm:pb-6 shadow-2xl shadow-black/40"
+            ref={panelRef}
+            tabIndex={-1}
+            className="relative w-full outline-none sm:max-w-md rounded-t-3xl sm:rounded-3xl border border-white/10 bg-slate-950 p-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] sm:pb-6 shadow-2xl shadow-black/40"
             initial={{ y: 40, opacity: 0, scale: 0.98 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 24, opacity: 0, scale: 0.98 }}
@@ -138,6 +150,7 @@ export function ConfirmHost() {
 
             <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
               <button
+                ref={cancelRef}
                 type="button"
                 onClick={() => resolvePending(false)}
                 className="h-12 rounded-2xl border border-white/10 bg-white/5 px-5 text-sm font-bold uppercase tracking-widest text-slate-200 transition-colors hover:border-white/20 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20 cursor-pointer sm:h-11"

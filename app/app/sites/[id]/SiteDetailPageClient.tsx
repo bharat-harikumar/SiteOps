@@ -170,7 +170,7 @@ export default function SiteDetailPageClient({
                   <button
                     onClick={() => setEditOpen(true)}
                     aria-label="Edit site"
-                    className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-300 transition-all hover:border-sky-500/40 hover:text-sky-400"
+                    className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-300 transition hover:border-sky-500/40 hover:text-sky-400"
                   >
                     <Edit3 className="w-4 h-4" /> Edit
                   </button>
@@ -181,7 +181,7 @@ export default function SiteDetailPageClient({
                     disabled={deletingSite}
                     title="Archive site"
                     aria-label="Archive site"
-                    className="inline-flex items-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs font-bold uppercase tracking-widest text-red-400 transition-all hover:bg-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs font-bold uppercase tracking-widest text-red-400 transition hover:bg-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {deletingSite ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                     Archive
@@ -220,7 +220,7 @@ export default function SiteDetailPageClient({
 
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5">
             <div
-              className="h-full rounded-full bg-sky-500 transition-all duration-700"
+              className="h-full rounded-full bg-sky-500 transition-[width] duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>

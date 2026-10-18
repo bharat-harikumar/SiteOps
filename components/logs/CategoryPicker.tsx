@@ -204,7 +204,7 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.05 }}
-            className="card-standard group flex items-center justify-between text-left hover:bg-white/5 transition-all active:scale-[0.99]"
+            className="card-standard group flex items-center justify-between text-left hover:bg-white/5 transition active:scale-[0.99]"
           >
             <button
               type="button"
@@ -236,7 +236,7 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
                   disabled={deletingId === c.categoryId}
                   title="Delete category"
                   aria-label={`Delete category ${c.name}`}
-                  className="p-2 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all disabled:opacity-40"
+                  className="p-2 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition disabled:opacity-40"
                 >
                   {deletingId === c.categoryId ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -249,7 +249,7 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
                 type="button"
                 onClick={() => onSelect(c)}
                 aria-label={`Open ${c.name}`}
-                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-600 hover:bg-sky-500 hover:text-slate-950 transition-all"
+                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-600 hover:bg-sky-500 hover:text-slate-950 transition"
               >
                 <ChevronRight className="w-5 h-5 transition-transform hover:translate-x-0.5" />
               </button>

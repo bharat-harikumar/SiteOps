@@ -27,7 +27,7 @@ export function AdminTabNav() {
             key={tab.href}
             href={tab.href}
             className={[
-              'relative flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-semibold transition-all duration-200 select-none cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-blue-500/50',
+              'relative flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-semibold transition duration-200 select-none cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-blue-500/50',
               active ? '' : 'hover:bg-white/5 active:bg-white/10',
             ].join(' ')}
           >

@@ -45,7 +45,7 @@ export function DangerZone() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-11 w-full items-center justify-center gap-2 rounded border border-red-500/40 bg-red-500/10 text-xs font-semibold uppercase text-error transition-all hover:bg-red-500/20 active:scale-[0.98]"
+        className="flex h-11 w-full items-center justify-center gap-2 rounded border border-red-500/40 bg-red-500/10 text-xs font-semibold uppercase text-error transition hover:bg-red-500/20 active:scale-[0.98]"
       >
         <Trash2 className="w-[18px] h-[18px]" />
         Delete Everything

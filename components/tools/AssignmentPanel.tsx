@@ -76,7 +76,7 @@ export function AssignmentPanel({
                     type="button"
                     aria-label={`Decrease ${nameOf(a.siteId)}`}
                     onClick={() => setQty(a.siteId, a.qty - 1)}
-                    className="grid h-8 w-8 cursor-pointer place-items-center rounded-lg border border-outline bg-white/5 text-on-surface-variant transition-colors hover:bg-white/10"
+                    className="relative before:absolute before:inset-x-0 before:-inset-y-1.5 grid h-8 w-8 cursor-pointer place-items-center rounded-lg border border-outline bg-white/5 text-on-surface-variant transition-colors hover:bg-white/10"
                   >
                     <Minus className="h-3.5 w-3.5" />
                   </button>
@@ -87,14 +87,14 @@ export function AssignmentPanel({
                     min={0}
                     value={a.qty}
                     onChange={(e) => setQty(a.siteId, Math.max(0, Math.floor(Number(e.target.value) || 0)))}
-                    className="h-8 w-14 rounded-lg border border-outline bg-transparent px-2 text-center text-sm font-semibold tabular-nums text-white outline-none"
+                    className="h-8 w-14 rounded-lg border border-outline bg-transparent px-2 text-center text-sm font-semibold tabular-nums text-white outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/40"
                   />
                   <button
                     type="button"
                     aria-label={`Increase ${nameOf(a.siteId)}`}
                     disabled={free < 1}
                     onClick={() => setQty(a.siteId, a.qty + 1)}
-                    className="grid h-8 w-8 cursor-pointer place-items-center rounded-lg border border-outline bg-white/5 text-on-surface-variant transition-colors hover:bg-white/10 disabled:opacity-30"
+                    className="relative before:absolute before:inset-x-0 before:-inset-y-1.5 grid h-8 w-8 cursor-pointer place-items-center rounded-lg border border-outline bg-white/5 text-on-surface-variant transition-colors hover:bg-white/10 disabled:opacity-30"
                   >
                     <Plus className="h-3.5 w-3.5" />
                   </button>
@@ -114,7 +114,7 @@ export function AssignmentPanel({
               setAddQty(1);
             }}
             disabled={available.length === 0 || free < 1}
-            className="h-9 w-full appearance-none cursor-pointer rounded-xl border border-outline bg-white/5 pl-3 pr-10 text-xs text-on-surface outline-none transition-all focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/40 disabled:opacity-40"
+            className="h-9 w-full appearance-none cursor-pointer rounded-xl border border-outline bg-white/5 pl-3 pr-10 text-xs text-on-surface outline-none transition focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/40 disabled:opacity-40"
           >
             <option value="" className="bg-[#0f172a] text-on-surface">{free < 1 ? "No free units to assign" : "Add another site…"}</option>
             {available.map((s) => (
@@ -138,7 +138,7 @@ export function AssignmentPanel({
                 aria-label="Decrease units to assign"
                 disabled={clampedAddQty <= 1}
                 onClick={() => setAddQty((q) => Math.max(1, q - 1))}
-                className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-lg border border-outline bg-white/5 text-on-surface-variant transition-colors hover:bg-white/10 disabled:opacity-30"
+                className="relative before:absolute before:inset-x-0 before:-inset-y-1.5 grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-lg border border-outline bg-white/5 text-on-surface-variant transition-colors hover:bg-white/10 disabled:opacity-30"
               >
                 <Minus className="h-3.5 w-3.5" />
               </button>
@@ -150,14 +150,14 @@ export function AssignmentPanel({
                 max={maxAddQty}
                 value={clampedAddQty}
                 onChange={(e) => setAddQty(Math.max(1, Math.floor(Number(e.target.value) || 1)))}
-                className="h-8 w-12 shrink-0 rounded-lg border border-outline bg-transparent px-1 text-center text-sm font-semibold tabular-nums text-white outline-none"
+                className="h-8 w-12 shrink-0 rounded-lg border border-outline bg-transparent px-1 text-center text-sm font-semibold tabular-nums text-white outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/40"
               />
               <button
                 type="button"
                 aria-label="Increase units to assign"
                 disabled={clampedAddQty >= maxAddQty}
                 onClick={() => setAddQty((q) => Math.min(maxAddQty, q + 1))}
-                className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-lg border border-outline bg-white/5 text-on-surface-variant transition-colors hover:bg-white/10 disabled:opacity-30"
+                className="relative before:absolute before:inset-x-0 before:-inset-y-1.5 grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-lg border border-outline bg-white/5 text-on-surface-variant transition-colors hover:bg-white/10 disabled:opacity-30"
               >
                 <Plus className="h-3.5 w-3.5" />
               </button>

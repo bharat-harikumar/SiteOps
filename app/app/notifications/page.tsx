@@ -12,6 +12,7 @@ import { UNREAD_BADGE_KEY } from '@/lib/http/notificationsKeys';
 import { useApiResult } from '@/lib/http/useApiQuery';
 import { toastClientError, toastSuccess } from '@/lib/ui/toast';
 import { formatDateTime } from '@/lib/utils/formatDate';
+import { friendlyErrorMessage } from '@/lib/ui/toastMessages';
 
 type Notification = {
   id: string;
@@ -122,14 +123,15 @@ export default function NotificationsPage() {
       ) : null}
       {result && !result.ok && result.kind !== 'endpoint_unavailable' ? (
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          {result.message}
+          {friendlyErrorMessage(result.code)}
         </div>
       ) : null}
 
       <section className="card-standard divide-y divide-outline-variant rounded-2xl">
         {items.length === 0 ? (
           <div className="p-4 text-sm text-on-surface-variant">
-            {result?.ok ? 'No notifications found.' : 'Loading…'}
+            {/* An error is reported in the banner above; don't claim to be loading. */}
+            {result?.ok ? 'No notifications yet.' : result ? 'Notifications are unavailable right now.' : 'Loading…'}
           </div>
         ) : (
           items.map((notification) => {

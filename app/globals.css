@@ -51,6 +51,12 @@
   --color-outline: #334155;
   --color-outline-variant: #1e293b;
 
+  /* Stock slate-500 (#64748b) is 4.24:1 on #020617 and ~3.8:1 on cards —
+     under WCAG AA — yet it is the app's secondary text colour in 100+ places.
+     Lifted just enough to pass 4.5:1 on the page, cards and slate-900 panels
+     while staying visibly darker than slate-400, so the hierarchy holds. */
+  --color-slate-500: #748298;
+
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
@@ -121,17 +127,17 @@
     border: 1px solid rgba(255,255,255,0.05);
     border-radius: 1rem;
     box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    /* No backdrop blur: cards sit on the flat page colour, so it blurred
+       nothing visible while costing a GPU pass per card on low-end phones. */
     overflow: hidden;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-bold uppercase tracking-widest text-[11px] rounded-xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/10 disabled:opacity-50;
+    @apply inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-bold uppercase tracking-widest text-[11px] rounded-xl hover:bg-blue-500 transition shadow-lg shadow-blue-600/10 disabled:opacity-50 not-disabled:active:scale-[0.97];
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-4 py-2 bg-white/5 text-slate-300 border border-white/5 font-bold uppercase tracking-widest text-[11px] rounded-xl hover:bg-white/10 transition-all;
+    @apply inline-flex items-center justify-center px-4 py-2 bg-white/5 text-slate-300 border border-white/5 font-bold uppercase tracking-widest text-[11px] rounded-xl hover:bg-white/10 transition not-disabled:active:scale-[0.97];
   }
 
   .badge-emerald {
@@ -147,7 +153,7 @@
   }
 
   .input-standard {
-    @apply w-full px-4 py-3 bg-white/5 border border-white/5 rounded-xl text-white text-sm outline-none transition-all placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50;
+    @apply w-full px-4 py-3 bg-white/5 border border-white/5 rounded-xl text-white text-sm outline-none transition placeholder-slate-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50;
   }
 }
 
@@ -159,7 +165,7 @@
   }
 
   .active-press {
-    @apply transition-transform duration-75 active:scale-95 active:opacity-80;
+    @apply transition-transform duration-150 ease-out active:scale-[0.97];
   }
 
   .pb-safe {
@@ -177,6 +183,17 @@
     scrollbar-width: none;
   }
 
+}
+
+/* iOS Safari zooms the page when a focused field's font is under 16px, and
+   ~30 fields here use text-xs/text-sm. Unlayered so it beats the Tailwind
+   utilities; scoped to iOS WebKit so desktop and Android keep their sizes. */
+@supports (-webkit-touch-callout: none) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
 }
 
 /* Reduced-motion fallback (WCAG 2.3.3): kill CSS transitions/animations for

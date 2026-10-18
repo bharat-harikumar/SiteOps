@@ -1,7 +1,8 @@
 'use client';
 
 import { ArrowRightLeft, BarChart3, FileText, Home, Plus, User } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { can } from '@/lib/auth/capabilities';
 import type { Role } from '@/lib/auth/roles';
@@ -13,7 +14,6 @@ function cn(...classes: (string | boolean | undefined | null)[]) {
 
 export function AppFooterNav({ role }: { role: Role }) {
   const pathname = usePathname();
-  const router = useRouter();
 
   const navItems = [
     { label: 'Home', icon: Home, href: '/app/dashboard', active: pathname === '/app/dashboard' || pathname.startsWith('/app/tools') },
@@ -25,33 +25,35 @@ export function AppFooterNav({ role }: { role: Role }) {
       : [{ label: 'Profile', icon: User, href: '/app/profile', active: pathname === '/app/profile' }]),
   ];
 
+  // Links, not router.push buttons: they prefetch the tab (faster switches) and
+  // keep long-press / open-in-new-tab working.
   return (
-    <nav className="nav-blur fixed bottom-0 left-0 right-0 z-50 border-t border-white/5">
+    <nav aria-label="Primary app nav" className="nav-blur fixed bottom-0 left-0 right-0 z-50 border-t border-white/5">
       <div className="mx-auto flex h-20 max-w-2xl items-center justify-around px-6">
         {navItems.map((item) =>
           item.primary ? (
-            <button
+            <Link
               key={item.label}
-              onClick={() => router.push(item.href)}
-              aria-label={item.label}
-              className="-mt-8 grid h-16 w-16 shrink-0 place-items-center rounded-full bg-blue-600 text-white shadow-[0_0_24px] shadow-blue-600/50 ring-8 ring-[#020617] transition-all duration-200 hover:bg-blue-500 active:scale-95"
-            >
-              <item.icon className="h-7 w-7" strokeWidth={2.5} />
-            </button>
-          ) : (
-            <button
-              key={item.href}
-              onClick={() => router.push(item.href)}
+              href={item.href}
               aria-label={item.label}
               aria-current={item.active ? 'page' : undefined}
+              className="-mt-8 grid h-16 w-16 shrink-0 place-items-center rounded-full bg-blue-600 text-white shadow-[0_0_24px] shadow-blue-600/50 ring-8 ring-[#020617] transition-[background-color,transform] duration-150 ease-out hover:bg-blue-500 active:scale-95"
+            >
+              <item.icon className="h-7 w-7" strokeWidth={2.5} />
+            </Link>
+          ) : (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={item.active ? 'page' : undefined}
               className={cn(
-                'flex flex-1 flex-col items-center justify-center gap-1.5 transition-colors duration-200',
-                item.active ? 'text-blue-500' : 'text-slate-500 hover:text-slate-300',
+                'flex flex-1 select-none flex-col items-center justify-center gap-1.5 transition-[color,transform] duration-150 ease-out active:scale-[0.97]',
+                item.active ? 'text-blue-500' : 'text-slate-400 hover:text-slate-200',
               )}
             >
               <item.icon className="h-6 w-6" strokeWidth={item.active ? 2.5 : 2} />
-              <span className="text-[10px] font-bold uppercase tracking-widest leading-none">{item.label}</span>
-            </button>
+              <span className="text-[11px] font-semibold leading-none">{item.label}</span>
+            </Link>
           ),
         )}
       </div>

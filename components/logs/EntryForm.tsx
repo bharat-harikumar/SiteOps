@@ -393,7 +393,7 @@ export function EntryForm({
             type="button"
             onClick={() => void handleDelete()}
             disabled={deleting}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-[11px] font-bold uppercase tracking-widest text-red-400 hover:bg-red-500/20 transition-all disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-[11px] font-bold uppercase tracking-widest text-red-400 hover:bg-red-500/20 transition disabled:opacity-50"
           >
             <Trash2 className="w-[18px] h-[18px]" />
             {deleting ? "Deleting…" : "Delete Entry"}

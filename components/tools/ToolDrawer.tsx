@@ -1,15 +1,17 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { useBackDismiss } from "@/lib/nav/useBackDismiss";
 import { ArrowLeftRight, ArrowRightLeft, Clock, History, PackageMinus, PackagePlus, Send, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import type { SiteOption } from "@/components/tools/AssignmentPanel";
 import type { ToolDTO } from "@/lib/client/tools";
 import { useToolMovements, useToolMutations } from "@/lib/client/tools";
+import { lockBodyScroll } from "@/lib/ui/scrollLock";
 import { notifyError } from "@/lib/ui/toast";
+import { useFocusTrap } from "@/lib/ui/useFocusTrap";
 
 const KIND_LABEL: Record<string, string> = {
   opening: "Stock Added (Opening)",
@@ -114,6 +116,17 @@ export function ToolDrawer({
   // hook, and the drawer unmounts its body when `tool` is null.
   useBackDismiss(Boolean(tool), onClose);
 
+  // Same overlay contract as ModalShell: the page behind stays put, and Tab
+  // stays inside the drawer until it closes.
+  useEffect(() => {
+    if (!tool) return;
+    return lockBodyScroll();
+  }, [tool]);
+  const panelRef = useRef<HTMLElement>(null);
+  useFocusTrap(Boolean(tool), panelRef);
+
+  // The parent (ToolsHub) owns the AnimatePresence, so the exit slide still
+  // plays after `tool` goes null.
   if (!tool) return null;
 
   const assignedSites = tool.assignments;
@@ -228,7 +241,7 @@ export function ToolDrawer({
   }
 
   return (
-    <AnimatePresence>
+    <>
       <motion.div
         className="fixed inset-0 z-[60] flex justify-end bg-black/50 backdrop-blur-xs"
         initial={{ opacity: 0 }}
@@ -237,13 +250,15 @@ export function ToolDrawer({
         onClick={onClose}
       >
         <motion.aside
+          ref={panelRef}
+          tabIndex={-1}
           role="dialog"
+          aria-modal="true"
           aria-label={`Manage ${tool.name}`}
-          className="flex h-full w-full max-w-lg flex-col border-l border-white/10 bg-slate-900 shadow-2xl"
-          initial={{ x: 40 }}
-          animate={{ x: 0 }}
-          exit={{ x: 40 }}
-          transition={{ duration: 0.2 }}
+          className="flex h-full w-full max-w-lg flex-col border-l border-white/10 bg-slate-900 shadow-2xl outline-none"
+          initial={{ transform: "translateX(100%)" }}
+          animate={{ transform: "translateX(0%)", transition: { duration: 0.3, ease: [0.32, 0.72, 0, 1] } }}
+          exit={{ transform: "translateX(100%)", transition: { duration: 0.2, ease: [0.32, 0.72, 0, 1] } }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -259,7 +274,7 @@ export function ToolDrawer({
                 type="button"
                 aria-label="Close drawer"
                 onClick={onClose}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white shadow-xs transition-all hover:bg-white/20 hover:border-white/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
+                className="relative before:absolute before:-inset-1.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white shadow-xs transition hover:bg-white/20 hover:border-white/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -395,7 +410,7 @@ export function ToolDrawer({
                         type="button"
                         disabled={submitting || !sendSiteId || inGodown < 1}
                         onClick={() => void handleSend()}
-                        className="w-full h-9 rounded-lg bg-blue-600 px-4 text-xs font-bold text-white transition-colors hover:bg-blue-500 disabled:opacity-40 cursor-pointer"
+                        className="w-full h-11 rounded-lg bg-blue-600 px-4 text-xs font-bold text-white transition-colors hover:bg-blue-500 disabled:opacity-40 cursor-pointer"
                       >
                         {submitting ? "Sending..." : "Send to Site"}
                       </button>
@@ -481,7 +496,7 @@ export function ToolDrawer({
                         type="button"
                         disabled={submitting || !returnSiteId}
                         onClick={() => void handleReturn()}
-                        className="w-full h-9 rounded-lg bg-emerald-600 px-4 text-xs font-bold text-white transition-colors hover:bg-emerald-500 disabled:opacity-40 cursor-pointer"
+                        className="w-full h-11 rounded-lg bg-emerald-600 px-4 text-xs font-bold text-white transition-colors hover:bg-emerald-500 disabled:opacity-40 cursor-pointer"
                       >
                         {submitting ? "Processing..." : "Bring Back to Godown"}
                       </button>
@@ -588,7 +603,7 @@ export function ToolDrawer({
                         type="button"
                         disabled={submitting || !transferFromSiteId || !transferToSiteId}
                         onClick={() => void handleTransfer()}
-                        className="w-full h-9 rounded-lg bg-amber-600 px-4 text-xs font-bold text-white transition-colors hover:bg-amber-500 disabled:opacity-40 cursor-pointer"
+                        className="w-full h-11 rounded-lg bg-amber-600 px-4 text-xs font-bold text-white transition-colors hover:bg-amber-500 disabled:opacity-40 cursor-pointer"
                       >
                         {submitting ? "Transferring..." : "Transfer Tools"}
                       </button>
@@ -647,7 +662,7 @@ export function ToolDrawer({
                     type="button"
                     disabled={submitting}
                     onClick={() => void handleAddStock()}
-                    className="w-full h-9 rounded-lg bg-emerald-600 px-4 text-xs font-bold text-white transition-colors hover:bg-emerald-500 disabled:opacity-40 cursor-pointer"
+                    className="w-full h-11 rounded-lg bg-emerald-600 px-4 text-xs font-bold text-white transition-colors hover:bg-emerald-500 disabled:opacity-40 cursor-pointer"
                   >
                     {submitting ? "Adding..." : "Add to Stock"}
                   </button>
@@ -703,7 +718,7 @@ export function ToolDrawer({
                     type="button"
                     disabled={submitting || inGodown < 1}
                     onClick={() => void handleRemoveStock()}
-                    className="w-full h-9 rounded-lg bg-rose-600 px-4 text-xs font-bold text-white transition-colors hover:bg-rose-500 disabled:opacity-40 cursor-pointer"
+                    className="w-full h-11 rounded-lg bg-rose-600 px-4 text-xs font-bold text-white transition-colors hover:bg-rose-500 disabled:opacity-40 cursor-pointer"
                   >
                     {submitting ? "Removing..." : "Remove Stock"}
                   </button>
@@ -747,6 +762,6 @@ export function ToolDrawer({
           </div>
         </motion.aside>
       </motion.div>
-    </AnimatePresence>
+    </>
   );
 }

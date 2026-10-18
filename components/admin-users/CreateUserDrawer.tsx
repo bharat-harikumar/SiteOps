@@ -88,7 +88,7 @@ export function CreateUserDrawer({
           type="button"
           onClick={close}
           aria-label="Close"
-          className="flex h-9 w-9 items-center justify-center rounded border border-outline text-on-surface-variant hover:text-on-surface"
+          className="relative before:absolute before:-inset-1.5 flex h-9 w-9 items-center justify-center rounded border border-outline text-on-surface-variant hover:text-on-surface"
         >
           <X className="h-4 w-4" />
         </button>

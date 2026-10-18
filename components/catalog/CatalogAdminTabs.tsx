@@ -42,7 +42,7 @@ export function CatalogAdminTabs() {
               key={label}
               type="button"
               onClick={() => selectTab(label)}
-              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
+              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
                 active
                   ? "bg-blue-600 text-white shadow-xs"
                   : "text-slate-400 hover:bg-white/5 hover:text-white"

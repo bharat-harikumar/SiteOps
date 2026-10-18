@@ -346,7 +346,7 @@ export function CatalogManager() {
               key={op.operation}
               type="button"
               onClick={() => setActiveOperation(i)}
-              className={`flex cursor-pointer items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
+              className={`flex cursor-pointer items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
                 active
                   ? "bg-blue-600/20 text-blue-400 border border-blue-500/40 shadow-xs"
                   : "border border-white/5 bg-slate-900/60 text-slate-400 hover:bg-white/5 hover:text-white"
@@ -408,7 +408,7 @@ export function CatalogManager() {
                 {items.map((item, index) => (
                   <li
                     key={item.subcategoryId}
-                    className={`flex items-center gap-3.5 rounded-xl border border-white/10 bg-slate-900/80 p-3 shadow-xs transition-all hover:border-white/20 ${
+                    className={`flex items-center gap-3.5 rounded-xl border border-white/10 bg-slate-900/80 p-3 shadow-xs transition hover:border-white/20 ${
                       item.isActive ? "" : "opacity-50"
                     }`}
                   >

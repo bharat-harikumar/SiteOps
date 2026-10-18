@@ -27,7 +27,7 @@ export function ToolCatalogManager() {
               key={t}
               type="button"
               onClick={() => setSub(t)}
-              className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
+              className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
                 active
                   ? "bg-blue-600/20 text-blue-400 border border-blue-500/40 shadow-xs"
                   : "text-slate-400 hover:bg-white/5 hover:text-white border border-transparent"
@@ -176,7 +176,7 @@ function ToolsTable() {
           {filtered.map((tool) => (
             <li
               key={tool.toolId}
-              className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-slate-900/80 p-3 shadow-xs transition-all hover:border-white/20"
+              className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-slate-900/80 p-3 shadow-xs transition hover:border-white/20"
             >
               {/* Left Content */}
               <div className="flex items-center gap-3 min-w-0 flex-1">

@@ -348,7 +348,7 @@ export default function AllOperationsPageClient({
           </span>
           <div className="flex items-center gap-2">
             <span
-              className={`rounded-md px-2.5 py-0.5 text-[10px] font-semibold transition-all ${
+              className={`rounded-md px-2.5 py-0.5 text-[10px] font-semibold transition ${
                 allSelected
                   ? "bg-blue-500/15 text-blue-400 border border-blue-500/30"
                   : "bg-slate-800 text-slate-400 border border-slate-700"
@@ -379,7 +379,7 @@ export default function AllOperationsPageClient({
                 type="button"
                 onClick={() => toggleType(type)}
                 aria-pressed={active}
-                className={`inline-flex h-11 items-center justify-between gap-2.5 rounded-xl px-3.5 text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
+                className={`inline-flex h-11 items-center justify-between gap-2.5 rounded-xl px-3.5 text-[11px] font-bold uppercase tracking-widest transition cursor-pointer ${
                   active
                     ? getTypeActiveGlowColor(type)
                     : "border border-white/10 bg-slate-900/60 text-slate-400 hover:border-white/20 hover:text-white"
@@ -390,7 +390,7 @@ export default function AllOperationsPageClient({
                   <span>{typeLabel[type]}</span>
                 </div>
                 <span
-                  className={`h-2.5 w-2.5 shrink-0 rounded-full transition-all ${
+                  className={`h-2.5 w-2.5 shrink-0 rounded-full transition ${
                     active ? getTypeDotColor(type) : "bg-slate-700"
                   }`}
                 />

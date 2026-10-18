@@ -1,10 +1,11 @@
 "use client";
 
 import { AnimatePresence, motion, type HTMLMotionProps, type Transition } from "motion/react";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import { useBackDismiss } from "@/lib/nav/useBackDismiss";
 import { lockBodyScroll } from "@/lib/ui/scrollLock";
+import { useFocusTrap } from "@/lib/ui/useFocusTrap";
 
 const EASE: Transition["ease"] = [0.22, 1, 0.36, 1];
 
@@ -47,13 +48,15 @@ const listItem = {
   exit: { opacity: 0, transition: transitions.fast },
 };
 
+// Runs on every in-app navigation (tens of times a day), so it stays a short
+// opacity-only settle: no slide, nothing that makes the tap feel delayed. No
+// exit — template.tsx remounts per route, so an exit could never play.
 export function PageTransition({ children }: { children: ReactNode }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 4 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -4 }}
-      transition={transitions.base}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.12, ease: EASE }}
     >
       {children}
     </motion.div>
@@ -158,6 +161,9 @@ export function ModalShell({
     return lockBodyScroll();
   }, [open]);
 
+  const panelRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(open, panelRef);
+
   return (
     <AnimatePresence>
       {open ? (
@@ -174,12 +180,14 @@ export function ModalShell({
           }}
         >
           <motion.div
+            ref={panelRef}
+            tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
             initial={{ opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.98 }}
             transition={transitions.base}
-            className={className}
+            className={`outline-none ${className ?? ""}`}
           >
             {children}
           </motion.div>

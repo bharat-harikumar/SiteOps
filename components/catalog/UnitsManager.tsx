@@ -170,7 +170,7 @@ export function UnitsManager() {
                 {units.map((unit, index) => (
                   <li
                     key={unit.unitId}
-                    className={`flex items-center gap-3.5 rounded-xl border border-white/10 bg-slate-900/80 p-3 shadow-xs transition-all hover:border-white/20 ${
+                    className={`flex items-center gap-3.5 rounded-xl border border-white/10 bg-slate-900/80 p-3 shadow-xs transition hover:border-white/20 ${
                       unit.isActive ? "" : "opacity-50"
                     }`}
                   >

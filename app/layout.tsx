@@ -11,7 +11,8 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  // No weight list: Inter is variable, so one file covers 100–900. A fixed
+  // 400–700 list left the 80+ font-extrabold (800) headings rendering at 700.
 });
 
 export const metadata: Metadata = {
@@ -20,7 +21,9 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    // Translucent so the installed PWA's status bar takes the dark app colour
+    // (viewportFit: cover + the header's safe-area padding already make room).
+    statusBarStyle: "black-translucent",
     title: "SiteOps",
   },
   icons: {

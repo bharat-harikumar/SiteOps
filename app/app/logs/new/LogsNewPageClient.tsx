@@ -68,7 +68,7 @@ export function LogsNewPageClient({ initialCategories, initialSites, siteId, rol
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.07 }}
                   onClick={() => setSelectedSiteId(site.siteId)}
-                  className="card-standard p-5 flex items-center justify-between text-left hover:bg-white/5 transition-all active:scale-[0.99]"
+                  className="card-standard p-5 flex items-center justify-between text-left hover:bg-white/5 transition active:scale-[0.99]"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
@@ -79,7 +79,7 @@ export function LogsNewPageClient({ initialCategories, initialSites, siteId, rol
                       <p className="text-xs text-slate-500 font-medium italic">{site.location}</p>
                     </div>
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-600 group-hover:bg-sky-500 group-hover:text-slate-950 transition-all">
+                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-600 group-hover:bg-sky-500 group-hover:text-slate-950 transition">
                     <ChevronRight className="w-5 h-5" />
                   </div>
                 </motion.button>

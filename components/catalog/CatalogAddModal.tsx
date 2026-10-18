@@ -117,8 +117,8 @@ export function CatalogAddModal({ noun, disabled, withRemark, solid, onCheckSimi
         onClick={() => setOpen(true)}
         className={
           solid
-            ? "inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-bold text-blue-400 transition-all hover:bg-blue-500/25 disabled:opacity-40"
-            : "inline-flex items-center gap-1.5 rounded-full border border-sky-500/40 bg-sky-500/10 px-4 py-2.5 text-sm font-bold text-sky-400 transition-all hover:bg-sky-500/20 disabled:opacity-40"
+            ? "inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-bold text-blue-400 transition hover:bg-blue-500/25 disabled:opacity-40"
+            : "inline-flex items-center gap-1.5 rounded-full border border-sky-500/40 bg-sky-500/10 px-4 py-2.5 text-sm font-bold text-sky-400 transition hover:bg-sky-500/20 disabled:opacity-40"
         }
       >
         <Plus className="h-4 w-4" strokeWidth={2.5} />

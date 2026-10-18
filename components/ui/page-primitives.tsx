@@ -23,8 +23,9 @@ export function PageHeading({ title, subtitle }: { title: string; subtitle?: str
 export function EmptyState({ message = 'No data found.' }: { message?: string }) {
   return (
     <div className="text-center py-24 bg-white/2 rounded-3xl border border-dashed border-white/5 backdrop-blur-sm">
-      <AlertCircle className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-      <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest italic">{message}</p>
+      <AlertCircle className="w-12 h-12 text-slate-600 mx-auto mb-4" aria-hidden />
+      {/* The only text on an otherwise blank screen, so it clears the 12px floor. */}
+      <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">{message}</p>
     </div>
   );
 }
