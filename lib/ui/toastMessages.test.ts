@@ -20,4 +20,38 @@ describe("friendlyErrorMessage", () => {
       GENERIC_ERROR_COPY,
     );
   });
+
+  describe("with a server message", () => {
+    it("shows the server's short reason for validation and conflict errors", () => {
+      expect(friendlyErrorMessage(ERROR_CODES.VALIDATION_ERROR, 'Invalid Work Stage: "Lintel Level"')).toBe(
+        'Invalid Work Stage: "Lintel Level"',
+      );
+      expect(friendlyErrorMessage(ERROR_CODES.CONFLICT, "Another item with this name already exists")).toBe(
+        "Another item with this name already exists",
+      );
+    });
+
+    it("falls back to the friendly copy when the message says nothing specific", () => {
+      expect(friendlyErrorMessage(ERROR_CODES.VALIDATION_ERROR, "One or more fields are invalid")).toBe(
+        "Please check the form and try again.",
+      );
+      expect(friendlyErrorMessage(ERROR_CODES.VALIDATION_ERROR, "Request failed with status 400")).toBe(
+        "Please check the form and try again.",
+      );
+      expect(friendlyErrorMessage(ERROR_CODES.VALIDATION_ERROR, "")).toBe("Please check the form and try again.");
+    });
+
+    it("does not show a long message", () => {
+      expect(friendlyErrorMessage(ERROR_CODES.VALIDATION_ERROR, "x".repeat(121))).toBe(
+        "Please check the form and try again.",
+      );
+    });
+
+    it("never shows the message of any other code (server faults, auth, not-found)", () => {
+      expect(friendlyErrorMessage(ERROR_CODES.INTERNAL_ERROR, 'duplicate key value violates "x_pkey"')).toBe(
+        "Something went wrong — please try again.",
+      );
+      expect(friendlyErrorMessage(ERROR_CODES.UNAUTHORIZED, "jwt expired")).toMatch(/session has expired/);
+    });
+  });
 });

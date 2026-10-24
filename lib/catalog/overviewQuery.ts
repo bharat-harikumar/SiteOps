@@ -4,7 +4,7 @@
 import { getTableName, sql } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 
-import { USAGE_SOURCES } from "@/lib/catalog/usageSources";
+import { notOnDeletedSiteSql, USAGE_SOURCES, usageSourcesForCategory } from "@/lib/catalog/usageSources";
 
 // Accepts any drizzle handle (the shared db or a transaction), so callers can run
 // it under withStatementTimeout.
@@ -21,7 +21,7 @@ export async function fetchUsageCounts(
   const branches = USAGE_SOURCES.map(({ categoryName, table, column }) => {
     const tbl = getTableName(table);
     const col = (column as PgColumn).name;
-    return `select '${categoryName}'::text as category_name, "${col}"::text as value, count(*)::int as n from "${tbl}" where "${col}" is not null group by "${col}"`;
+    return `select '${categoryName}'::text as category_name, "${col}"::text as value, count(*)::int as n from "${tbl}" where "${col}" is not null and ${notOnDeletedSiteSql(tbl)} group by "${col}"`;
   });
   const rows = (await db.execute(sql.raw(branches.join(" union all ")))) as Array<{
     category_name: string;
@@ -39,4 +39,22 @@ export async function fetchUsageCounts(
     catMap.set(value, (catMap.get(value) ?? 0) + Number(r.n));
   }
   return out;
+}
+
+// Live usage of ONE catalog item (the delete guard). Same eligibility as the
+// overview counts — soft-deleted sites excluded — so "0 uses" in the admin list
+// and "can I delete this?" never disagree. One round trip across all sources.
+export async function countCatalogUsage(
+  db: Executor,
+  categoryName: string,
+  itemName: string,
+): Promise<number> {
+  const sources = usageSourcesForCategory(categoryName);
+  if (sources.length === 0) return 0;
+  const branches = sources.map(({ table, column }) => {
+    const tbl = getTableName(table);
+    return sql`select count(*)::int as n from ${sql.raw(`"${tbl}"`)} where ${sql.raw(`"${(column as PgColumn).name}"`)} = ${itemName} and ${sql.raw(notOnDeletedSiteSql(tbl))}`;
+  });
+  const rows = (await db.execute(sql.join(branches, sql` union all `))) as Array<{ n: number }>;
+  return rows.reduce((sum, r) => sum + Number(r.n), 0);
 }

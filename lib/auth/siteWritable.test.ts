@@ -55,7 +55,7 @@ describe("assertSiteWritable", () => {
     await call();
     expect(mockFindSite).toHaveBeenCalledWith(
       expect.objectContaining({
-        columns: { supervisorId: true, archivedAt: true, budget: true, name: true },
+        columns: { supervisorId: true, archivedAt: true, isDeleted: true, budget: true, name: true },
       }),
     );
   });
@@ -86,6 +86,17 @@ describe("assertSiteWritable", () => {
 
   it("404s (not 409) when the site is archived — same conflation the routes have always had", async () => {
     mockFindSite.mockResolvedValue({ supervisorId: "u1", archivedAt: new Date("2026-01-01") });
+    const result = await call();
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.response.status).toBe(404);
+    expect((await body(result.response)).error?.message).toBe("Site not found");
+  });
+
+  it("404s when the site was soft-deleted, even though it is not archived", async () => {
+    // is_deleted is set independently of archived_at; a deleted site must be as
+    // invisible to entry writes as a missing one.
+    mockFindSite.mockResolvedValue({ supervisorId: "u1", archivedAt: null, isDeleted: true });
     const result = await call();
     expect(result.ok).toBe(false);
     if (result.ok) return;

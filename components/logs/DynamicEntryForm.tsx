@@ -106,11 +106,13 @@ export function DynamicEntryForm({ categoryId, categoryName, siteId }: Props) {
       });
       if (!res.ok) {
         setSubmitting(false);
-        // Friendly copy by code, never the raw backend string (see lib/ui/toast).
+        // Friendly copy by code; a short specific validation reason is allowed
+        // through (see friendlyErrorMessage).
+        const reason = friendlyErrorMessage(res.code, res.message);
         toast.error(
           created > 0
-            ? `Saved ${created} field(s); "${field.label}" failed: ${friendlyErrorMessage(res.code)}`
-            : friendlyErrorMessage(res.code),
+            ? `Saved ${created} field(s); "${field.label}" failed: ${reason}`
+            : reason,
         );
         return;
       }

@@ -1,5 +1,6 @@
 import { and, asc, desc, eq, gte, lte, sql, type SQL } from "drizzle-orm";
 
+import { lockCatalogMembers } from "@/lib/catalog/lockCatalogMembers";
 import { db } from "@/lib/db/client";
 import { labourOtSumExpr, labourSpendSumExpr } from "@/lib/db/queries/labourSpendSql";
 import {
@@ -28,6 +29,22 @@ export {
   ALL_TYPE_PREVIEW_LIMIT,
   DEFAULT_ENTRIES_LIMIT,
 };
+
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+// Writes an entry in a transaction that first locks the catalog items its text
+// fields point at (see lockCatalogMembers). The route validated them moments ago
+// against a cache; this closes the window where an admin rename lands in between
+// and the entry would be saved under a name the catalog no longer has.
+async function writeWithCatalogLock<T>(
+  pairs: ReadonlyArray<readonly [string, string | null | undefined]>,
+  write: (tx: Tx) => Promise<T>,
+): Promise<T> {
+  return db.transaction(async (tx) => {
+    await lockCatalogMembers(tx, pairs);
+    return write(tx);
+  });
+}
 
 export async function insertLabourEntry(data: {
   siteId: string;
@@ -59,7 +76,9 @@ export async function insertLabourEntry(data: {
   workStage?: string | null;
   createdBy: string;
 }) {
-  const result = await db.insert(labourEntries).values(data).returning();
+  const result = await writeWithCatalogLock([["Work Stage", data.workStage]], (tx) =>
+    tx.insert(labourEntries).values(data).returning(),
+  );
   return result[0];
 }
 
@@ -90,7 +109,9 @@ export async function insertMaterialEntry(data: {
   remarks: string | null;
   createdBy: string;
 }) {
-  const result = await db.insert(materialEntries).values(data).returning();
+  const result = await writeWithCatalogLock([["Work Stage", data.workStage]], (tx) =>
+    tx.insert(materialEntries).values(data).returning(),
+  );
   return result[0];
 }
 
@@ -107,7 +128,9 @@ export async function insertMachineryEntry(data: {
   workStage?: string | null;
   createdBy: string;
 }) {
-  const result = await db.insert(machineryEntries).values(data).returning();
+  const result = await writeWithCatalogLock([["Work Stage", data.workStage]], (tx) =>
+    tx.insert(machineryEntries).values(data).returning(),
+  );
   return result[0];
 }
 
@@ -120,7 +143,10 @@ export async function insertExpenseEntry(data: {
   workStage?: string | null;
   createdBy: string;
 }) {
-  const result = await db.insert(expenseEntries).values(data).returning();
+  const result = await writeWithCatalogLock(
+    [["Expense Category", data.category], ["Work Stage", data.workStage]],
+    (tx) => tx.insert(expenseEntries).values(data).returning(),
+  );
   return result[0];
 }
 
@@ -132,7 +158,10 @@ export async function insertIncidentReport(data: {
   durationEstimate: number | null;
   reportedBy: string;
 }) {
-  const result = await db.insert(incidentReports).values(data).returning();
+  const result = await writeWithCatalogLock(
+    [["Incident Type", data.incidentType], ["Incident Severity", data.severity]],
+    (tx) => tx.insert(incidentReports).values(data).returning(),
+  );
   return result[0];
 }
 
@@ -380,11 +409,18 @@ export async function updateEntryById<T extends EntryType>(
 
   const d = serverDescriptorFor(type);
   if (!d) return null;
-  const r = await db
-    .update(d.table)
-    .set({ ...safeData, updatedAt: new Date() })
-    .where(eq(d.idColumn, entryId))
-    .returning();
+  // Only catalog fields this request is changing are locked: an omitted field
+  // keeps its stored value, and null (un-tag) is skipped by the lock.
+  const pairs = d.catalogFields.map(
+    ([listKey, field]) => [listKey, safeData[field] as string | null | undefined] as const,
+  );
+  const r = await writeWithCatalogLock(pairs, (tx) =>
+    tx
+      .update(d.table)
+      .set({ ...safeData, updatedAt: new Date() })
+      .where(eq(d.idColumn, entryId))
+      .returning(),
+  );
   return (r[0] as RowByType[T] | undefined) ?? null;
 }
 

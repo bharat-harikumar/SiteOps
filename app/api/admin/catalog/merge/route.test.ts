@@ -6,8 +6,9 @@ import { POST } from "./route";
 
 const {
   mockRequireCapability, mockSelect, mockExecute, mockUpdate, mockTransaction,
-  mockInvalidateOverview, mockRunNonCritical,
+  mockInvalidateOverview, mockRunNonCritical, mockTxSelect,
 } = vi.hoisted(() => ({
+  mockTxSelect: vi.fn(),
   mockInvalidateOverview: vi.fn().mockResolvedValue(undefined),
   mockRunNonCritical: vi.fn(),
   mockRequireCapability: vi.fn(),
@@ -39,7 +40,14 @@ vi.mock("@/lib/utils/requestId", () => ({
 }));
 
 // 1st select: the two subcategory rows. 2nd select: category name row.
+// Inside the transaction the route re-reads the category's items under a
+// FOR UPDATE lock (lockCategoryItems); by default that sees what the pre-read saw.
+function mockLocked(items: unknown[]) {
+  mockTxSelect.mockReturnValue({ from: () => ({ where: () => ({ for: () => Promise.resolve(items) }) }) });
+}
+
 function mockReads(subRows: unknown[], catRows: unknown[]) {
+  mockLocked(subRows.map((r) => ({ ...(r as object), isActive: true })));
   mockSelect
     .mockReturnValueOnce({ from: () => ({ where: () => Promise.resolve(subRows) }) })
     .mockReturnValueOnce({ from: () => ({ where: () => ({ limit: () => Promise.resolve(catRows) }) }) });
@@ -57,12 +65,12 @@ describe("POST /api/admin/catalog/merge", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mockRequireCapability.mockResolvedValue({ session: { user: { id: "u1" } } });
-    mockExecute.mockResolvedValue(undefined);
+    mockExecute.mockResolvedValue([{ n: 1 }]);
     mockUpdate.mockReturnValue({ set: () => ({ where: () => Promise.resolve(undefined) }) });
     // Route now wraps the rewrite in db.transaction(tx => ...); hand the callback
     // a tx that reuses the same execute/update spies so existing assertions hold.
     mockTransaction.mockImplementation(async (cb: (tx: unknown) => Promise<void>) =>
-      cb({ execute: mockExecute, update: mockUpdate }),
+      cb({ execute: mockExecute, update: mockUpdate, select: mockTxSelect }),
     );
   });
 
@@ -195,5 +203,45 @@ describe("POST /api/admin/catalog/merge", () => {
     expect(res.status).toBe(200);
     expect(mockExecute).not.toHaveBeenCalled();
     expect(mockUpdate).toHaveBeenCalled();
+  });
+
+  it("rewrites from the source's name as it is under the lock, not the stale pre-read name", async () => {
+    // An admin renamed the source between the route's first read and its lock:
+    // merging by the old name would rewrite nothing yet still deactivate the source.
+    mockReads(
+      [
+        { subcategoryId: "src", categoryId: "c1", name: "Brick Level" },
+        { subcategoryId: "tgt", categoryId: "c1", name: "Brick Work" },
+      ],
+      [{ name: "Materials" }],
+    );
+    mockLocked([
+      { subcategoryId: "src", name: "Brick Level 2", isActive: true },
+      { subcategoryId: "tgt", name: "Brick Work", isActive: true },
+    ]);
+
+    const res = await POST(postBody({ sourceId: "src", targetId: "tgt" }));
+
+    expect(res.status).toBe(200);
+    const { params } = new PgDialect().sqlToQuery(mockExecute.mock.calls[0][0]);
+    expect(params).toEqual(["Brick Work", "Brick Level 2"]);
+  });
+
+  it("404s and changes nothing when an item disappeared before the lock was taken", async () => {
+    mockReads(
+      [
+        { subcategoryId: "src", categoryId: "c1", name: "a" },
+        { subcategoryId: "tgt", categoryId: "c1", name: "b" },
+      ],
+      [{ name: "Materials" }],
+    );
+    mockLocked([{ subcategoryId: "tgt", name: "b", isActive: true }]);
+
+    const res = await POST(postBody({ sourceId: "src", targetId: "tgt" }));
+
+    expect(res.status).toBe(404);
+    expect(mockExecute).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(mockInvalidateOverview).not.toHaveBeenCalled();
   });
 });

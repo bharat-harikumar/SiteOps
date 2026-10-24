@@ -7,13 +7,13 @@ export function toastSuccess(message: string) {
   toast.success(message);
 }
 
-// Show a friendly, code-driven error toast. Never surfaces the raw backend
-// `message` (which may be a DB constraint, validation internal, or GoTrue
-// string) — that stays in logs/requestId. Pass an optional override for cases
-// that warrant bespoke copy.
+// Show a friendly, code-driven error toast. The backend `message` is shown only
+// for validation/conflict errors, and only when short and specific (see
+// friendlyErrorMessage); any other code gets fixed copy, so DB or framework
+// text never reaches the UI. Pass an optional override for bespoke copy.
 export function notifyError(result: ClientResult<unknown>, override?: string) {
   if (result.ok) return;
-  toast.error(override ?? friendlyErrorMessage(result.code));
+  toast.error(override ?? friendlyErrorMessage(result.code, result.message));
 }
 
 // Generic error toast for non-ClientResult failures (e.g. raw thrown errors,

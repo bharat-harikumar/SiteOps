@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { CatalogChangedError } from "@/lib/catalog/lockCatalogMembers";
 import { handleDbError } from "@/lib/errors/db";
 
 describe("handleDbError", () => {
@@ -11,5 +12,11 @@ describe("handleDbError", () => {
 
   it("leaves unknown errors for the caller to rethrow", () => {
     expect(handleDbError({ code: "XX000" }, "req_1")).toBeNull();
+  });
+
+  it("turns a CatalogChangedError into a 409 asking the user to pick the item again", async () => {
+    const res = handleDbError(new CatalogChangedError("Work Stage", "Lintel Level"), "req_1");
+    expect(res?.status).toBe(409);
+    expect((await res!.json()).error.message).toMatch(/Work Stage "Lintel Level" was just renamed or removed/);
   });
 });

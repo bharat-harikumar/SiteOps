@@ -26,16 +26,16 @@ import { runNonCritical } from "@/lib/services/nonCritical";
 import { assertInCatalogList } from "@/lib/validation/catalogList";
 type RouteCtx = { params: Promise<{ id: string }> };
 
-// Entries on an archived site are read-only — block edits/deletes even for
+// Entries on an archived or soft-deleted site are read-only — block edits/deletes even for
 // the original author so a reassigned/closed site can't be mutated.
 async function siteIsArchived(entry: unknown): Promise<boolean> {
   const siteId = (entry as { siteId?: unknown }).siteId;
   if (typeof siteId !== "string") return false;
   const site = await db.query.sites.findFirst({
     where: (t, { eq }) => eq(t.siteId, siteId),
-    columns: { archivedAt: true },
+    columns: { archivedAt: true, isDeleted: true },
   });
-  return !site || site.archivedAt != null;
+  return !site || site.archivedAt != null || site.isDeleted;
 }
 
 function parseType(request: NextRequest): EntryType | null {

@@ -34,12 +34,13 @@ export async function assertSiteWritable(input: {
     // budget/name are a superset of what the four entry routes need: expenses
     // reads budget for its threshold notification. Selecting them here keeps
     // every caller at exactly one site lookup instead of two.
-    columns: { supervisorId: true, archivedAt: true, budget: true, name: true },
+    columns: { supervisorId: true, archivedAt: true, isDeleted: true, budget: true, name: true },
   });
 
   // Archived folds into 404 exactly as the routes have always done — an
   // archived site is deliberately indistinguishable from a missing one here.
-  if (!site || site.archivedAt) {
+  // A soft-deleted site (is_deleted, set independently of archived_at) is too.
+  if (!site || site.archivedAt || site.isDeleted) {
     return {
       ok: false as const,
       response: errorResponse(ERROR_CODES.NOT_FOUND, "Site not found", 404, undefined, requestId),

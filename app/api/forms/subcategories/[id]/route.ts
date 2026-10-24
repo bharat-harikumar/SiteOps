@@ -1,8 +1,9 @@
-import { and, eq, ne, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { requireCapability } from "@/lib/auth/guards";
-import { usageSourcesForCategory } from "@/lib/catalog/usageSources";
+import { countCatalogUsage } from "@/lib/catalog/overviewQuery";
+import { lockCategoryItems, rewriteEntryNames } from "@/lib/catalog/rewriteEntryNames";
 import { invalidateCatalogOverviewCache, invalidateCategoryTreeCache } from "@/lib/cache/invalidate";
 import { db } from "@/lib/db/client";
 import { categories, subcategories } from "@/lib/db/schema";
@@ -50,33 +51,59 @@ export const PATCH = withApiRoute<RouteCtx>(async ({ request, requestId }, conte
     return errorResponse(ERROR_CODES.NOT_FOUND, "Subcategory not found", 404, undefined, requestId);
   }
 
-  const updates: Partial<typeof subcategories.$inferInsert> = {};
-  if (validation.data.isActive !== undefined) updates.isActive = validation.data.isActive;
-  if (validation.data.sortOrder !== undefined) updates.sortOrder = validation.data.sortOrder;
+  const catRows = await db
+    .select({ name: categories.name })
+    .from(categories)
+    .where(eq(categories.categoryId, row.categoryId))
+    .limit(1);
+  const categoryName = catRows[0]?.name;
 
-  if (validation.data.name !== undefined) {
-    const name = validation.data.name.trim();
-    const normalized = normalizeLabel(name);
-    if (!normalized) {
-      return errorResponse(ERROR_CODES.VALIDATION_ERROR, "Name is invalid", 400, undefined, requestId);
-    }
-    // Reject a rename that collides with another item in the same category.
-    const siblings = await db
-      .select({ name: subcategories.name })
-      .from(subcategories)
-      .where(and(eq(subcategories.categoryId, row.categoryId), ne(subcategories.subcategoryId, id)));
-    if (siblings.some((s) => normalizeLabel(s.name) === normalized)) {
-      return errorResponse(ERROR_CODES.CONFLICT, "Another item with this name already exists", 409, undefined, requestId);
-    }
-    updates.name = name;
+  const requestedName = validation.data.name?.trim();
+  const normalized = requestedName === undefined ? undefined : normalizeLabel(requestedName);
+  if (requestedName !== undefined && !normalized) {
+    return errorResponse(ERROR_CODES.VALIDATION_ERROR, "Name is invalid", 400, undefined, requestId);
   }
 
   try {
-    const updated = await db
-      .update(subcategories)
-      .set(updates)
-      .where(eq(subcategories.subcategoryId, id))
-      .returning();
+    // One transaction: lock the category's items, change the item, and — on a
+    // rename — rewrite the entries that carry the old name. Entries store the
+    // name as text, so a catalog-only rename strands every historical entry
+    // under a name the catalog no longer has. The lock also makes the sibling
+    // collision check race-free against a concurrent rename or merge.
+    const outcome = await db.transaction(async (tx) => {
+      const items = await lockCategoryItems(tx, row.categoryId);
+      const current = items.find((i) => i.subcategoryId === id);
+      if (!current) return { kind: "not_found" as const };
+
+      const updates: Partial<typeof subcategories.$inferInsert> = {};
+      if (validation.data.isActive !== undefined) updates.isActive = validation.data.isActive;
+      if (validation.data.sortOrder !== undefined) updates.sortOrder = validation.data.sortOrder;
+      if (requestedName !== undefined) {
+        // Reject a rename that collides with another item in the same category.
+        if (items.some((i) => i.subcategoryId !== id && normalizeLabel(i.name) === normalized)) {
+          return { kind: "conflict" as const };
+        }
+        updates.name = requestedName;
+      }
+
+      const updated = await tx
+        .update(subcategories)
+        .set(updates)
+        .where(eq(subcategories.subcategoryId, id))
+        .returning();
+
+      if (categoryName && requestedName !== undefined && requestedName !== current.name) {
+        await rewriteEntryNames(tx, categoryName, current.name, requestedName);
+      }
+      return { kind: "ok" as const, updated: updated[0] };
+    });
+
+    if (outcome.kind === "not_found") {
+      return errorResponse(ERROR_CODES.NOT_FOUND, "Subcategory not found", 404, undefined, requestId);
+    }
+    if (outcome.kind === "conflict") {
+      return errorResponse(ERROR_CODES.CONFLICT, "Another item with this name already exists", 409, undefined, requestId);
+    }
 
     runNonCritical(
       requestId,
@@ -89,7 +116,7 @@ export const PATCH = withApiRoute<RouteCtx>(async ({ request, requestId }, conte
       invalidateCatalogOverviewCache(requestId),
     );
 
-    return successResponse(updated[0], 200, requestId);
+    return successResponse(outcome.updated, 200, requestId);
   } catch (dbError) {
     const handled = handleDbError(dbError, requestId);
     if (handled) return handled;
@@ -143,26 +170,17 @@ export const DELETE = withApiRoute<RouteCtx>(async ({ request, requestId }, cont
     .from(categories)
     .where(eq(categories.categoryId, row.categoryId))
     .limit(1);
-  const sources = catRows[0] ? usageSourcesForCategory(catRows[0].name) : [];
-  if (sources.length > 0) {
-    const counts = await Promise.all(
-      sources.map((source) =>
-        db
-          .select({ n: sql<number>`count(*)::int` })
-          .from(source.table)
-          .where(eq(source.column, row.name)),
-      ),
+  // Live usage only: entries on soft-deleted sites are invisible in the app, so
+  // they must not pin an item the admin can see is unused.
+  const usage = catRows[0] ? await countCatalogUsage(db, catRows[0].name, row.name) : 0;
+  if (usage > 0) {
+    return errorResponse(
+      ERROR_CODES.CONFLICT,
+      "This item is still in use — deactivate it instead of deleting",
+      409,
+      undefined,
+      requestId,
     );
-    const usage = counts.reduce((sum, c) => sum + Number(c[0]?.n ?? 0), 0);
-    if (usage > 0) {
-      return errorResponse(
-        ERROR_CODES.CONFLICT,
-        "This item is still in use — deactivate it instead of deleting",
-        409,
-        undefined,
-        requestId,
-      );
-    }
   }
 
   await db.delete(subcategories).where(eq(subcategories.subcategoryId, id));

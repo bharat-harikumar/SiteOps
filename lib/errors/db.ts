@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { CatalogChangedError } from "@/lib/catalog/lockCatalogMembers";
 import { ERROR_CODES } from "@/lib/errors/codes";
 import { errorResponse } from "@/lib/errors/response";
 import { logWarn } from "@/lib/logging/log";
@@ -13,6 +14,13 @@ export function handleDbError(
   dbError: unknown,
   requestId?: string
 ): NextResponse | null {
+  // The catalog item the entry was validated against changed before the write
+  // (renamed, deactivated or deleted by an admin): a conflict the user can fix
+  // by picking the item again, not a server fault.
+  if (dbError instanceof CatalogChangedError) {
+    return errorResponse(ERROR_CODES.CONFLICT, dbError.message, 409, undefined, requestId);
+  }
+
   const err = dbError as PgError;
 
   const constraintMessages: Record<string, string> = {

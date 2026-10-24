@@ -71,6 +71,14 @@ describe("PATCH entries — workStage catalog checks", () => {
     expect(mockUpdateEntryById).toHaveBeenCalledWith("some-id", "labour", expect.objectContaining({ workStage: "Roof Level" }));
   });
 
+  it("409s an edit to an entry whose site was soft-deleted (not archived)", async () => {
+    mockFindSite.mockResolvedValue({ archivedAt: null, isDeleted: true });
+    mockGetEntryById.mockResolvedValue({ siteId: "s1", createdBy: "u1", workType: "Mason" });
+    const res = await PATCH(reqType("labour", { remarks: "x" }), ctx);
+    expect(res.status).toBe(409);
+    expect(mockUpdateEntryById).not.toHaveBeenCalled();
+  });
+
   it("rejects a PATCH that un-tags an entry", async () => {
     // Un-tagging was allowed until Work Stage became mandatory. The form no
     // longer offers a clear affordance; the route must refuse it outright too.

@@ -1,8 +1,8 @@
-import { eq, inArray, sql } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 
 import { requireCapability } from "@/lib/auth/guards";
-import { usageSourcesForCategory } from "@/lib/catalog/usageSources";
+import { lockCategoryItems, rewriteEntryNames } from "@/lib/catalog/rewriteEntryNames";
 import { invalidateCatalogOverviewCache, invalidateCategoryTreeCache } from "@/lib/cache/invalidate";
 import { db } from "@/lib/db/client";
 import { categories, subcategories } from "@/lib/db/schema";
@@ -66,24 +66,32 @@ export const POST = withApi(async ({ request, requestId }) => {
     .from(categories)
     .where(eq(categories.categoryId, source.categoryId))
     .limit(1);
-  const usageSources = catRows[0] ? usageSourcesForCategory(catRows[0].name) : [];
+  const categoryName = catRows[0]?.name;
 
   try {
-    await db.transaction(async (tx) => {
-      for (const usageSource of usageSources) {
-        // SET takes an unqualified column name; interpolating the PgColumn
-        // renders it table-qualified, which Postgres rejects (42703).
-        const setColumn = sql.identifier(usageSource.column.name);
-        await tx.execute(
-          sql`update ${usageSource.table} set ${setColumn} = ${target.name} where ${usageSource.column} = ${source.name}`,
-        );
+    const merged = await db.transaction(async (tx) => {
+      // Lock the category, then use the names as they are NOW: the first read
+      // above is stale if a rename landed in between, and rewriting by a stale
+      // name would change no entries yet still deactivate the source.
+      const items = await lockCategoryItems(tx, source.categoryId);
+      const lockedSource = items.find((i) => i.subcategoryId === sourceId);
+      const lockedTarget = items.find((i) => i.subcategoryId === targetId);
+      if (!lockedSource || !lockedTarget) return false;
+
+      if (categoryName) {
+        await rewriteEntryNames(tx, categoryName, lockedSource.name, lockedTarget.name);
       }
 
       await tx
         .update(subcategories)
         .set({ isActive: false })
         .where(eq(subcategories.subcategoryId, sourceId));
+      return true;
     });
+
+    if (!merged) {
+      return errorResponse(ERROR_CODES.NOT_FOUND, "Source or target item not found", 404, undefined, requestId);
+    }
 
     runNonCritical(
       requestId,

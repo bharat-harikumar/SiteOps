@@ -18,10 +18,15 @@ export async function getSiteById(
   const result = await db
     .select()
     .from(sites)
+    // A soft-deleted site is gone from every UI; is_deleted is checked here, in
+    // the one lookup the stage/operations pages and APIs share, so none of them
+    // can forget it. Archived sites are only skipped unless asked for.
     .where(
-      includeArchived
-        ? eq(sites.siteId, id)
-        : and(eq(sites.siteId, id), isNull(sites.archivedAt))
+      and(
+        eq(sites.siteId, id),
+        eq(sites.isDeleted, false),
+        includeArchived ? undefined : isNull(sites.archivedAt),
+      )
     );
   return result[0] ?? null;
 }

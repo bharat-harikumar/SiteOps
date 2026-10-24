@@ -11,6 +11,8 @@ import {
   type PrecacheEntry,
 } from "serwist";
 
+import { classifyReplayStatus, describeRejectedWrite } from "../lib/pwa/replayOutcome";
+
 declare global {
   interface WorkerGlobalScope {
     __SW_MANIFEST: Array<PrecacheEntry | string>;
@@ -34,21 +36,53 @@ async function notifyClients(message: Record<string, unknown>) {
   clients.forEach((client) => client.postMessage(message));
 }
 
+// Reads what the server said and what we sent, for the "not saved" message.
+// Both reads are best-effort: the message must still go out if either fails.
+async function rejectionNotice(request: Request, response: Response) {
+  const [body, reply] = await Promise.all([
+    request.clone().json().catch(() => null),
+    response.json().catch(() => null),
+  ]);
+  const serverMessage = typeof reply?.error?.message === "string" ? reply.error.message : null;
+  return describeRejectedWrite({ pathname: new URL(request.url).pathname, body, serverMessage });
+}
+
 const writeSyncQueue = new BackgroundSyncQueue("siteops-write-sync", {
   maxRetentionTime: 24 * 60, // retry for up to 24h, then drop
   onSync: async ({ queue }) => {
+    let rejected = 0;
     let entry: Awaited<ReturnType<typeof queue.shiftRequest>>;
     while ((entry = await queue.shiftRequest())) {
+      let response: Response;
       try {
-        await fetch(entry.request.clone());
-        await notifyClients({ type: "BG_SYNC_REPLAYED", url: entry.request.url });
+        response = await fetch(entry.request.clone());
       } catch (error) {
         // Put it back at the front and rethrow so the browser retries later.
         await queue.unshiftRequest(entry);
         throw error;
       }
+
+      const outcome = classifyReplayStatus(response.status);
+      if (outcome === "retry") {
+        // Server down, rate limited or signed out: the entry may still save later.
+        await queue.unshiftRequest(entry);
+        throw new Error(`Replay of ${entry.request.url} returned ${response.status}`);
+      }
+      if (outcome === "rejected") {
+        // The server read it and refused it (stale Work Stage, archived site…).
+        // Retrying can never work, so drop it from the queue — but tell the user,
+        // never report it as synced.
+        rejected += 1;
+        await notifyClients({
+          type: "BG_SYNC_REJECTED",
+          url: entry.request.url,
+          message: await rejectionNotice(entry.request, response),
+        });
+        continue;
+      }
+      await notifyClients({ type: "BG_SYNC_REPLAYED", url: entry.request.url });
     }
-    await notifyClients({ type: "BG_SYNC_DRAINED" });
+    if (rejected === 0) await notifyClients({ type: "BG_SYNC_DRAINED" });
   },
 });
 

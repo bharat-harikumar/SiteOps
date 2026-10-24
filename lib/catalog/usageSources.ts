@@ -32,3 +32,12 @@ export const USAGE_SOURCES: UsageSource[] = [
 export function usageSourcesForCategory(categoryName: string): UsageSource[] {
   return USAGE_SOURCES.filter((s) => s.categoryName === categoryName);
 }
+
+// SQL predicate for an entry table: the row does not belong to a soft-deleted
+// site (sites.is_deleted). Those rows stay in the database but are invisible in
+// the app, so they must not make a catalog item look "in use". Archived sites
+// are deliberately NOT excluded — their history is still reported.
+// `tableName` is always a schema constant (getTableName), never user input.
+export function notOnDeletedSiteSql(tableName: string): string {
+  return `not exists (select 1 from "sites" ds where ds."site_id" = "${tableName}"."site_id" and ds."is_deleted")`;
+}
