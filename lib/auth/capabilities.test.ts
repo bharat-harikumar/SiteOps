@@ -82,3 +82,10 @@ describe("capabilities map", () => {
     }
   });
 });
+
+it("shares site tool access without granting the global inventory", () => {
+  for (const role of ALL_ROLES) {
+    expect(can(role, "site_tool:read")).toBe(true);
+    expect(can(role, "site_tool:move")).toBe(true);
+  }
+});

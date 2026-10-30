@@ -86,13 +86,19 @@ export const movementsQuerySchema = z.object({
 export type MovementsQuery = z.infer<typeof movementsQuerySchema>;
 
 const noteField = z.string().trim().max(500).optional();
-
 export const toolMovementSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("send_to_site"), targetSiteId: z.string().uuid(), quantity: z.number().int().min(1).max(1_000_000), note: noteField }).strict(),
-  z.object({ kind: z.literal("return_to_godown"), fromSiteId: z.string().uuid(), quantity: z.number().int().min(1).max(1_000_000), note: noteField }).strict(),
-  z.object({ kind: z.literal("transfer_site"), fromSiteId: z.string().uuid(), targetSiteId: z.string().uuid(), quantity: z.number().int().min(1).max(1_000_000), note: noteField }).strict(),
-  z.object({ kind: z.literal("add_stock"), quantity: z.number().int().min(1).max(1_000_000), note: noteField }).strict(),
-  z.object({ kind: z.literal("remove_stock"), quantity: z.number().int().min(1).max(1_000_000), note: noteField }).strict(),
+  z.object({ expectedVersion: z.number().int().min(0), kind: z.literal("send_to_site"), targetSiteId: z.string().uuid(), quantity: z.number().int().min(1).max(1_000_000), note: noteField }).strict(),
+  z.object({ expectedVersion: z.number().int().min(0), kind: z.literal("return_to_godown"), fromSiteId: z.string().uuid(), quantity: z.number().int().min(1).max(1_000_000), note: noteField }).strict(),
+  z.object({ expectedVersion: z.number().int().min(0), kind: z.literal("transfer_site"), fromSiteId: z.string().uuid(), targetSiteId: z.string().uuid(), quantity: z.number().int().min(1).max(1_000_000), note: noteField }).strict(),
+  z.object({ expectedVersion: z.number().int().min(0), kind: z.literal("add_stock"), quantity: z.number().int().min(1).max(1_000_000), note: noteField }).strict(),
+  z.object({ expectedVersion: z.number().int().min(0), kind: z.literal("remove_stock"), quantity: z.number().int().min(1).max(1_000_000), note: noteField }).strict(),
 ]);
 export type ToolMovementBody = z.infer<typeof toolMovementSchema>;
-
+const siteMoveFields = { toolId: z.string().uuid(), expectedVersion: z.number().int().min(0), quantity: z.number().int().min(1).max(1_000_000), note: noteField };
+export const siteToolMovementSchema = z.discriminatedUnion("kind", [
+  z.object({ ...siteMoveFields, kind: z.literal("receive") }).strict(),
+  z.object({ ...siteMoveFields, kind: z.literal("return") }).strict(),
+  z.object({ ...siteMoveFields, kind: z.literal("transfer"), targetSiteId: z.string().uuid() }).strict(),
+]);
+export const receiveOptionsQuerySchema = z.object({ q: z.string().trim().max(120).optional() }).strict();
+export const siteMovementsQuerySchema = movementsQuerySchema.pick({ toolId: true, limit: true, offset: true }).strict();

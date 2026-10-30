@@ -48,6 +48,8 @@ export type Capability =
   | "user:reset_password"
   | "resource:manage_all"
   | "data:export"
+  | "site_tool:read"
+  | "site_tool:move"
   | "tool:read"
   | "tool:manage"
   | "tool:assign"
@@ -57,6 +59,8 @@ export type Capability =
 // Capabilities shared by every authenticated role. Supervisor === this set.
 const SUPERVISOR_CAPABILITIES: readonly Capability[] = [
   "site:read",
+  "site_tool:read",
+  "site_tool:move",
   "entry:create",
   "entry:read",
   "entry:update",
