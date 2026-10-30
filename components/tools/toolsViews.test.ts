@@ -9,6 +9,7 @@ import { ToolMovementForm } from "./ToolMovementForm";
 import { SiteTools } from "./SiteTools";
 import { ToolsHub } from "./ToolsHub";
 import { ToolAddModal } from "./ToolAddModal";
+import { ToolSummaryTile } from "./ToolSummaryTile";
 
 const tool = {
   toolId: "t",
@@ -23,6 +24,47 @@ const tool = {
 };
 
 describe("tool navigation and readable inventory", () => {
+  it("does not describe failed inventory as zero tool types", () => {
+    const failure = {
+      ok: false,
+      kind: "api_error",
+      status: 503,
+      message: "Unavailable",
+      endpoint: "/api/tools",
+      method: "GET",
+    };
+    const html = renderToStaticMarkup(
+      createElement(
+        SWRConfig,
+        { value: { fallback: { "/api/tools": failure } } },
+        createElement(ToolsHub),
+      ),
+    );
+    expect(html).not.toContain("0 tool types");
+  });
+  it("does not describe failed home totals as zero stock", () => {
+    const failure = {
+      ok: false,
+      kind: "api_error",
+      status: 503,
+      message: "Unavailable",
+      endpoint: "/api/tools/dashboard",
+      method: "GET",
+    };
+    const html = renderToStaticMarkup(
+      createElement(
+        SWRConfig,
+        {
+          value: {
+            fallback: { "/api/tools/dashboard": failure },
+            isPaused: () => true,
+          },
+        },
+        createElement(ToolSummaryTile),
+      ),
+    );
+    expect(html).not.toMatch(/>0<\/span>/);
+  });
   it("puts category failure recovery inside the creation dialog", () => {
     const html = renderToStaticMarkup(
       createElement(ToolAddModal, {

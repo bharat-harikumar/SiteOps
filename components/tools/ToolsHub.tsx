@@ -98,9 +98,11 @@ export function ToolsHub() {
       </label>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-slate-300">
-          {query.trim()
-            ? `${matches.length} matching tool ${matches.length === 1 ? "type" : "types"}`
-            : `${tools.length} tool ${tools.length === 1 ? "type" : "types"}`}
+          {!inventory.data?.ok
+            ? "Tool inventory"
+            : query.trim()
+              ? `${matches.length} matching tool ${matches.length === 1 ? "type" : "types"}`
+              : `${tools.length} tool ${tools.length === 1 ? "type" : "types"}`}
         </h2>
         <Link
           href="/app/admin/catalog?tab=tools"

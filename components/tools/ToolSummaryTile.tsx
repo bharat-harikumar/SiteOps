@@ -39,7 +39,7 @@ export function ToolSummaryTile() {
                   <div className="h-7 w-10 animate-pulse rounded bg-white/5" />
                 ) : (
                   <span className="text-2xl font-semibold leading-none tabular-nums text-white">
-                    {d?.free ?? 0}
+                    {d?.free ?? "—"}
                   </span>
                 )}
               </div>
@@ -51,7 +51,7 @@ export function ToolSummaryTile() {
                   <div className="h-7 w-10 animate-pulse rounded bg-white/5" />
                 ) : (
                   <span className="text-2xl font-semibold leading-none tabular-nums text-white">
-                    {d?.deployed ?? 0}
+                    {d?.deployed ?? "—"}
                   </span>
                 )}
               </div>
