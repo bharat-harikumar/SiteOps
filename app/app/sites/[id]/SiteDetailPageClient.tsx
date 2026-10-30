@@ -25,6 +25,7 @@ import { can } from '@/lib/auth/capabilities';
 import { requestJson, type ClientResult } from '@/lib/http/client';
 import { confirmDialog } from '@/lib/ui/confirm';
 import { EditSiteModal } from './EditSiteModal';
+import { SiteToolsCard } from '@/components/tools/SiteToolsCard';
 import { EntryTypeIcon } from '@/components/constants/EntryTypeIcon';
 import { getTypeColor } from '@/components/operations/typeStyles';
 import { sumSpendTypeSummary } from '@/components/operations/allOperationsView';
@@ -291,6 +292,8 @@ export default function SiteDetailPageClient({
         </div>
         <ChevronRight className="w-5 h-5 shrink-0 text-slate-500 group-hover:text-amber-400 transition-colors" />
       </Link>
+
+      <SiteToolsCard siteId={siteId} />
 
       <section className="grid gap-4 md:grid-cols-2">
         {operationMeta.map((operation) => {
