@@ -503,7 +503,7 @@ This plan has been checked against the approved conversation for scope, DTO/rout
 
 Completed on `feat/tools-usability`. All ten work areas are implemented. The shared movement service lives in `lib/tools/movement.ts`; common HTTP/cache behavior lives in `lib/tools/http.ts`. Site/tool locking remains alongside the reused transaction engine rather than adding an unused locking abstraction.
 
-- Full suite: 146 files, 1,192 tests passed with the disposable database and `--no-file-parallelism`.
+- Full suite: 146 files, 1,194 tests passed with the disposable database and `--no-file-parallelism`.
 - Browser workflows: 10 passed, including receive, partial/full return, transfer, role boundaries, conflict review, lost responses, reopened forms, category retry, focus return, and 120-character names on mobile.
 - Production build and TypeScript checks passed.
 - Production service-worker test passed: existing stock-cache entries are bypassed online and offline.
