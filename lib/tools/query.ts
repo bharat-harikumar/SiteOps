@@ -1,105 +1,38 @@
-import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
-
+import { and, desc, eq, getTableColumns, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { toolAssignments, toolCategories, toolMovements, tools } from "@/lib/db/schema";
-
-import type { AssignmentInput } from "./types";
+import { toolMovements, userProfiles } from "@/lib/db/schema";
 import type { FreshTool } from "./applyBatch";
-
-// List non-deleted tools with computed `free` and their assignments. Two queries
-// (tools, then assignments for those tools) — NOT N+1. Optional `q` filters by
-// name or code (case-insensitive).
-export async function listTools(q?: string): Promise<FreshTool[]> {
+type Executor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
+function toolSnapshot() {
+  return sql`select t.tool_id as "toolId",t.name,t.code,t.category_id as "categoryId",t.total_quantity as "totalQuantity",t.icon,t.version,
+ (t.total_quantity-coalesce(sum(a.quantity),0))::int as free,
+ coalesce(json_agg(json_build_object('siteId',a.site_id,'qty',a.quantity) order by a.id) filter(where a.tool_id is not null),'[]'::json) as assignments
+ from tools t left join tool_assignments a on a.tool_id=t.tool_id`;
+}
+export async function listTools(q?: string, executor: Executor = db): Promise<FreshTool[]> {
   const trimmed = q?.trim();
-  const where = trimmed
-    ? and(
-        eq(tools.isDeleted, false),
-        or(ilike(tools.name, `%${trimmed}%`), ilike(tools.code, `%${trimmed}%`)),
-      )
-    : eq(tools.isDeleted, false);
-
-  const toolRows = await db
-    .select()
-    .from(tools)
-    .where(where)
-    .orderBy(desc(tools.createdAt));
-
-  if (toolRows.length === 0) return [];
-
-  const ids = toolRows.map((t) => t.toolId);
-  const assignmentRows = await db
-    .select({ toolId: toolAssignments.toolId, siteId: toolAssignments.siteId, qty: toolAssignments.quantity })
-    .from(toolAssignments)
-    .where(inArray(toolAssignments.toolId, ids));
-
-  const byTool = new Map<string, AssignmentInput[]>();
-  for (const r of assignmentRows) {
-    const list = byTool.get(r.toolId) ?? [];
-    list.push({ siteId: r.siteId, qty: r.qty });
-    byTool.set(r.toolId, list);
-  }
-
-  return toolRows.map((t) => {
-    const assignments = byTool.get(t.toolId) ?? [];
-    const assigned = assignments.reduce((s, a) => s + a.qty, 0);
-    return {
-      toolId: t.toolId,
-      name: t.name,
-      code: t.code,
-      categoryId: t.categoryId,
-      totalQuantity: t.totalQuantity,
-      icon: t.icon,
-      version: t.version,
-      free: t.totalQuantity - assigned,
-      assignments,
-    };
-  });
+  return executor.execute<FreshTool>(sql`${toolSnapshot()} where t.is_deleted=false
+ ${trimmed ? sql`and (t.name ilike ${`%${trimmed}%`} or t.code ilike ${`%${trimmed}%`})` : sql``}
+ group by t.id order by t.created_at desc`);
 }
-
-// Single non-deleted tool + its assignments, or null.
-export async function getTool(toolId: string): Promise<FreshTool | null> {
-  const t = (
-    await db
-      .select()
-      .from(tools)
-      .where(and(eq(tools.toolId, toolId), eq(tools.isDeleted, false)))
-      .limit(1)
-  )[0];
-  if (!t) return null;
-
-  const assignmentRows = await db
-    .select({ siteId: toolAssignments.siteId, qty: toolAssignments.quantity })
-    .from(toolAssignments)
-    .where(eq(toolAssignments.toolId, toolId));
-  const assignments = assignmentRows.map((r) => ({ siteId: r.siteId, qty: r.qty }));
-  const assigned = assignments.reduce((s, a) => s + a.qty, 0);
-
-  return {
-    toolId: t.toolId,
-    name: t.name,
-    code: t.code,
-    categoryId: t.categoryId,
-    totalQuantity: t.totalQuantity,
-    icon: t.icon,
-    version: t.version,
-    free: t.totalQuantity - assigned,
-    assignments,
-  };
+export async function getTool(toolId: string, executor: Executor = db): Promise<FreshTool | null> {
+  const rows = await executor.execute<FreshTool>(sql`${toolSnapshot()} where t.is_deleted=false and t.tool_id=${toolId} group by t.id limit 1`);
+  return rows[0] ?? null;
 }
-
-export type MovementRow = typeof toolMovements.$inferSelect;
-
+export type MovementRow = typeof toolMovements.$inferSelect & {
+  actorName: string;
+};
 // Per-tool ledger timeline, newest first, paginated.
 export async function listToolMovements(toolId: string, limit: number, offset: number): Promise<MovementRow[]> {
   return db
-    .select()
+    .select({ ...getTableColumns(toolMovements), actorName: sql<string>`coalesce(${userProfiles.fullName}, 'Former user')` })
     .from(toolMovements)
+    .leftJoin(userProfiles, eq(userProfiles.userId, toolMovements.actorUserId))
     .where(eq(toolMovements.toolId, toolId))
-    .orderBy(desc(toolMovements.createdAt))
+    .orderBy(desc(toolMovements.createdAt), desc(toolMovements.movementId))
     .limit(limit)
     .offset(offset);
 }
-
 // Delete all movement history for a tool. Returns the number of rows deleted.
 export async function clearToolMovements(toolId: string): Promise<number> {
   const result = await db
@@ -108,106 +41,59 @@ export async function clearToolMovements(toolId: string): Promise<number> {
     .returning({ id: toolMovements.movementId });
   return result.length;
 }
-
 // Global ledger feed with optional filters (tool, site → from/to location, kind).
-export async function listGlobalMovements(
-  filters: { toolId?: string; siteId?: string; kind?: string },
-  limit: number,
-  offset: number,
-): Promise<MovementRow[]> {
+export async function listGlobalMovements(filters: {
+  toolId?: string;
+  siteId?: string;
+  kind?: string;
+}, limit: number, offset: number): Promise<MovementRow[]> {
   const conds = [];
-  if (filters.toolId) conds.push(eq(toolMovements.toolId, filters.toolId));
-  if (filters.kind) conds.push(eq(toolMovements.kind, filters.kind));
+  if (filters.toolId)
+    conds.push(eq(toolMovements.toolId, filters.toolId));
+  if (filters.kind)
+    conds.push(eq(toolMovements.kind, filters.kind));
   if (filters.siteId) {
-    conds.push(
-      or(eq(toolMovements.fromLocation, filters.siteId), eq(toolMovements.toLocation, filters.siteId))!,
-    );
+    conds.push(or(eq(toolMovements.fromLocation, filters.siteId), eq(toolMovements.toLocation, filters.siteId))!);
   }
   const where = conds.length ? and(...conds) : undefined;
   return db
-    .select()
+    .select({ ...getTableColumns(toolMovements), actorName: sql<string>`coalesce(${userProfiles.fullName}, 'Former user')` })
     .from(toolMovements)
+    .leftJoin(userProfiles, eq(userProfiles.userId, toolMovements.actorUserId))
     .where(where)
-    .orderBy(desc(toolMovements.createdAt))
+    .orderBy(desc(toolMovements.createdAt), desc(toolMovements.movementId))
     .limit(limit)
     .offset(offset);
 }
-
 export type ToolDashboard = {
   totalTools: number;
   totalQuantity: number;
   deployed: number;
   free: number;
-  perCategory: { categoryId: string; name: string; codePrefix: string; toolCount: number; totalQuantity: number }[];
-  perSite: { siteId: string; toolTypes: number; totalQuantity: number }[];
+  perCategory: {
+    categoryId: string;
+    name: string;
+    codePrefix: string;
+    toolCount: number;
+    totalQuantity: number;
+  }[];
+  perSite: {
+    siteId: string;
+    toolTypes: number;
+    totalQuantity: number;
+  }[];
 };
-
-// Accepts the db handle or a transaction handle, so integration tests can drive
-// these aggregates inside a rolled-back tx (lib/db/testing.ts) without touching
-// committed rows. Defaults to `db`, leaving callers unchanged.
-type Executor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
-
-// Aggregate strip for the hub + Home tile. Single grouped queries, no N+1 (§14).
+// All dashboard buckets share one PostgreSQL statement snapshot.
 export async function dashboardAggregates(executor: Executor = db): Promise<ToolDashboard> {
-  // None of these four depend on another's result, so they are dispatched
-  // together rather than in series — four sequential pooler round-trips cost
-  // ~4x the slowest one. Drizzle builders are lazy: Promise.all calling .then()
-  // on each is what actually fires them concurrently.
-  //
-  // Trade-off: this holds four pool connections at once instead of one. The pool
-  // is sized at 15 (lib/db/client.ts) with headroom for exactly this, so ~3
-  // concurrent hits on this endpoint use a fifth of it — fine at current traffic,
-  // but it is the number to revisit if this endpoint ever gets hot.
-  const [totalsRows, deployedRows, perCategory, perSite] = await Promise.all([
-    executor
-      .select({
-        totalTools: sql<number>`count(*)::int`,
-        totalQuantity: sql<number>`coalesce(sum(${tools.totalQuantity}), 0)::int`,
-      })
-      .from(tools)
-      .where(eq(tools.isDeleted, false)),
-
-    executor
-      .select({ deployed: sql<number>`coalesce(sum(${toolAssignments.quantity}), 0)::int` })
-      .from(toolAssignments)
-      .innerJoin(tools, eq(tools.toolId, toolAssignments.toolId))
-      .where(eq(tools.isDeleted, false)),
-
-    executor
-      .select({
-        categoryId: toolCategories.categoryId,
-        name: toolCategories.name,
-        codePrefix: toolCategories.codePrefix,
-        toolCount: sql<number>`count(${tools.toolId})::int`,
-        totalQuantity: sql<number>`coalesce(sum(${tools.totalQuantity}), 0)::int`,
-      })
-      .from(toolCategories)
-      .leftJoin(tools, and(eq(tools.categoryId, toolCategories.categoryId), eq(tools.isDeleted, false)))
-      .groupBy(toolCategories.categoryId, toolCategories.name, toolCategories.codePrefix, toolCategories.sortOrder)
-      .orderBy(toolCategories.sortOrder),
-
-    executor
-      .select({
-        siteId: toolAssignments.siteId,
-        toolTypes: sql<number>`count(distinct ${toolAssignments.toolId})::int`,
-        totalQuantity: sql<number>`coalesce(sum(${toolAssignments.quantity}), 0)::int`,
-      })
-      .from(toolAssignments)
-      .innerJoin(tools, and(eq(tools.toolId, toolAssignments.toolId), eq(tools.isDeleted, false)))
-      .groupBy(toolAssignments.siteId),
-  ]);
-
-  const totalsRow = totalsRows[0];
-  const deployedRow = deployedRows[0];
-
-  const totalQuantity = totalsRow?.totalQuantity ?? 0;
-  const deployed = deployedRow?.deployed ?? 0;
-  return {
-    totalTools: totalsRow?.totalTools ?? 0,
-    totalQuantity,
-    deployed,
-    free: totalQuantity - deployed,
-    perCategory,
-    perSite,
-  };
+  const [row] = await executor.execute<ToolDashboard>(sql`
+ with live as (select * from tools where is_deleted=false),
+ allocations as (select a.* from tool_assignments a join live t on t.tool_id=a.tool_id),
+ totals as (select count(*)::int as count,coalesce(sum(total_quantity),0)::int as quantity from live),
+ deployed as (select coalesce(sum(quantity),0)::int as quantity from allocations)
+ select totals.count as "totalTools",totals.quantity as "totalQuantity",deployed.quantity as deployed,totals.quantity-deployed.quantity as free,
+ coalesce((select json_agg(c order by sort_order) from (select c.category_id as "categoryId",c.name,c.code_prefix as "codePrefix",count(t.tool_id)::int as "toolCount",coalesce(sum(t.total_quantity),0)::int as "totalQuantity",c.sort_order
+ from tool_categories c left join live t on t.category_id=c.category_id group by c.category_id,c.name,c.code_prefix,c.sort_order) c),'[]'::json) as "perCategory",
+ coalesce((select json_agg(a) from (select site_id as "siteId",count(distinct tool_id)::int as "toolTypes",sum(quantity)::int as "totalQuantity" from allocations group by site_id) a),'[]'::json) as "perSite"
+ from totals cross join deployed`);
+  return { ...row, perCategory: row.perCategory.map(({ categoryId, name, codePrefix, toolCount, totalQuantity }) => ({ categoryId, name, codePrefix, toolCount, totalQuantity })) };
 }
