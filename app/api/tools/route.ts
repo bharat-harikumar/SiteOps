@@ -1,3 +1,4 @@
+import { withPrivateNoStore } from "@/lib/http/privateNoStore";
 import { requireCapability } from "@/lib/auth/guards";
 import { errorResponse, successResponse } from "@/lib/errors/response";
 import { handleDbError } from "@/lib/errors/db";
@@ -10,7 +11,7 @@ import { createToolSchema } from "@/lib/validation/toolSchemas";
 
 // GET /api/tools — list tools with computed free + assignments + version.
 // Supports ?q= name/code search. Capability: tool:read.
-export const GET = withApi(async ({ request, requestId }) => {
+export const GET = withPrivateNoStore(withApi(async ({ request, requestId }) => {
   const auth = await requireCapability(request, "tool:read");
   if (!("session" in auth)) {
     return errorResponse(auth.error, "Authentication required", auth.status, undefined, requestId);
@@ -18,7 +19,7 @@ export const GET = withApi(async ({ request, requestId }) => {
   const q = new URL(request.url).searchParams.get("q") ?? undefined;
   const tools = await listTools(q);
   return successResponse({ tools }, 200, requestId);
-});
+}));
 
 // POST /api/tools — create a tool (mints code, writes opening movement).
 // Capability: tool:manage.
