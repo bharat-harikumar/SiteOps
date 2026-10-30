@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
+import { sql } from "drizzle-orm";
 import { describeDb, seedSite, withRollback } from "@/lib/db/testing";
 import { toolAssignments, toolCategories, tools } from "@/lib/db/schema";
 import { dashboardAggregates, listTools, getTool } from "./query";
@@ -10,6 +11,9 @@ import { dashboardAggregates, listTools, getTool } from "./query";
 describeDb("dashboardAggregates", () => {
   it("counts tools, deployment and per-category/per-site breakdowns, ignoring soft-deleted tools", async () => {
     await withRollback(async (tx) => {
+      // Other scratch suites commit real concurrent movements. Keep this
+      // before/after delta assertion on one snapshot, plus our own fixture rows.
+      await tx.execute(sql`set transaction isolation level repeatable read`);
       const before = await dashboardAggregates(tx);
       const { userId, siteId } = await seedSite(tx);
       const tag = userId.slice(0, 8);
@@ -21,11 +25,33 @@ describeDb("dashboardAggregates", () => {
       const liveA = randomUUID();
       const liveB = randomUUID();
       await tx.insert(tools).values([
-        { toolId: liveA, name: `Drill ${tag}`, code: `D-${tag}`, categoryId: category.categoryId, totalQuantity: 10, ...audit },
-        { toolId: liveB, name: `Saw ${tag}`, code: `S-${tag}`, categoryId: category.categoryId, totalQuantity: 4, ...audit },
+        {
+          toolId: liveA,
+          name: `Drill ${tag}`,
+          code: `D-${tag}`,
+          categoryId: category.categoryId,
+          totalQuantity: 10,
+          ...audit,
+        },
+        {
+          toolId: liveB,
+          name: `Saw ${tag}`,
+          code: `S-${tag}`,
+          categoryId: category.categoryId,
+          totalQuantity: 4,
+          ...audit,
+        },
         // Soft-deleted: must not reach any bucket — not the totals, not the
         // category breakdown, and its assignment must not count as deployed.
-        { toolId: randomUUID(), name: `Gone ${tag}`, code: `G-${tag}`, categoryId: category.categoryId, totalQuantity: 100, isDeleted: true, ...audit },
+        {
+          toolId: randomUUID(),
+          name: `Gone ${tag}`,
+          code: `G-${tag}`,
+          categoryId: category.categoryId,
+          totalQuantity: 100,
+          isDeleted: true,
+          ...audit,
+        },
       ]);
       await tx.insert(toolAssignments).values([
         { toolId: liveA, siteId, quantity: 3 },
@@ -40,7 +66,9 @@ describeDb("dashboardAggregates", () => {
       // free is derived, never queried — it must stay consistent with the pair.
       expect(after.free).toBe(after.totalQuantity - after.deployed);
       // Exact: the category is new, so nothing else contributes to its row.
-      const seededCategory = after.perCategory.find((c) => c.categoryId === category.categoryId);
+      const seededCategory = after.perCategory.find(
+        (c) => c.categoryId === category.categoryId,
+      );
       expect(seededCategory).toMatchObject({
         name: `Cat ${tag}`,
         codePrefix: `T${tag.slice(0, 5)}`,
@@ -61,7 +89,9 @@ describeDb("dashboardAggregates", () => {
         .returning({ categoryId: toolCategories.categoryId });
       const result = await dashboardAggregates(tx);
       // The left join is what keeps this row present; an inner join would drop it.
-      const row = result.perCategory.find((c) => c.categoryId === category.categoryId);
+      const row = result.perCategory.find(
+        (c) => c.categoryId === category.categoryId,
+      );
       expect(row).toMatchObject({ toolCount: 0, totalQuantity: 0 });
     });
   });
@@ -69,12 +99,32 @@ describeDb("dashboardAggregates", () => {
 it("returns filtered tool stock and allocations from the transaction snapshot", async () => {
   await withRollback(async (tx) => {
     const { userId, siteId } = await seedSite(tx);
-    const [c] = await tx.insert(toolCategories).values({ name: userId, codePrefix: userId.slice(0, 8) }).returning();
-    const [t] = await tx.insert(tools).values({ name: userId, code: userId.slice(0, 12), categoryId: c.categoryId, totalQuantity: 8, createdByUserId: userId, updatedByUserId: userId }).returning();
-    await tx.insert(toolAssignments).values({ toolId: t.toolId, siteId, quantity: 3 });
+    const [c] = await tx
+      .insert(toolCategories)
+      .values({ name: userId, codePrefix: userId.slice(0, 8) })
+      .returning();
+    const [t] = await tx
+      .insert(tools)
+      .values({
+        name: userId,
+        code: userId.slice(0, 12),
+        categoryId: c.categoryId,
+        totalQuantity: 8,
+        createdByUserId: userId,
+        updatedByUserId: userId,
+      })
+      .returning();
+    await tx
+      .insert(toolAssignments)
+      .values({ toolId: t.toolId, siteId, quantity: 3 });
     const listed = await listTools(userId, tx);
     expect(listed).toHaveLength(1);
-    expect(listed[0]).toMatchObject({ toolId: t.toolId, totalQuantity: 8, free: 5, assignments: [{ siteId, qty: 3 }] });
+    expect(listed[0]).toMatchObject({
+      toolId: t.toolId,
+      totalQuantity: 8,
+      free: 5,
+      assignments: [{ siteId, qty: 3 }],
+    });
     expect(await getTool(t.toolId, tx)).toEqual(listed[0]);
   });
 });

@@ -8,6 +8,10 @@ import { getSiteTools, listReceiveOptions, listSiteToolMovements } from "./siteQ
 import { executeMovement } from "./movement";
 import { applyOneTool } from "./applyBatch";
 import { returnSiteToolsOnLifecycle } from "./siteLifecycle";
+import { isDisposableTestDatabase } from "@/lib/db/testDatabaseSafety";
+if (process.env.TOOLS_IT_DB === "1" && !isDisposableTestDatabase(process.env.DATABASE_URL)) {
+  throw new Error("Tool write tests require the disposable local siteops_tools_test database.");
+}
 const IT = process.env.TOOLS_IT_DB === "1" ? describe : describe.skip;
 IT("explicit movements on scratch database", () => {
   let owner: string, other: string, category: string, a: string, b: string, c: string;

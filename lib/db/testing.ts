@@ -1,6 +1,6 @@
 // Integration-test helper. Runs the callback inside a transaction that is ALWAYS
-// rolled back, so seeded rows never persist. Tests using this auto-skip when no
-// DATABASE_URL is configured (keeps the unit suite green in DB-less CI).
+// rolled back, so seeded rows never persist. Write tests auto-skip unless
+// DATABASE_URL names the disposable loopback database; .env.local may be live.
 import { randomUUID } from "node:crypto";
 
 import { drizzle } from "drizzle-orm/postgres-js";
@@ -9,12 +9,10 @@ import { describe } from "vitest";
 
 import * as schema from "@/lib/db/schema";
 import { sites, userProfiles } from "@/lib/db/schema";
+import { isDisposableTestDatabase } from "./testDatabaseSafety";
 
 const dbUrl = process.env.DATABASE_URL;
-export const hasDb =
-  Boolean(dbUrl) &&
-  !dbUrl!.includes("your-project-ref") &&
-  !dbUrl!.includes("aws-0-region");
+export const hasDb = isDisposableTestDatabase(dbUrl);
 
 // Describe-or-skip: use in place of `describe` for DB integration suites.
 export const describeDb = hasDb ? describe : describe.skip;
@@ -27,7 +25,15 @@ type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
 // Runs `fn` with a transactional drizzle handle, then throws a sentinel to force
 // rollback. Each test gets a clean slate without truncating shared tables.
 export async function withRollback<T>(fn: (tx: Tx) => Promise<T>): Promise<T> {
-  const client = postgres(process.env.DATABASE_URL!, { max: 1, prepare: false });
+  if (!isDisposableTestDatabase(process.env.DATABASE_URL)) {
+    throw new Error(
+      "Write tests require the disposable local siteops_tools_test database; the shared database is read-only.",
+    );
+  }
+  const client = postgres(process.env.DATABASE_URL!, {
+    max: 1,
+    prepare: false,
+  });
   const database = drizzle(client, { schema });
   const ROLLBACK = Symbol("rollback");
   let captured: T;
@@ -47,7 +53,9 @@ export async function withRollback<T>(fn: (tx: Tx) => Promise<T>): Promise<T> {
 // Seeds a user profile + a site inside the given transaction and returns their
 // ids. Entry tables FK to sites.siteId, which FKs to userProfiles.userId, so most
 // data tests need this minimal chain.
-export async function seedSite(tx: Tx): Promise<{ userId: string; siteId: string }> {
+export async function seedSite(
+  tx: Tx,
+): Promise<{ userId: string; siteId: string }> {
   const userId = randomUUID();
   await tx.insert(userProfiles).values({ userId, role: "Supervisor" });
   const [site] = await tx
