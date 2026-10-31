@@ -33,25 +33,25 @@ export function ToolSummaryTile() {
           {/* KPI tiles */}
           <div className="mt-3 grid grid-cols-2 gap-3">
             <div className="rounded-lg border border-white/5 bg-white/[0.02] p-3 flex flex-col justify-center">
-              <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-400">Free Tools</span>
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-400">In godown</span>
               <div className="mt-2 flex items-baseline">
                 {isLoading ? (
                   <div className="h-7 w-10 animate-pulse rounded bg-white/5" />
                 ) : (
                   <span className="text-2xl font-semibold leading-none tabular-nums text-white">
-                    {d?.free ?? 0}
+                    {d?.free ?? "—"}
                   </span>
                 )}
               </div>
             </div>
             <div className="rounded-lg border border-white/5 bg-white/[0.02] p-3 flex flex-col justify-center">
-              <span className="block text-[10px] font-bold uppercase tracking-wider text-sky-400">Deployed</span>
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-sky-400">At sites</span>
               <div className="mt-2 flex items-baseline">
                 {isLoading ? (
                   <div className="h-7 w-10 animate-pulse rounded bg-white/5" />
                 ) : (
                   <span className="text-2xl font-semibold leading-none tabular-nums text-white">
-                    {d?.deployed ?? 0}
+                    {d?.deployed ?? "—"}
                   </span>
                 )}
               </div>

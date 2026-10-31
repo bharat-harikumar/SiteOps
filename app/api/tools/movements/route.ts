@@ -1,3 +1,4 @@
+import { withPrivateNoStore } from "@/lib/http/privateNoStore";
 import { requireCapability } from "@/lib/auth/guards";
 import { errorResponse, successResponse } from "@/lib/errors/response";
 import { withApi } from "@/lib/http/withApi";
@@ -6,7 +7,7 @@ import { movementsQuerySchema } from "@/lib/validation/toolSchemas";
 
 // GET /api/tools/movements — global ledger with filters (tool, site, kind) +
 // pagination. Capability: tool:read.
-export const GET = withApi(async ({ request, requestId }) => {
+export const GET = withPrivateNoStore(withApi(async ({ request, requestId }) => {
   const auth = await requireCapability(request, "tool:read");
   if (!("session" in auth)) {
     return errorResponse(auth.error, "Authentication required", auth.status, undefined, requestId);
@@ -20,4 +21,4 @@ export const GET = withApi(async ({ request, requestId }) => {
   const { toolId, siteId, kind, limit, offset } = parsed.data;
   const movements = await listGlobalMovements({ toolId, siteId, kind }, limit, offset);
   return successResponse({ movements, limit, offset }, 200, requestId);
-});
+}));

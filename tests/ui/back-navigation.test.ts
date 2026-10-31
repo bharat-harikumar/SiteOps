@@ -21,7 +21,9 @@ const repoRoot = path.resolve(__dirname, "..", "..");
 function codeLines(relPath: string): string[] {
   return readFileSync(path.join(repoRoot, relPath), "utf8")
     .split("\n")
-    .filter((line) => !line.trim().startsWith("//") && !line.trim().startsWith("*"));
+    .filter(
+      (line) => !line.trim().startsWith("//") && !line.trim().startsWith("*"),
+    );
 }
 
 function offendingLines(relPath: string, pattern: RegExp): string[] {
@@ -61,7 +63,9 @@ describe("back navigation", () => {
   test("the header chevron never guesses from history.length", () => {
     // The old heuristic: any tab that had visited another site first reported
     // history.length > 1, so back() on a deep-linked arrival left the app.
-    expect(offendingLines("components/app-shell/AppHeader.tsx", /history\.length/)).toEqual([]);
+    expect(
+      offendingLines("components/app-shell/AppHeader.tsx", /history\.length/),
+    ).toEqual([]);
   });
 
   test("the header chevron only calls back() under the parentIsBehind guard", () => {
@@ -95,7 +99,7 @@ describe("back navigation", () => {
 // the surfaces that had no answer to back at all and now share that plumbing.
 const DISMISSIBLE_OVERLAYS = [
   "components/ui/motion.tsx",
-  "components/tools/ToolDrawer.tsx",
+  "components/tools/ToolMovementForm.tsx",
   "components/tools/ToolLedgerDrawer.tsx",
   "components/search/GlobalSearchOverlay.tsx",
 ];
@@ -103,7 +107,10 @@ const DISMISSIBLE_OVERLAYS = [
 describe("overlay dismissal", () => {
   test("every full-screen overlay closes on the back gesture", () => {
     const missing = DISMISSIBLE_OVERLAYS.filter(
-      (file) => !codeLines(file).some((line) => /useBackDismiss\s*\(/.test(line)),
+      (file) =>
+        !codeLines(file).some((line) =>
+          /useBackDismiss\s*\(|<ModalShell\b/.test(line),
+        ),
     );
     expect(missing).toEqual([]);
   });

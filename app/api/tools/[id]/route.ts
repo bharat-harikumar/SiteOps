@@ -1,3 +1,4 @@
+import { withPrivateNoStore } from "@/lib/http/privateNoStore";
 import { requireCapability } from "@/lib/auth/guards";
 import { ERROR_CODES } from "@/lib/errors/codes";
 import { handleDbError } from "@/lib/errors/db";
@@ -11,7 +12,7 @@ import { patchToolSchema } from "@/lib/validation/toolSchemas";
 type RouteCtx = { params: Promise<{ id: string }> };
 
 // GET /api/tools/:id — single tool + assignments. Capability: tool:read.
-export const GET = withApiRoute<RouteCtx>(async ({ request, requestId }, context) => {
+export const GET = withPrivateNoStore(withApiRoute<RouteCtx>(async ({ request, requestId }, context) => {
   const auth = await requireCapability(request, "tool:read");
   if (!("session" in auth)) {
     return errorResponse(auth.error, "Authentication required", auth.status, undefined, requestId);
@@ -20,7 +21,7 @@ export const GET = withApiRoute<RouteCtx>(async ({ request, requestId }, context
   const tool = await getTool(id);
   if (!tool) return errorResponse(ERROR_CODES.NOT_FOUND, "Tool not found", 404, undefined, requestId);
   return successResponse(tool, 200, requestId);
-});
+}));
 
 // PATCH /api/tools/:id — edit name/category/icon (not quantities). tool:manage.
 export const PATCH = withApiRoute<RouteCtx>(async ({ request, requestId }, context) => {

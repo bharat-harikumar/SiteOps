@@ -1,55 +1,98 @@
 "use client";
 
-import { Sliders } from "lucide-react";
+import Link from "next/link";
+import { Send } from "lucide-react";
 import type { ToolDTO } from "@/lib/client/tools";
 
 export function ToolRow({
   tool,
   categoryName,
-  onManage,
+  sites,
+  onAction,
 }: {
   tool: ToolDTO;
   categoryName: string;
-  onManage: () => void;
+  sites: { siteId: string; name: string }[];
+  onAction: (action: "send" | "add" | "remove" | "history") => void;
 }) {
-  const inGodown = tool.free;
-  const assigned = tool.assignments.reduce((s, a) => s + a.qty, 0);
-
+  const atSites = tool.assignments.reduce((sum, item) => sum + item.qty, 0);
   return (
-    <div className="rounded-xl border border-white/10 bg-slate-900/80 p-3.5 shadow-sm transition hover:border-white/20">
-      {/* Top Row: Tool Name + Category & Manage Action */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-bold leading-tight text-white break-words">
+    <article className="card-standard p-4 sm:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1 basis-40">
+          <h3 className="break-words text-base font-semibold leading-snug text-white">
             {tool.name}
           </h3>
-          <span className="mt-1 inline-block rounded-md bg-white/5 px-2 py-0.5 text-[10px] font-medium text-slate-400 border border-white/5">
-            {categoryName}
-          </span>
+          <p className="mt-1 text-xs text-slate-400">{categoryName}</p>
         </div>
-
         <button
           type="button"
-          onClick={onManage}
-          className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-1.5 text-xs font-bold text-blue-400 transition-colors hover:bg-blue-500/20 active:scale-95"
+          onClick={() => onAction("send")}
+          disabled={tool.free < 1}
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-3 text-sm font-semibold text-white transition-colors hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-slate-400"
         >
-          <Sliders className="h-3.5 w-3.5" />
-          Manage
+          <Send className="h-4 w-4" aria-hidden="true" />
+          Send to site
         </button>
       </div>
-
-      {/* Bottom Row: Non-wrapping Status Badges */}
-      <div className="mt-3 flex flex-wrap items-center gap-2 pt-2 border-t border-white/5 text-xs">
-        <span className="whitespace-nowrap rounded-md bg-emerald-500/15 px-2.5 py-1 text-[11px] font-semibold text-emerald-400 border border-emerald-500/20">
-          In Godown: {inGodown}
+      <p className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-300">
+        <span>
+          <strong className="tabular-nums text-white">{tool.free}</strong> in
+          godown
         </span>
-        <span className="whitespace-nowrap rounded-md bg-blue-500/15 px-2.5 py-1 text-[11px] font-semibold text-blue-400 border border-blue-500/20">
-          At Sites: {assigned}
+        <span>
+          <strong className="tabular-nums text-white">{atSites}</strong> at
+          sites
         </span>
-        <span className="whitespace-nowrap text-[11px] font-medium text-slate-400 ml-auto">
-          Total: {tool.totalQuantity}
-        </span>
-      </div>
-    </div>
+      </p>
+      {tool.free === 0 ? (
+        <p className="mt-2 text-xs text-slate-400">
+          None available to send from godown.
+        </p>
+      ) : null}
+      <details className="mt-2 border-t border-white/5">
+        <summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold text-blue-400 focus-visible:outline-blue-500">
+          Locations &amp; stock actions
+        </summary>
+        {tool.assignments.length ? (
+          <ul className="mb-3 divide-y divide-white/5">
+            {tool.assignments.map((a) => (
+              <li key={a.siteId}>
+                <Link
+                  href={`/app/sites/${encodeURIComponent(a.siteId)}/tools`}
+                  className="flex min-h-11 items-center justify-between gap-3 py-2 text-sm text-slate-300 hover:text-blue-400"
+                >
+                  <span className="min-w-0 break-words">
+                    {sites.find((s) => s.siteId === a.siteId)?.name ?? "Site"}
+                  </span>
+                  <span className="shrink-0 tabular-nums">{a.qty} here →</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="pb-3 text-sm text-slate-400">No tools at sites.</p>
+        )}
+        <div className="flex flex-wrap gap-2">
+          {(
+            [
+              ["add", "Add stock"],
+              ["remove", "Remove damaged / lost stock"],
+              ["history", "Movement history"],
+            ] as const
+          ).map(([action, label]) => (
+            <button
+              key={action}
+              type="button"
+              onClick={() => onAction(action)}
+              disabled={action === "remove" && tool.free === 0}
+              className="min-h-11 rounded-lg border border-white/10 px-3 text-sm text-slate-300 transition-colors hover:bg-white/5 disabled:opacity-40"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </details>
+    </article>
   );
 }

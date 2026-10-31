@@ -1,4 +1,4 @@
-import type { ToolMovementBody } from "@/lib/validation/toolSchemas";
+import type { MovementAction } from "./contracts";
 import type { AssignmentInput } from "./types";
 import type { ToolPayload } from "./applyBatch";
 
@@ -13,7 +13,7 @@ export type BaseToolState = {
 // transfer_site, add_stock, remove_stock) to an end-state ToolPayload for applyOneTool.
 export function translateToPayload(
   tool: BaseToolState,
-  body: ToolMovementBody,
+  body: MovementAction,
 ): ToolPayload {
   const base = { toolId: tool.toolId, version: tool.version, note: body.note };
 

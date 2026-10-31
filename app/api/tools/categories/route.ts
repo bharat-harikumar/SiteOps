@@ -1,3 +1,4 @@
+import { withPrivateNoStore } from "@/lib/http/privateNoStore";
 import { handleDbError } from "@/lib/errors/db";
 import { successResponse } from "@/lib/errors/response";
 import { parseJsonBody, validateBody } from "@/lib/http/request";
@@ -6,10 +7,10 @@ import { createCategory, listCategories } from "@/lib/tools/categories";
 import { createCategorySchema } from "@/lib/validation/toolSchemas";
 
 // GET /api/tools/categories — list tool categories. Capability: tool:read.
-export const GET = withAuthedApi("tool:read", async ({ requestId }) => {
+export const GET = withPrivateNoStore(withAuthedApi("tool:read", async ({ requestId }) => {
   const categories = await listCategories();
   return successResponse({ categories }, 200, requestId);
-});
+}));
 
 // POST /api/tools/categories — create category. Capability: tool_category:manage.
 export const POST = withAuthedApi(

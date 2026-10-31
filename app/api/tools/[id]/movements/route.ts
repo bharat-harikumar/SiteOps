@@ -1,3 +1,4 @@
+import { withPrivateNoStore } from "@/lib/http/privateNoStore";
 import { requireCapability } from "@/lib/auth/guards";
 import { errorResponse, successResponse } from "@/lib/errors/response";
 import { withApiRoute } from "@/lib/http/withApi";
@@ -6,7 +7,7 @@ import { clearToolMovements, listToolMovements } from "@/lib/tools/query";
 type RouteCtx = { params: Promise<{ id: string }> };
 
 // GET /api/tools/:id/movements — per-tool ledger timeline (paginated). tool:read.
-export const GET = withApiRoute<RouteCtx>(async ({ request, requestId }, context) => {
+export const GET = withPrivateNoStore(withApiRoute<RouteCtx>(async ({ request, requestId }, context) => {
   const auth = await requireCapability(request, "tool:read");
   if (!("session" in auth)) {
     return errorResponse(auth.error, "Authentication required", auth.status, undefined, requestId);
@@ -17,7 +18,7 @@ export const GET = withApiRoute<RouteCtx>(async ({ request, requestId }, context
   const offset = Math.max(Number(url.searchParams.get("offset")) || 0, 0);
   const movements = await listToolMovements(id, limit, offset);
   return successResponse({ movements, limit, offset }, 200, requestId);
-});
+}));
 
 // DELETE /api/tools/:id/movements — clear all movement history. tool:manage.
 export const DELETE = withApiRoute<RouteCtx>(async ({ request, requestId }, context) => {

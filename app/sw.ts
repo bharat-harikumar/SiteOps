@@ -11,7 +11,11 @@ import {
   type PrecacheEntry,
 } from "serwist";
 
-import { classifyReplayStatus, describeRejectedWrite } from "../lib/pwa/replayOutcome";
+import {
+  classifyReplayStatus,
+  describeRejectedWrite,
+} from "../lib/pwa/replayOutcome";
+import { isLiveToolPath } from "../lib/pwa/toolRequests";
 
 declare global {
   interface WorkerGlobalScope {
@@ -40,11 +44,19 @@ async function notifyClients(message: Record<string, unknown>) {
 // Both reads are best-effort: the message must still go out if either fails.
 async function rejectionNotice(request: Request, response: Response) {
   const [body, reply] = await Promise.all([
-    request.clone().json().catch(() => null),
+    request
+      .clone()
+      .json()
+      .catch(() => null),
     response.json().catch(() => null),
   ]);
-  const serverMessage = typeof reply?.error?.message === "string" ? reply.error.message : null;
-  return describeRejectedWrite({ pathname: new URL(request.url).pathname, body, serverMessage });
+  const serverMessage =
+    typeof reply?.error?.message === "string" ? reply.error.message : null;
+  return describeRejectedWrite({
+    pathname: new URL(request.url).pathname,
+    body,
+    serverMessage,
+  });
 }
 
 const writeSyncQueue = new BackgroundSyncQueue("siteops-write-sync", {
@@ -66,7 +78,9 @@ const writeSyncQueue = new BackgroundSyncQueue("siteops-write-sync", {
       if (outcome === "retry") {
         // Server down, rate limited or signed out: the entry may still save later.
         await queue.unshiftRequest(entry);
-        throw new Error(`Replay of ${entry.request.url} returned ${response.status}`);
+        throw new Error(
+          `Replay of ${entry.request.url} returned ${response.status}`,
+        );
       }
       if (outcome === "rejected") {
         // The server read it and refused it (stale Work Stage, archived site…).
@@ -88,7 +102,8 @@ const writeSyncQueue = new BackgroundSyncQueue("siteops-write-sync", {
 
 const isQueueableWrite = (url: URL, method: string) =>
   method === "POST" &&
-  (url.pathname.startsWith("/api/entries") || url.pathname === "/api/transfers");
+  (url.pathname.startsWith("/api/entries") ||
+    url.pathname === "/api/transfers");
 
 const userScopedCachePlugin = {
   cacheKeyWillBeUsed: async ({ request }: { request: Request }) => {
@@ -103,6 +118,11 @@ const serwist = new Serwist({
   skipWaiting: true,
   clientsClaim: true,
   runtimeCaching: [
+    {
+      matcher: ({ request, sameOrigin, url }) =>
+        sameOrigin && request.method === "GET" && isLiveToolPath(url.pathname),
+      handler: new NetworkOnly(),
+    },
     {
       // PWA4 — entry/transfer writes go network-first; on failure (offline) they
       // are queued for background sync and replayed later instead of being lost.
@@ -166,8 +186,28 @@ const serwist = new Serwist({
   },
 });
 
+// Retire inventory persisted by older workers. The live rule also covers RSC
+// page requests, so an old stock/permission response cannot become a fallback.
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    (async () => {
+      for (const name of [API_CACHE, PAGE_CACHE]) {
+        const cache = await caches.open(name);
+        const keys = await cache.keys();
+        await Promise.all(
+          keys
+            .filter((key) => isLiveToolPath(new URL(key.url).pathname))
+            .map((key) => cache.delete(key)),
+        );
+      }
+    })(),
+  );
+});
+
 self.addEventListener("message", (event) => {
-  const data = event.data as { type?: string; userId?: string | null } | undefined;
+  const data = event.data as
+    | { type?: string; userId?: string | null }
+    | undefined;
   if (!data || data.type !== "AUTH_CHANGED") return;
 
   const nextUserId = data.userId ?? "anon";
@@ -209,10 +249,15 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const targetUrl = (event.notification.data as { url?: string } | undefined)?.url ?? "/app/notifications";
+  const targetUrl =
+    (event.notification.data as { url?: string } | undefined)?.url ??
+    "/app/notifications";
   event.waitUntil(
     (async () => {
-      const allClients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      const allClients = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
       // Focus an existing tab if one is already open, else open a new one.
       const existing = allClients.find((client) => "focus" in client);
       if (existing) {
