@@ -1,5 +1,6 @@
 "use client";
 
+import { Amount } from "@/components/ui/Amount";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -45,7 +46,7 @@ function ManpowerLine({
         • {role} · {count} {count === 1 ? "Person" : "People"}
       </span>
       <span className="text-[11px] font-semibold text-slate-400 shrink-0">
-        {formatCurrency(salary ?? 0)}
+        <Amount>{formatCurrency(salary ?? 0)}</Amount>
       </span>
     </div>
   );
@@ -119,8 +120,13 @@ export default function StageSummaryClient({
         </h1>
         <p className="text-xs text-slate-500 font-semibold mt-1">{siteName}</p>
         <p className="text-sm text-slate-400 font-semibold mt-2">
-          {formatCurrency(tracked)} tracked
-          {budget ? ` of ${formatCurrency(budget)} budget` : ""}
+          <Amount>{formatCurrency(tracked)}</Amount> tracked
+          {budget ? (
+            <>
+              {" of "}
+              <Amount>{formatCurrency(budget)}</Amount> budget
+            </>
+          ) : null}
         </p>
       </section>
 
@@ -163,11 +169,11 @@ export default function StageSummaryClient({
                     <div className="flex items-center gap-3 shrink-0">
                       <div className="text-right">
                         <p className="text-lg font-extrabold text-sky-400">
-                          {formatCurrency(row.total)}
+                          <Amount>{formatCurrency(row.total)}</Amount>
                         </p>
                         {budget ? (
                           <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                            {((row.total / budget) * 100).toFixed(1)}% of budget
+                            <Amount mask="**%">{`${((row.total / budget) * 100).toFixed(1)}%`}</Amount> of budget
                           </p>
                         ) : null}
                       </div>
@@ -192,7 +198,7 @@ export default function StageSummaryClient({
                   <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
                     {TYPE_ORDER.filter((t) => row.byType[t] > 0).map((t) => (
                       <span key={t} className="text-[11px] font-semibold text-slate-500">
-                        {TYPE_LABELS[t]} {formatCurrency(row.byType[t])}
+                        {TYPE_LABELS[t]} <Amount>{formatCurrency(row.byType[t])}</Amount>
                       </span>
                     ))}
                   </div>
@@ -224,7 +230,7 @@ export default function StageSummaryClient({
                             </span>
                           </span>
                           <span className="text-xs font-bold text-slate-300 shrink-0">
-                            {formatCurrency(d.spend)}
+                            <Amount>{formatCurrency(d.spend)}</Amount>
                           </span>
                         </div>
 
@@ -239,7 +245,7 @@ export default function StageSummaryClient({
                           <div className="pl-4 mt-0.5 flex items-baseline justify-between gap-4">
                             <span className="text-[11px] text-slate-400 font-medium">• Overtime (included)</span>
                             <span className="text-[11px] font-semibold text-slate-400 shrink-0">
-                              {formatCurrency(d.otSpend)}
+                              <Amount>{formatCurrency(d.otSpend)}</Amount>
                             </span>
                           </div>
                         ) : null}

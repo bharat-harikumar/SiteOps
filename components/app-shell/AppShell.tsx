@@ -16,7 +16,12 @@ export default function AppShell({
   initialUnread?: number;
 }) {
   return (
-    <div className="flex flex-col min-h-dvh bg-[#020617] pl-[var(--sal)] pr-[var(--sar)]">
+    <div
+      // Hide-values blur applies only inside this scope, so a supervisor never
+      // inherits an admin's per-device demo setting (lib/ui/privacy.ts).
+      data-privacy-scope={role === 'Admin' ? '' : undefined}
+      className="flex flex-col min-h-dvh bg-[#020617] pl-[var(--sal)] pr-[var(--sar)]"
+    >
       <AppHeader role={role} email={email} initialUnread={initialUnread} />
       <main className="flex-1 pb-24 pt-[calc(env(safe-area-inset-top)+5.25rem)] px-4 max-w-7xl mx-auto w-full">
         {children}

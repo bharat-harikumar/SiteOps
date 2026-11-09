@@ -1,4 +1,5 @@
 export type { EntryType } from "@/lib/types/entry";
+import { Amount } from "@/components/ui/Amount";
 import { clientDescriptorFor } from "@/lib/entryTypes/client";
 import type { EntryType } from "@/lib/types/entry";
 
@@ -133,7 +134,7 @@ function LabourOvertimeLine({ amount, splitRoles }: { amount: unknown; splitRole
   return (
     <p className="text-xs text-slate-400">
       {splitRoles ? "OT (masons + helpers)" : "OT"}:{" "}
-      <span className="font-semibold text-slate-200">{formatCurrency(value)}</span>
+      <span className="font-semibold text-slate-200"><Amount>{formatCurrency(value)}</Amount></span>
     </p>
   );
 }
@@ -161,19 +162,25 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
                 // reads as the role's total and hid a costing bug for months.
                 // Mirrors the ordinary line's `{n} people x {wage}` idiom below.
                 <p key={role}>
-                  {role}: {Number(count ?? 0)} people x {formatCurrency(Number(wage ?? 0))} ={" "}
-                  {formatCurrency(Number(count ?? 0) * Number(wage ?? 0))}
+                  {role}: {Number(count ?? 0)} people x <Amount>{formatCurrency(Number(wage ?? 0))}</Amount> ={" "}
+                  <Amount>{formatCurrency(Number(count ?? 0) * Number(wage ?? 0))}</Amount>
                 </p>
               ),
             )}
           </div>
         ) : (
           <p className="text-xs text-slate-500">
-            {entry.peopleCount ?? 0} people{isMerged ? "" : ` x ${formatCurrency(wage)}`}
+            {entry.peopleCount ?? 0} people
+            {isMerged ? null : (
+              <>
+                {" x "}
+                <Amount>{formatCurrency(wage)}</Amount>
+              </>
+            )}
           </p>
         )}
         <LabourOvertimeLine amount={entry.otTotalAmount} splitRoles={hasSplitRoles} />
-        <p className="text-sm font-bold text-sky-400">{formatCurrency(entrySpend(entry, type))}</p>
+        <p className="text-sm font-bold text-sky-400"><Amount>{formatCurrency(entrySpend(entry, type))}</Amount></p>
         {entry.remarks ? <p className="text-xs text-slate-500">{entry.remarks}</p> : null}
       </div>
     );
@@ -193,7 +200,7 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
           {entry.quantity ?? 0} {entry.unit ?? ""}
         </p>
         {hasCost ? (
-          <p className="text-sm font-bold text-sky-400">{formatCurrency(Number(entry.cost))}</p>
+          <p className="text-sm font-bold text-sky-400"><Amount>{formatCurrency(Number(entry.cost))}</Amount></p>
         ) : null}
         {entry.remarks ? <p className="text-xs text-slate-500">{entry.remarks}</p> : null}
       </div>
@@ -213,7 +220,7 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
         </div>
         <p className="text-xs text-slate-500">{entry.count ?? 0} units</p>
         {entry.hoursActive ? <p className="text-xs text-slate-500">{entry.hoursActive} hours active</p> : null}
-        {entry.totalCost ? <p className="text-sm font-bold text-sky-400">{formatCurrency(Number(entry.totalCost ?? 0))}</p> : null}
+        {entry.totalCost ? <p className="text-sm font-bold text-sky-400"><Amount>{formatCurrency(Number(entry.totalCost ?? 0))}</Amount></p> : null}
         {entry.remarks ? <p className="text-xs text-slate-500">{entry.remarks}</p> : null}
       </div>
     );
@@ -231,7 +238,7 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
           ) : null}
         </div>
         <p className="text-xs text-slate-500">{entry.category ?? "Misc"}</p>
-        <p className="text-sm font-bold text-sky-400">{formatCurrency(Number(entry.amount ?? 0))}</p>
+        <p className="text-sm font-bold text-sky-400"><Amount>{formatCurrency(Number(entry.amount ?? 0))}</Amount></p>
       </div>
     );
   }

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { resolveEntryKind } from "@/components/logs/entryFieldRegistry";
+import { ReportingFromCard } from "@/components/logs/ReportingFromCard";
 
 // Code-split the two entry forms (446 + ~210 LOC). Only one renders per request,
 // so the browser downloads just the matching chunk. SSR stays on (default) — no
@@ -19,6 +20,8 @@ const EntryForm = dynamicImport(() =>
 import { safeGetSessionFromHeaders } from "@/lib/auth/session";
 import { db } from "@/lib/db/client";
 import { categories } from "@/lib/db/schema";
+import { getSiteById } from "@/lib/db/queries/sites";
+import { reportingSiteFor } from "@/lib/nav/reportingSite";
 
 export const dynamic = "force-dynamic";
 
@@ -38,12 +41,17 @@ export default async function LogsNewCategoryPage({
   const { categoryId } = await params;
   const { siteId } = await searchParams;
 
-  const rows = await db
-    .select()
-    .from(categories)
-    .where(eq(categories.categoryId, categoryId));
+  const [rows, siteRow] = await Promise.all([
+    db.select().from(categories).where(eq(categories.categoryId, categoryId)),
+    // Excludes archived/deleted sites; ownership is checked by reportingSiteFor.
+    siteId ? getSiteById(siteId) : Promise.resolve(null),
+  ]);
   const category = rows[0];
   if (!category) notFound();
+  const reportingSite = reportingSiteFor(siteRow, {
+    id: session.user.id,
+    role: session.user.role as "Admin" | "Supervisor",
+  });
 
   const backHref = siteId
     ? `/app/logs/new?siteId=${encodeURIComponent(siteId)}`
@@ -63,6 +71,14 @@ export default async function LogsNewCategoryPage({
           <p className="text-sm text-slate-500 font-medium italic">Step 2 of 2 — fill the form to create a new entry.</p>
         </div>
       </div>
+      <ReportingFromCard
+        site={reportingSite}
+        action={
+          <Link href="/app/logs/new" className="btn-secondary px-3 py-2 shrink-0">
+            {reportingSite ? "Change" : "Choose site"}
+          </Link>
+        }
+      />
       {resolveEntryKind(category.name) === "dynamic" ? (
         <DynamicEntryForm
           categoryId={category.categoryId}

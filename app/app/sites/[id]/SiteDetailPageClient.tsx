@@ -1,5 +1,6 @@
 'use client';
 
+import { AMOUNT_MASK, Amount } from "@/components/ui/Amount";
 import Link from 'next/link';
 import { useState } from 'react';
 import { useNavRouter } from '@/lib/nav/useNavRouter';
@@ -197,8 +198,17 @@ export default function SiteDetailPageClient({
               { label: 'Phase', val: site.currentPhase ?? '—', icon: Layers },
               {
                 label: 'Budget',
-                val: formatBudgetPair(trackedSpend, site.budget),
-                sub: site.budget ? `${Math.round((Number(trackedSpend) / Number(site.budget)) * 100)}% used` : null,
+                val: (
+                  <Amount mask={site.budget ? `${AMOUNT_MASK} / ${AMOUNT_MASK}` : AMOUNT_MASK}>
+                    {formatBudgetPair(trackedSpend, site.budget)}
+                  </Amount>
+                ),
+                // Derived from the budget, so it's hidden with it.
+                sub: site.budget ? (
+                  <Amount mask="**% used">
+                    {`${Math.round((Number(trackedSpend) / Number(site.budget)) * 100)}% used`}
+                  </Amount>
+                ) : null,
                 icon: TrendingUp,
               },
               { label: 'Progress', val: `${progress}%`, icon: Clock, highlight: true },
@@ -267,7 +277,7 @@ export default function SiteDetailPageClient({
         <div className="flex items-center gap-3 shrink-0">
           <div className="text-right">
             <p className="text-lg font-extrabold text-sky-400">
-              {formatCompactCurrency(allOperationsSummary.totalSpend) ?? '₹0'}
+              <Amount>{formatCompactCurrency(allOperationsSummary.totalSpend) ?? '₹0'}</Amount>
             </p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
               {allOperationsSummary.totalCount.toLocaleString('en-IN')} entries
@@ -324,7 +334,7 @@ export default function SiteDetailPageClient({
                   <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Today</p>
                 </div>
                 {todaySpend ? (
-                  <p className="text-sm font-bold text-slate-200 shrink-0">{todaySpend}</p>
+                  <p className="text-sm font-bold text-slate-200 shrink-0"><Amount>{todaySpend}</Amount></p>
                 ) : null}
               </div>
 
@@ -337,12 +347,12 @@ export default function SiteDetailPageClient({
                   {summary.totalCount.toLocaleString('en-IN')} {totalLabel} all-time
                 </span>
                 {totalSpend ? (
-                  <span className="font-bold text-slate-300 shrink-0">{totalSpend}</span>
+                  <span className="font-bold text-slate-300 shrink-0"><Amount>{totalSpend}</Amount></span>
                 ) : null}
               </div>
               {summary.totalOtSpend ? (
                 <p className="mt-1 text-right text-[11px] font-semibold text-slate-500">
-                  incl. OT {formatCompactCurrency(summary.totalOtSpend)}
+                  incl. OT <Amount>{formatCompactCurrency(summary.totalOtSpend)}</Amount>
                 </p>
               ) : null}
             </Link>

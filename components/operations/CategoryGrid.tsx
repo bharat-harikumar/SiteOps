@@ -1,5 +1,6 @@
 "use client";
 
+import { Amount } from "@/components/ui/Amount";
 import Link from "next/link";
 
 import { EntryTypeIcon } from "@/components/constants/EntryTypeIcon";
@@ -42,7 +43,7 @@ export default function CategoryGrid({ entries, type, siteId }: CategoryGridProp
           </div>
           <div className="flex items-center justify-between">
             <p className="text-xs text-slate-500">{summary.count} entries</p>
-            <p className="text-sm font-bold text-sky-400">{formatCurrency(summary.totalSpend)}</p>
+            <p className="text-sm font-bold text-sky-400"><Amount>{formatCurrency(summary.totalSpend)}</Amount></p>
           </div>
           {summary.lastActivity ? (
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">

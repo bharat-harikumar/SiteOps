@@ -1,5 +1,6 @@
 'use client';
 
+import { Amount } from "@/components/ui/Amount";
 import { useEffect, useState } from 'react';
 
 import { ApiUnavailableBanner } from '@/components/ui/ApiUnavailableBanner';
@@ -95,7 +96,7 @@ export function AdminExpensesPageClient({
         </div>
         <div className="rounded-[1.5rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
           <div className="text-[10px] font-black uppercase tracking-[0.28em] text-on-surface-variant">Total</div>
-          <div className="mt-2 text-2xl font-black text-on-surface">₹{total.toLocaleString('en-IN')}</div>
+          <div className="mt-2 text-2xl font-black text-on-surface"><Amount>₹{total.toLocaleString('en-IN')}</Amount></div>
         </div>
       </section>
 
@@ -112,7 +113,7 @@ export function AdminExpensesPageClient({
                       <div className="text-sm text-on-surface-variant">{formatDate(entry.date)}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-base font-black text-on-surface">₹{Number(entry.amount).toLocaleString('en-IN')}</div>
+                      <div className="text-base font-black text-on-surface"><Amount>₹{Number(entry.amount).toLocaleString('en-IN')}</Amount></div>
                       <div className="text-xs font-black uppercase tracking-[0.24em] text-on-surface-variant">{entry.category}</div>
                     </div>
                   </div>

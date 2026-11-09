@@ -1,5 +1,6 @@
 "use client";
 
+import { Amount } from "@/components/ui/Amount";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -120,7 +121,7 @@ export default function EntryLogList({
               <div className="flex items-center gap-2">
                 <span className="text-xs font-extrabold uppercase tracking-widest text-slate-500">Day total</span>
                 <span className="text-xs font-bold text-sky-400">
-                  {formatCurrency(rows.reduce((sum, row) => sum + row.total, 0))}
+                  <Amount>{formatCurrency(rows.reduce((sum, row) => sum + row.total, 0))}</Amount>
                 </span>
               </div>
             ) : null}
@@ -150,7 +151,7 @@ export default function EntryLogList({
                     <div className="mt-3 rounded-xl border border-sky-500/10 bg-sky-500/5 px-3 py-2">
                       <p className="text-xs font-extrabold uppercase tracking-widest text-slate-500">Running total</p>
                       <p className="text-sm font-extrabold text-sky-400">
-                        {formatCurrency(runningTotals.get(runningKey) ?? row.total)}
+                        <Amount>{formatCurrency(runningTotals.get(runningKey) ?? row.total)}</Amount>
                       </p>
                     </div>
                   ) : null}

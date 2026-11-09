@@ -1,5 +1,6 @@
 "use client";
 
+import { Amount } from "@/components/ui/Amount";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from 'next/navigation';
@@ -145,7 +146,7 @@ export default function OperationDetailPageClient({
             <p className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Logs</p>
             {(type === "labour" || type === "material" || type === "machinery" || type === "expense") ? (
-              <p className="mt-2 text-sm font-bold text-sky-400">{formatCurrency(totalSpend)}</p>
+              <p className="mt-2 text-sm font-bold text-sky-400"><Amount>{formatCurrency(totalSpend)}</Amount></p>
             ) : null}
           </div>
         </div>
@@ -287,7 +288,7 @@ export default function OperationDetailPageClient({
           {stageTotals.map((item) => (
             <div key={item.stage} className="card-standard p-4">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{item.stage}</p>
-              <p className="mt-1 text-lg font-extrabold text-white">{formatCurrency(item.total)}</p>
+              <p className="mt-1 text-lg font-extrabold text-white"><Amount>{formatCurrency(item.total)}</Amount></p>
             </div>
           ))}
         </section>

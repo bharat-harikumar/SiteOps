@@ -10,6 +10,8 @@ import { requestJson, type ClientResult } from '@/lib/http/client';
 import { useApiResult } from '@/lib/http/useApiQuery';
 import { toastClientError, toastSuccess } from '@/lib/ui/toast';
 import { DangerZone } from './DangerZone';
+import { Toggle } from '@/components/ui/Toggle';
+import { usePrivacyMode } from '@/lib/ui/usePrivacyMode';
 import { friendlyErrorMessage } from '@/lib/ui/toastMessages';
 
 type ProfileResponse = {
@@ -50,6 +52,9 @@ export function ProfilePageClient({
     fallbackData: { ok: true, data: initialProfile, status: 200 } as ClientResult<ProfileResponse>,
   });
   const [saving, setSaving] = useState(false);
+  // From the verified server session, so the toggle never flickers away on an SWR error.
+  const isAdmin = initialProfile.user.role === 'Admin';
+  const [hideAmounts, setHideAmounts] = usePrivacyMode();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -128,6 +133,16 @@ export function ProfilePageClient({
         <ReadOnlyRow label="Region" value={profile?.assignedRegion ?? '—'} />
         <ReadOnlyRow label="Designation" value={profile?.designation ?? '—'} />
       </section>
+
+      {isAdmin ? (
+        <section className="card-standard rounded-2xl p-4 flex flex-col gap-3">
+          <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Privacy</h3>
+          <p className="text-xs text-on-surface-variant">
+            Show ₹ **** instead of budgets and amounts. Applies to this device only.
+          </p>
+          <Toggle checked={hideAmounts} onChange={setHideAmounts} label="Hide amounts" />
+        </section>
+      ) : null}
 
       <form onSubmit={update} className="card-standard flex flex-col gap-4 rounded-2xl p-4">
         <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Update Profile</h3>

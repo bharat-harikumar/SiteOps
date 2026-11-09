@@ -1,5 +1,6 @@
 "use client";
 
+import { Amount } from "@/components/ui/Amount";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useNavRouter } from '@/lib/nav/useNavRouter';
@@ -262,7 +263,7 @@ export default function AllOperationsPageClient({
           <div className="text-right">
             <p className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Logs</p>
-            <p className="mt-2 text-sm font-bold text-sky-400">{formatCurrency(grandTotal)}</p>
+            <p className="mt-2 text-sm font-bold text-sky-400"><Amount>{formatCurrency(grandTotal)}</Amount></p>
           </div>
         </div>
       </section>
@@ -430,7 +431,7 @@ export default function AllOperationsPageClient({
               <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">{formatDate(date)}</h2>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-extrabold uppercase tracking-widest text-slate-500">Day total</span>
-                <span className="text-xs font-bold text-sky-400">{formatCurrency(dayTotal)}</span>
+                <span className="text-xs font-bold text-sky-400"><Amount>{formatCurrency(dayTotal)}</Amount></span>
               </div>
             </div>
 

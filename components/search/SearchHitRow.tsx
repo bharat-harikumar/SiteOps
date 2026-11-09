@@ -1,5 +1,6 @@
 'use client';
 
+import { Amount } from "@/components/ui/Amount";
 import { EntryTypeIcon } from '@/components/constants/EntryTypeIcon';
 import { formatCurrency } from '@/components/operations/entryFormat';
 import { splitHighlight } from '@/lib/search/highlight';
@@ -61,7 +62,7 @@ export function SearchHitRow({ hit, query, active = false, optionId, onSelect }:
       </span>
       {hit.amount != null && (
         <span className="mt-0.5 shrink-0 text-xs font-bold text-sky-400 tabular-nums">
-          {formatCurrency(hit.amount)}
+          <Amount>{formatCurrency(hit.amount)}</Amount>
         </span>
       )}
     </button>

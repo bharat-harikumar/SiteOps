@@ -196,6 +196,21 @@
   }
 }
 
+/* "Hide amounts" demo mode (components/ui/Amount.tsx, lib/ui/privacy.ts).
+   <Amount> renders the real figure and a fixed "₹ ****" mask; this picks one.
+   Admin-only via AppShell's [data-privacy-scope]. */
+[data-amount-mask] {
+  display: none;
+}
+
+html[data-privacy="on"] [data-privacy-scope] [data-amount-value] {
+  display: none;
+}
+
+html[data-privacy="on"] [data-privacy-scope] [data-amount-mask] {
+  display: inline;
+}
+
 /* Reduced-motion fallback (WCAG 2.3.3): kill CSS transitions/animations for
    users who request it. motion/react animations are handled separately via
    <MotionConfig reducedMotion="user"> in app/providers.tsx. */
