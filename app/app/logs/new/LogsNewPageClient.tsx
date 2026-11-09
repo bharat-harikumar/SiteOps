@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { MapPin, ChevronRight, Plus } from "lucide-react";
 
 import { CategoryPicker, type CategoryOption } from "@/components/logs/CategoryPicker";
+import { ReportingFromCard } from "@/components/logs/ReportingFromCard";
 
 type SiteOption = {
   siteId: string;
@@ -95,19 +96,9 @@ export function LogsNewPageClient({ initialCategories, initialSites, siteId, rol
             exit={{ opacity: 0, x: -20 }}
             className="space-y-4"
           >
-            {/* Selected site banner */}
-            <div className="card-standard p-4 border-sky-500/10 bg-sky-500/5">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 bg-sky-500/10 border border-sky-500/20 rounded-xl flex items-center justify-center shrink-0">
-                    <MapPin className="w-5 h-5 text-sky-400" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Reporting From</p>
-                    <p className="text-sm font-bold text-white truncate">{selectedSite?.name}</p>
-                    <p className="text-xs text-slate-500 italic">{selectedSite?.location}</p>
-                  </div>
-                </div>
+            <ReportingFromCard
+              site={selectedSite}
+              action={
                 <button
                   type="button"
                   onClick={() => setSelectedSiteId(null)}
@@ -115,8 +106,8 @@ export function LogsNewPageClient({ initialCategories, initialSites, siteId, rol
                 >
                   Change
                 </button>
-              </div>
-            </div>
+              }
+            />
 
             <CategoryPicker
               initialCategories={initialCategories}
