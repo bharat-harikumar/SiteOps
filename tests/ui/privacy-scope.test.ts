@@ -52,3 +52,15 @@ describe("hide-values wiring", () => {
     expect(layout).toMatch(/<html[^>]*suppressHydrationWarning/);
   });
 });
+
+describe("hide-values toggle", () => {
+  const profile = read("app/app/profile/ProfilePageClient.tsx");
+
+  test("Profile shows the Hide values toggle only to admins", () => {
+    const guarded = profile.match(/isAdmin \? \(\s*<section[\s\S]*?<\/section>\s*\) : null/);
+    expect(guarded?.[0]).toContain('label="Hide values"');
+    expect(guarded?.[0]).toContain("<Toggle");
+    expect(profile.match(/Hide values/g)).toHaveLength(1);
+    expect(profile).toMatch(/const isAdmin = initialProfile\.user\.role === ['"]Admin['"]/);
+  });
+});

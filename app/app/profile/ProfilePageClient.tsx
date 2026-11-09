@@ -10,6 +10,8 @@ import { requestJson, type ClientResult } from '@/lib/http/client';
 import { useApiResult } from '@/lib/http/useApiQuery';
 import { toastClientError, toastSuccess } from '@/lib/ui/toast';
 import { DangerZone } from './DangerZone';
+import { Toggle } from '@/components/ui/Toggle';
+import { usePrivacyMode } from '@/lib/ui/usePrivacyMode';
 import { friendlyErrorMessage } from '@/lib/ui/toastMessages';
 
 type ProfileResponse = {
@@ -35,7 +37,7 @@ function ReadOnlyRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between border-b border-outline-variant px-4 py-3 last:border-b-0">
       <span className={labelClass}>{label}</span>
-      <span className="text-sm font-medium text-on-surface">{value}</span>
+      <span data-private className="text-sm font-medium text-on-surface">{value}</span>
     </div>
   );
 }
@@ -50,6 +52,9 @@ export function ProfilePageClient({
     fallbackData: { ok: true, data: initialProfile, status: 200 } as ClientResult<ProfileResponse>,
   });
   const [saving, setSaving] = useState(false);
+  // From the verified server session, so the toggle never flickers away on an SWR error.
+  const isAdmin = initialProfile.user.role === 'Admin';
+  const [hideValues, setHideValues] = usePrivacyMode();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -101,7 +106,9 @@ export function ProfilePageClient({
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
           <CircleUserRound className="w-10 h-10" />
         </div>
-        <h2 className="text-xl font-bold text-on-surface">{user?.email ?? '—'}</h2>
+        <h2 className="text-xl font-bold text-on-surface">
+          <span data-private>{user?.email ?? '—'}</span>
+        </h2>
         {profile?.designation ? (
           <p className="text-sm text-on-surface-variant">{profile.designation}</p>
         ) : null}
@@ -128,6 +135,16 @@ export function ProfilePageClient({
         <ReadOnlyRow label="Region" value={profile?.assignedRegion ?? '—'} />
         <ReadOnlyRow label="Designation" value={profile?.designation ?? '—'} />
       </section>
+
+      {isAdmin ? (
+        <section className="card-standard rounded-2xl p-4 flex flex-col gap-3">
+          <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Privacy</h3>
+          <p className="text-xs text-on-surface-variant">
+            Blur names, sites and amounts for demos. Applies to this device only.
+          </p>
+          <Toggle checked={hideValues} onChange={setHideValues} label="Hide values" />
+        </section>
+      ) : null}
 
       <form onSubmit={update} className="card-standard flex flex-col gap-4 rounded-2xl p-4">
         <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Update Profile</h3>
