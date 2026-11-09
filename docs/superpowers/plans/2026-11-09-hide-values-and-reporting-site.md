@@ -189,4 +189,12 @@ Sub-tasks 4a (dashboard+sites+operations), 4b (search+notifications+admin+reques
 
 ## Verification record
 
-_To be filled by the implementer in Task 5._
+Recorded 2026-11-09 on `feat/hide-values-and-reporting-site`.
+
+- `npm test`: 1163 passed, 85 skipped, 1 failed — `lib/tools/query.test.ts` refuses to run without the disposable `siteops_tools_test` database (environment guard; unrelated to this change).
+- Focused suites (`tests/ui lib/ui lib/nav components`): 344/344 passed.
+- `npm run lint`: clean. `npm run build`: compiled successfully.
+- Every test was watched failing before its implementation (privacy store, scope fence, profile fence, `reportingSiteFor`, reporting-card fence, coverage fence listing 35 untagged files).
+- Coverage fence adjusted against reality: `logs/[entryId]` (edit form only), `ToolsHub` / `ToolLedgerDrawer` (catalog names only) and `AssignmentPanel` (not rendered) removed. Existing `toolsViews` tests now compare visible text.
+- Visual QA (partial): real components (`ReportingFromCard`, `SiteRow`, entry summaries, a KPI block) rendered with the built CSS and screenshotted at 390px in both states. Layout identical; blur stays in its own box. Found and fixed: a truncated name's "…" stayed sharp (tag moved to the truncating element).
+- **Not yet done:** Task 5 steps 1–4 against the running app with a signed-in admin and supervisor (needs credentials), the reload-flash check, the reduced-motion check and the real-phone performance check (A10).
