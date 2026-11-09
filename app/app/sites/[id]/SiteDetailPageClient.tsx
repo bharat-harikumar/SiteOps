@@ -157,8 +157,8 @@ export default function SiteDetailPageClient({
                   #{site.siteId.slice(0, 8)}
                 </span>
               </div>
-              <h2 className="text-3xl font-extrabold text-white uppercase tracking-tight leading-none truncate">
-                <span data-private>{site.name}</span>
+              <h2 data-private className="text-3xl font-extrabold text-white uppercase tracking-tight leading-none truncate">
+                {site.name}
               </h2>
               <div className="flex items-center gap-1.5 text-slate-400 font-medium italic text-sm">
                 <MapPin className="w-4 h-4 text-sky-500" />

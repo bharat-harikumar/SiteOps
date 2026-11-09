@@ -28,11 +28,12 @@ export function ReportingFromCard({
             <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Reporting From</p>
             {site ? (
               <>
-                <p className="text-sm font-bold text-white truncate">
-                  <span data-private>{site.name}</span>
+                {/* Tag the truncating element so its "…" blurs too. */}
+                <p data-private className="text-sm font-bold text-white truncate">
+                  {site.name}
                 </p>
-                <p className="text-xs text-slate-500 italic truncate">
-                  <span data-private>{site.location}</span>
+                <p data-private className="text-xs text-slate-500 italic truncate">
+                  {site.location}
                 </p>
               </>
             ) : (
