@@ -25,7 +25,7 @@ function Identity({ user, isSelf, wrap = false }: { user: AdminUser; isSelf: boo
         aria-hidden
         className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-surface-container text-xs font-black text-on-surface-variant"
       >
-        {initialsFor(user.email)}
+        <span data-private>{initialsFor(user.email)}</span>
       </span>
       <div className="min-w-0">
         <p className={`flex gap-2 ${wrap ? 'items-start' : 'items-center'}`}>
@@ -33,7 +33,7 @@ function Identity({ user, isSelf, wrap = false }: { user: AdminUser; isSelf: boo
             className={`text-sm font-bold text-on-surface ${wrap ? 'min-w-0 break-all' : 'truncate'} ${user.email ? '' : 'font-mono'}`}
             title={label}
           >
-            {label}
+            <span data-private>{label}</span>
           </span>
           {isSelf ? (
             <span className="shrink-0 rounded-full border border-primary/40 px-2 py-0.5 text-[10px] font-bold uppercase text-primary">

@@ -79,11 +79,11 @@ export function ResourceRequests({ initialRequests }: { initialRequests: Resourc
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="text-base font-black text-slate-100">{request.requestType}</div>
-                <div className="text-sm text-slate-400">Site {request.siteId}</div>
+                <div className="text-sm text-slate-400">Site <span data-private>{request.siteId}</span></div>
               </div>
               <span className="badge-sky">{request.status}</span>
             </div>
-            <p className="mt-3 text-sm font-medium text-slate-200">{request.details}</p>
+            <p className="mt-3 text-sm font-medium text-slate-200"><span data-private>{request.details}</span></p>
             {request.status === 'Pending' ? (
               <div className="mt-4 flex flex-wrap gap-2">
                 <button

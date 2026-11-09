@@ -187,7 +187,7 @@ export function FieldRequestsPageClient({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-sm font-semibold text-on-surface">{request.proposedName}</div>
-                    <div className="text-[10px] font-semibold mt-0.5 text-on-surface-variant">Site {request.siteId}</div>
+                    <div className="text-[10px] font-semibold mt-0.5 text-on-surface-variant">Site <span data-private>{request.siteId}</span></div>
                   </div>
                   <span className={`rounded-full px-2 py-1 text-xs font-semibold uppercase ${statusChip(request.status)}`}>
                     {request.status}

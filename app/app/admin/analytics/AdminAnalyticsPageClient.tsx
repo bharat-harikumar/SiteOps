@@ -76,28 +76,28 @@ export function AdminAnalyticsPageClient({
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             <div className="rounded-[1.5rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
               <div className="text-[10px] font-black uppercase tracking-[0.28em] text-on-surface-variant">Sites</div>
-              <div className="mt-2 text-2xl font-black text-on-surface">{result.data.sites}</div>
+              <div data-private className="mt-2 text-2xl font-black text-on-surface">{result.data.sites}</div>
             </div>
             <div className="rounded-[1.5rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
               <div className="text-[10px] font-black uppercase tracking-[0.28em] text-on-surface-variant">Labour</div>
-              <div className="mt-2 text-2xl font-black text-on-surface">{result.data.entries.labour}</div>
+              <div data-private className="mt-2 text-2xl font-black text-on-surface">{result.data.entries.labour}</div>
             </div>
             <div className="rounded-[1.5rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
               <div className="text-[10px] font-black uppercase tracking-[0.28em] text-on-surface-variant">Expense</div>
-              <div className="mt-2 text-2xl font-black text-on-surface">{result.data.entries.expense}</div>
+              <div data-private className="mt-2 text-2xl font-black text-on-surface">{result.data.entries.expense}</div>
             </div>
             <div className="rounded-[1.5rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
               <div className="text-[10px] font-black uppercase tracking-[0.28em] text-on-surface-variant">Requests</div>
-              <div className="mt-2 text-2xl font-black text-on-surface">{result.data.resourceRequests}</div>
+              <div data-private className="mt-2 text-2xl font-black text-on-surface">{result.data.resourceRequests}</div>
             </div>
           </div>
 
           <div className="rounded-[1.75rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
             <h3 className="text-lg font-black text-on-surface">Breakdown</h3>
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-3">
-              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Material: <span className="font-black">{result.data.entries.material}</span></div>
-              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Machinery: <span className="font-black">{result.data.entries.machinery}</span></div>
-              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Incident: <span className="font-black">{result.data.entries.incident}</span></div>
+              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Material: <span data-private className="font-black">{result.data.entries.material}</span></div>
+              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Machinery: <span data-private className="font-black">{result.data.entries.machinery}</span></div>
+              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Incident: <span data-private className="font-black">{result.data.entries.incident}</span></div>
             </div>
           </div>
         </section>

@@ -80,12 +80,18 @@ export function TransferApprovals({ initialTransfers }: { initialTransfers: Tran
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="text-base font-black text-slate-100">{transfer.resourceType} Transfer</div>
-                <div className="text-sm text-slate-400">{transfer.fromSiteId} → {transfer.toSiteId}</div>
+                <div className="text-sm text-slate-400"><span data-private>{transfer.fromSiteId}</span> → <span data-private>{transfer.toSiteId}</span></div>
               </div>
               <span className="badge-sky">{transfer.status}</span>
             </div>
             <p className="mt-3 text-sm font-medium text-slate-200">
-              Qty: {transfer.quantity}{transfer.remarks ? ` • ${transfer.remarks}` : ''}
+              Qty: <span data-private>{transfer.quantity}</span>
+              {transfer.remarks ? (
+                <>
+                  {' • '}
+                  <span data-private>{transfer.remarks}</span>
+                </>
+              ) : null}
             </p>
             {transfer.status === 'Pending' ? (
               <div className="mt-4 flex flex-wrap gap-2">

@@ -144,7 +144,7 @@ export function AppHeader({ role, email = '', initialUnread = 0 }: Props) {
             aria-current={onProfile ? 'page' : undefined}
           >
             <div className="text-right hidden sm:block">
-              <p className="max-w-[14rem] truncate text-xs font-bold text-white leading-none">{email || 'Signed in'}</p>
+              <p className="max-w-[14rem] truncate text-xs font-bold text-white leading-none"><span data-private>{email || 'Signed in'}</span></p>
               <p className="text-[11px] text-slate-400 uppercase tracking-widest mt-1">{role}</p>
             </div>
             <div

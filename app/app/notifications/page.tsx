@@ -144,10 +144,10 @@ export default function NotificationsPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-sm font-semibold text-on-surface">{notification.title}</h3>
+                    <h3 className="text-sm font-semibold text-on-surface"><span data-private>{notification.title}</span></h3>
                     {unread ? <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" aria-label="unread" /> : null}
                   </div>
-                  <p className="mt-0.5 text-sm text-on-surface-variant">{notification.message}</p>
+                  <p className="mt-0.5 text-sm text-on-surface-variant"><span data-private>{notification.message}</span></p>
                   <div className="mt-2 flex items-center justify-between gap-3 text-xs text-on-surface-variant">
                     <span>{formatDateTime(notification.createdAt)}</span>
                     <div className="flex items-center gap-3">

@@ -124,7 +124,7 @@ export default function AdminLiveFeedPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-white">
-                    <span className="font-semibold uppercase">{activity.type}</span> entry logged at site {activity.siteId}.
+                    <span className="font-semibold uppercase">{activity.type}</span> entry logged at site <span data-private>{activity.siteId}</span>.
                   </p>
                   <p className="text-[10px] font-semibold mt-0.5 text-on-surface-variant">
                     {formatDateTime(activity.createdAt)}
