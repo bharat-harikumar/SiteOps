@@ -31,19 +31,19 @@ export function ToolDashboardStrip() {
       className="flex flex-wrap gap-x-5 gap-y-2 rounded-xl border border-white/10 bg-slate-900/50 px-4 py-3 text-sm text-slate-300"
     >
       <span>
-        <strong data-private className="font-semibold tabular-nums text-white">
+        <strong className="font-semibold tabular-nums text-white">
           {data.totalQuantity}
         </strong>{" "}
         items total
       </span>
       <span>
-        <strong data-private className="font-semibold tabular-nums text-emerald-400">
+        <strong className="font-semibold tabular-nums text-emerald-400">
           {data.free}
         </strong>{" "}
         in godown
       </span>
       <span>
-        <strong data-private className="font-semibold tabular-nums text-blue-400">
+        <strong className="font-semibold tabular-nums text-blue-400">
           {data.deployed}
         </strong>{" "}
         at sites

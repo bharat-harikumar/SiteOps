@@ -1,5 +1,6 @@
 'use client';
 
+import { AMOUNT_MASK, Amount } from "@/components/ui/Amount";
 import Link from 'next/link';
 import { useState } from 'react';
 import { useNavRouter } from '@/lib/nav/useNavRouter';
@@ -157,12 +158,12 @@ export default function SiteDetailPageClient({
                   #{site.siteId.slice(0, 8)}
                 </span>
               </div>
-              <h2 data-private className="text-3xl font-extrabold text-white uppercase tracking-tight leading-none truncate">
+              <h2 className="text-3xl font-extrabold text-white uppercase tracking-tight leading-none truncate">
                 {site.name}
               </h2>
               <div className="flex items-center gap-1.5 text-slate-400 font-medium italic text-sm">
                 <MapPin className="w-4 h-4 text-sky-500" />
-                <span data-private>{site.location}</span>
+                {site.location}
               </div>
             </div>
             {(canEditSite || canDeleteSite) ? (
@@ -197,12 +198,20 @@ export default function SiteDetailPageClient({
               { label: 'Phase', val: site.currentPhase ?? '—', icon: Layers },
               {
                 label: 'Budget',
-                val: formatBudgetPair(trackedSpend, site.budget),
-                sub: site.budget ? `${Math.round((Number(trackedSpend) / Number(site.budget)) * 100)}% used` : null,
+                val: (
+                  <Amount mask={site.budget ? `${AMOUNT_MASK} / ${AMOUNT_MASK}` : AMOUNT_MASK}>
+                    {formatBudgetPair(trackedSpend, site.budget)}
+                  </Amount>
+                ),
+                // Derived from the budget, so it's hidden with it.
+                sub: site.budget ? (
+                  <Amount mask="**% used">
+                    {`${Math.round((Number(trackedSpend) / Number(site.budget)) * 100)}% used`}
+                  </Amount>
+                ) : null,
                 icon: TrendingUp,
-                hidden: true,
               },
-              { label: 'Progress', val: `${progress}%`, icon: Clock, highlight: true, hidden: true },
+              { label: 'Progress', val: `${progress}%`, icon: Clock, highlight: true },
               { label: 'Status', val: site.status, icon: AlertCircle },
             ].map((stat) => (
               <div key={stat.label} className="space-y-0.5">
@@ -211,10 +220,10 @@ export default function SiteDetailPageClient({
                   <span className="text-[9px] font-bold uppercase tracking-widest leading-none">{stat.label}</span>
                 </div>
                 <p className={`text-xl font-extrabold tracking-tight ${stat.highlight ? 'text-sky-400' : 'text-white'}`}>
-                  <span data-private={'hidden' in stat ? '' : undefined}>{stat.val}</span>
+                  {stat.val}
                 </p>
                 {'sub' in stat && stat.sub ? (
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500"><span data-private>{stat.sub}</span></p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{stat.sub}</p>
                 ) : null}
               </div>
             ))}
@@ -268,10 +277,10 @@ export default function SiteDetailPageClient({
         <div className="flex items-center gap-3 shrink-0">
           <div className="text-right">
             <p className="text-lg font-extrabold text-sky-400">
-              <span data-private>{formatCompactCurrency(allOperationsSummary.totalSpend) ?? '₹0'}</span>
+              <Amount>{formatCompactCurrency(allOperationsSummary.totalSpend) ?? '₹0'}</Amount>
             </p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-              <span data-private>{allOperationsSummary.totalCount.toLocaleString('en-IN')}</span> entries
+              {allOperationsSummary.totalCount.toLocaleString('en-IN')} entries
             </p>
           </div>
           <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-sky-400 transition-colors" />
@@ -321,11 +330,11 @@ export default function SiteDetailPageClient({
               {/* Today: primary stat */}
               <div className="mt-4 flex items-baseline justify-between gap-3">
                 <div className="min-w-0">
-                  <p data-private className="text-3xl font-extrabold text-white leading-none">{summary.todayCount}</p>
+                  <p className="text-3xl font-extrabold text-white leading-none">{summary.todayCount}</p>
                   <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Today</p>
                 </div>
                 {todaySpend ? (
-                  <p data-private className="text-sm font-bold text-slate-200 shrink-0">{todaySpend}</p>
+                  <p className="text-sm font-bold text-slate-200 shrink-0"><Amount>{todaySpend}</Amount></p>
                 ) : null}
               </div>
 
@@ -335,15 +344,15 @@ export default function SiteDetailPageClient({
               {/* All-time: secondary stat */}
               <div className="flex items-center justify-between gap-3 text-xs">
                 <span className="font-semibold text-slate-400 truncate">
-                  <span data-private>{summary.totalCount.toLocaleString('en-IN')}</span> {totalLabel} all-time
+                  {summary.totalCount.toLocaleString('en-IN')} {totalLabel} all-time
                 </span>
                 {totalSpend ? (
-                  <span data-private className="font-bold text-slate-300 shrink-0">{totalSpend}</span>
+                  <span className="font-bold text-slate-300 shrink-0"><Amount>{totalSpend}</Amount></span>
                 ) : null}
               </div>
               {summary.totalOtSpend ? (
                 <p className="mt-1 text-right text-[11px] font-semibold text-slate-500">
-                  incl. OT <span data-private>{formatCompactCurrency(summary.totalOtSpend)}</span>
+                  incl. OT <Amount>{formatCompactCurrency(summary.totalOtSpend)}</Amount>
                 </p>
               ) : null}
             </Link>

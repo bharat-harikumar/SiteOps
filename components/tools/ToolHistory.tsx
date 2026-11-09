@@ -74,7 +74,7 @@ export function ToolHistory({
                     {MOVEMENT_LABELS[m.kind] ?? "Tool movement"}
                   </p>
                 </div>
-                <span data-private className="shrink-0 text-base font-bold tabular-nums text-white">
+                <span className="shrink-0 text-base font-bold tabular-nums text-white">
                   ×{m.quantity}
                 </span>
               </div>
@@ -84,10 +84,10 @@ export function ToolHistory({
                     className="text-blue-400 underline-offset-4 hover:underline"
                     href={m.from.href}
                   >
-                    <span data-private>{m.from.label}</span>
+                    {m.from.label}
                   </Link>
                 ) : (
-                  <span data-private>{m.from.label}</span>
+                  m.from.label
                 )}{" "}
                 <span aria-label="to">→</span>{" "}
                 {m.to.href ? (
@@ -95,19 +95,19 @@ export function ToolHistory({
                     className="text-blue-400 underline-offset-4 hover:underline"
                     href={m.to.href}
                   >
-                    <span data-private>{m.to.label}</span>
+                    {m.to.label}
                   </Link>
                 ) : (
-                  <span data-private>{m.to.label}</span>
+                  m.to.label
                 )}
               </p>
               {m.note ? (
                 <p className="mt-2 whitespace-pre-wrap break-words text-sm text-slate-300">
-                  <span data-private>{m.note}</span>
+                  {m.note}
                 </p>
               ) : null}
               <p className="mt-3 text-xs text-slate-400">
-                <span data-private>{m.actorName}</span> ·{" "}
+                {m.actorName} ·{" "}
                 <time dateTime={m.createdAt}>
                   {new Date(m.createdAt).toLocaleString("en-IN", {
                     dateStyle: "medium",

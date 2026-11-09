@@ -37,11 +37,11 @@ export function ToolRow({
       </div>
       <p className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-300">
         <span>
-          <strong data-private className="tabular-nums text-white">{tool.free}</strong> in
+          <strong className="tabular-nums text-white">{tool.free}</strong> in
           godown
         </span>
         <span>
-          <strong data-private className="tabular-nums text-white">{atSites}</strong> at
+          <strong className="tabular-nums text-white">{atSites}</strong> at
           sites
         </span>
       </p>
@@ -62,10 +62,10 @@ export function ToolRow({
                   href={`/app/sites/${encodeURIComponent(a.siteId)}/tools`}
                   className="flex min-h-11 items-center justify-between gap-3 py-2 text-sm text-slate-300 hover:text-blue-400"
                 >
-                  <span data-private className="min-w-0 break-words">
+                  <span className="min-w-0 break-words">
                     {sites.find((s) => s.siteId === a.siteId)?.name ?? "Site"}
                   </span>
-                  <span className="shrink-0 tabular-nums"><span data-private>{a.qty}</span> here →</span>
+                  <span className="shrink-0 tabular-nums">{a.qty} here →</span>
                 </Link>
               </li>
             ))}

@@ -37,7 +37,7 @@ function ReadOnlyRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between border-b border-outline-variant px-4 py-3 last:border-b-0">
       <span className={labelClass}>{label}</span>
-      <span data-private className="text-sm font-medium text-on-surface">{value}</span>
+      <span className="text-sm font-medium text-on-surface">{value}</span>
     </div>
   );
 }
@@ -54,7 +54,7 @@ export function ProfilePageClient({
   const [saving, setSaving] = useState(false);
   // From the verified server session, so the toggle never flickers away on an SWR error.
   const isAdmin = initialProfile.user.role === 'Admin';
-  const [hideValues, setHideValues] = usePrivacyMode();
+  const [hideAmounts, setHideAmounts] = usePrivacyMode();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -106,9 +106,7 @@ export function ProfilePageClient({
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
           <CircleUserRound className="w-10 h-10" />
         </div>
-        <h2 className="text-xl font-bold text-on-surface">
-          <span data-private>{user?.email ?? '—'}</span>
-        </h2>
+        <h2 className="text-xl font-bold text-on-surface">{user?.email ?? '—'}</h2>
         {profile?.designation ? (
           <p className="text-sm text-on-surface-variant">{profile.designation}</p>
         ) : null}
@@ -140,9 +138,9 @@ export function ProfilePageClient({
         <section className="card-standard rounded-2xl p-4 flex flex-col gap-3">
           <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Privacy</h3>
           <p className="text-xs text-on-surface-variant">
-            Blur names, sites and amounts for demos. Applies to this device only.
+            Show ₹ **** instead of budgets and amounts. Applies to this device only.
           </p>
-          <Toggle checked={hideValues} onChange={setHideValues} label="Hide values" />
+          <Toggle checked={hideAmounts} onChange={setHideAmounts} label="Hide amounts" />
         </section>
       ) : null}
 

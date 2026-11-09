@@ -1,8 +1,8 @@
-// "Hide values" demo mode (admin only). Purely presentational: nodes tagged
-// `data-private` are blurred by one CSS rule in app/globals.css while
-// <html data-privacy="on"> is set AND they sit inside AppShell's Admin-only
-// [data-privacy-scope]. Values stay in the DOM — this is for over-the-shoulder
-// demos, not a security boundary.
+// "Hide amounts" demo mode (admin only). Purely presentational: every rupee
+// figure renders through <Amount> (components/ui/Amount.tsx), and CSS in
+// app/globals.css swaps it for "₹ ****" while <html data-privacy="on"> is set
+// AND it sits inside AppShell's Admin-only [data-privacy-scope]. Real values
+// stay in the DOM — this is for over-the-shoulder demos, not a security boundary.
 
 export const HIDE_VALUES_KEY = "siteops:hide-values";
 

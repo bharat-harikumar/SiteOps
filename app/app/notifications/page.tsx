@@ -1,5 +1,6 @@
 'use client';
 
+import { AMOUNT_MASK, Amount } from '@/components/ui/Amount';
 import { AlertTriangle, ClipboardCheck, Megaphone, Wallet, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useOptimistic, useState } from 'react';
@@ -144,10 +145,20 @@ export default function NotificationsPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-sm font-semibold text-on-surface"><span data-private>{notification.title}</span></h3>
+                    <h3 className="text-sm font-semibold text-on-surface">{notification.title}</h3>
                     {unread ? <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" aria-label="unread" /> : null}
                   </div>
-                  <p className="mt-0.5 text-sm text-on-surface-variant"><span data-private>{notification.message}</span></p>
+                  <p className="mt-0.5 text-sm text-on-surface-variant">
+                    {/* Budget alerts carry the spend and budget in their text
+                        (app/api/entries/expenses/route.ts), so mask the message. */}
+                    {notification.type === 'budget_alert' ? (
+                      <Amount mask={`Site spend is at ${AMOUNT_MASK} of budget ${AMOUNT_MASK}`}>
+                        {notification.message}
+                      </Amount>
+                    ) : (
+                      notification.message
+                    )}
+                  </p>
                   <div className="mt-2 flex items-center justify-between gap-3 text-xs text-on-surface-variant">
                     <span>{formatDateTime(notification.createdAt)}</span>
                     <div className="flex items-center gap-3">

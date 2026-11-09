@@ -87,8 +87,8 @@ export function ArchivedSites({ sites }: { sites: ArchivedSite[] }) {
             {sites.map((s) => (
               <li key={s.siteId} className="flex items-center justify-between gap-3 px-4 py-3.5">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-bold uppercase tracking-tight text-slate-200" data-private>{s.name}</p>
-                  <p className="text-[11px] text-slate-500"><span data-private>{s.location}</span></p>
+                  <p className="truncate text-sm font-bold uppercase tracking-tight text-slate-200">{s.name}</p>
+                  <p className="text-[11px] text-slate-500">{s.location}</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <button

@@ -183,16 +183,16 @@ export function ResourceRequestsPageClient({
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm font-semibold text-on-surface">{request.requestType}</div>
-                      <div className="text-[10px] font-semibold text-on-surface-variant">Site <span data-private>{request.siteId}</span></div>
+                      <div className="text-[10px] font-semibold text-on-surface-variant">Site {request.siteId}</div>
                     </div>
                   </div>
                   <span className={`rounded-full px-2 py-1 text-xs font-semibold uppercase ${statusChip(request.status)}`}>
                     {request.status}
                   </span>
                 </div>
-                <p className="text-sm text-on-surface"><span data-private>{request.details}</span></p>
+                <p className="text-sm text-on-surface">{request.details}</p>
                 <p className="text-[10px] font-semibold text-on-surface-variant">
-                  <span className="uppercase">Reason:</span> <span data-private>{request.reason}</span>
+                  <span className="uppercase">Reason:</span> {request.reason}
                 </p>
                 {request.status === 'Pending' ? (
                   <div className="flex flex-wrap gap-2">

@@ -1,5 +1,6 @@
 "use client";
 
+import { Amount } from "@/components/ui/Amount";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from 'next/navigation';
@@ -136,16 +137,16 @@ export default function OperationDetailPageClient({
                 <h1 className="text-2xl font-extrabold uppercase tracking-tight text-white">
                   {typeLabel[type]} Logs
                 </h1>
-                <p className="text-xs text-slate-500 font-semibold"><span data-private>{site.name}</span></p>
+                <p className="text-xs text-slate-500 font-semibold">{site.name}</p>
               </div>
             </div>
           </div>
 
           <div className="text-right">
-            <p data-private className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
+            <p className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Logs</p>
             {(type === "labour" || type === "material" || type === "machinery" || type === "expense") ? (
-              <p data-private className="mt-2 text-sm font-bold text-sky-400">{formatCurrency(totalSpend)}</p>
+              <p className="mt-2 text-sm font-bold text-sky-400"><Amount>{formatCurrency(totalSpend)}</Amount></p>
             ) : null}
           </div>
         </div>
@@ -244,7 +245,7 @@ export default function OperationDetailPageClient({
               Site
             </span>
             <div className="input-standard flex items-center text-xs uppercase tracking-widest text-slate-500">
-              <span data-private>{site.location}</span>
+              {site.location}
             </div>
           </div>
         )}
@@ -287,7 +288,7 @@ export default function OperationDetailPageClient({
           {stageTotals.map((item) => (
             <div key={item.stage} className="card-standard p-4">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{item.stage}</p>
-              <p className="mt-1 text-lg font-extrabold text-white">{formatCurrency(item.total)}</p>
+              <p className="mt-1 text-lg font-extrabold text-white"><Amount>{formatCurrency(item.total)}</Amount></p>
             </div>
           ))}
         </section>

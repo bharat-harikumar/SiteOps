@@ -196,21 +196,19 @@
   }
 }
 
-/* "Hide values" demo mode (lib/ui/privacy.ts). Admin-only via AppShell's
-   [data-privacy-scope]. Visual only — never change layout here.
-   - blur in em: a 2xl KPI and an xs caption soften by the same proportion
-     instead of the KPI turning into a smear and the caption staying legible.
-   - clip-path keeps the blur inside the text's own box, so it reads as a tidy
-     frosted chip rather than a halo bleeding over card borders. */
-[data-private] {
-  transition: filter 200ms cubic-bezier(0.23, 1, 0.32, 1);
+/* "Hide amounts" demo mode (components/ui/Amount.tsx, lib/ui/privacy.ts).
+   <Amount> renders the real figure and a fixed "₹ ****" mask; this picks one.
+   Admin-only via AppShell's [data-privacy-scope]. */
+[data-amount-mask] {
+  display: none;
 }
 
-html[data-privacy="on"] [data-privacy-scope] [data-private] {
-  filter: blur(0.3em);
-  clip-path: inset(0 round 0.25em);
-  -webkit-user-select: none;
-  user-select: none;
+html[data-privacy="on"] [data-privacy-scope] [data-amount-value] {
+  display: none;
+}
+
+html[data-privacy="on"] [data-privacy-scope] [data-amount-mask] {
+  display: inline;
 }
 
 /* Reduced-motion fallback (WCAG 2.3.3): kill CSS transitions/animations for

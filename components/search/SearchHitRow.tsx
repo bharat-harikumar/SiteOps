@@ -1,5 +1,6 @@
 'use client';
 
+import { Amount } from "@/components/ui/Amount";
 import { EntryTypeIcon } from '@/components/constants/EntryTypeIcon';
 import { formatCurrency } from '@/components/operations/entryFormat';
 import { splitHighlight } from '@/lib/search/highlight';
@@ -44,7 +45,7 @@ export function SearchHitRow({ hit, query, active = false, optionId, onSelect }:
         <EntryTypeIcon type={hit.source} className="w-4 h-4" />
       </span>
       <span className="min-w-0 flex-1">
-        <span data-private className="block text-sm text-slate-200 line-clamp-2 break-words">
+        <span className="block text-sm text-slate-200 line-clamp-2 break-words">
           {parts.map((part, i) =>
             part.match ? (
               <mark key={i} className="bg-transparent text-sky-300 font-semibold">
@@ -56,12 +57,12 @@ export function SearchHitRow({ hit, query, active = false, optionId, onSelect }:
           )}
         </span>
         <span className="mt-1 block text-[11px] uppercase tracking-wider text-slate-500 truncate">
-          <span data-private>{hit.siteName}</span> · {SOURCE_LABEL[hit.source]} · {formatShortDate(hit.date)}
+          {hit.siteName} · {SOURCE_LABEL[hit.source]} · {formatShortDate(hit.date)}
         </span>
       </span>
       {hit.amount != null && (
-        <span data-private className="mt-0.5 shrink-0 text-xs font-bold text-sky-400 tabular-nums">
-          {formatCurrency(hit.amount)}
+        <span className="mt-0.5 shrink-0 text-xs font-bold text-sky-400 tabular-nums">
+          <Amount>{formatCurrency(hit.amount)}</Amount>
         </span>
       )}
     </button>

@@ -134,7 +134,7 @@ export function FieldRequests({ initialRequests }: { initialRequests: FieldReque
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="text-base font-black text-slate-100">{request.proposedName}</div>
-                    <div className="text-sm text-slate-400">Site <span data-private>{request.siteId}</span></div>
+                    <div className="text-sm text-slate-400">Site {request.siteId}</div>
                   </div>
                   <span className="badge-sky">{request.status}</span>
                 </div>
@@ -202,7 +202,7 @@ export function FieldRequests({ initialRequests }: { initialRequests: FieldReque
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="text-base font-black text-slate-100">{request.proposedName}</div>
-                  <div className="text-sm text-slate-400">Site <span data-private>{request.siteId}</span></div>
+                  <div className="text-sm text-slate-400">Site {request.siteId}</div>
                 </div>
                 <span className="badge-sky">{request.status}</span>
               </div>

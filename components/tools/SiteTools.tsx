@@ -107,13 +107,13 @@ export function SiteTools({
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1 basis-44">
           <p className="mb-1 break-words text-sm font-medium text-slate-400">
-            <span data-private>{siteName}</span>
+            {siteName}
           </p>
           <h1 className="text-2xl font-bold text-white">Tools</h1>
           {data ? (
             <p className="mt-2 text-sm text-slate-400">
-              <span data-private>{data.itemCount}</span> {data.itemCount === 1 ? "item" : "items"} across{" "}
-              <span data-private>{data.toolTypeCount}</span> tool{" "}
+              {data.itemCount} {data.itemCount === 1 ? "item" : "items"} across{" "}
+              {data.toolTypeCount} tool{" "}
               {data.toolTypeCount === 1 ? "type" : "types"}
             </p>
           ) : null}
@@ -243,7 +243,7 @@ export function SiteTools({
                       </p>
                     </div>
                     <span className="shrink-0 text-base font-bold tabular-nums text-white">
-                      <span data-private>{tool.quantityHere}</span> here
+                      {tool.quantityHere} here
                     </span>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">

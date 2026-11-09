@@ -1,5 +1,13 @@
 # Hide Values (Demo Mode) and Reporting-Site Card Implementation Plan
 
+> **Revision 2026-11-09 (supersedes the blur design below).** After seeing the blur, the client narrowed the requirement: show names, sites, quantities and notes; hide **only money**. Changes:
+> - Every rupee figure renders through `components/ui/Amount.tsx`, which outputs the real value and a fixed mask `₹ ****` (`AMOUNT_MASK`) side by side; `app/globals.css` shows one or the other. No hook, so no hydration flash; works in server components.
+> - Masked: budgets (`₹ **** / ₹ ****`), `% used` / `% of budget` (`**%`, derived from budget), spend/day/running/grand totals, costs, wages, OT, expense amounts, search-hit amounts, budget-alert notification text.
+> - Unmasked again: everything else. All `data-private` tags and the blur CSS are removed. Form fields (`components/logs/`) still show what is typed.
+> - Profile toggle renamed **Hide amounts** ("Show ₹ **** instead of budgets and amounts."). Admin scope, per-device storage, boot script and the Reporting-from card are unchanged.
+> - Fences: `components/ui/Amount.test.ts`, `tests/ui/privacy-scope.test.ts` (CSS swap only inside the admin scope; no blur), `tests/ui/amount-coverage.test.ts` (every `{formatCurrency(…)}` / `{formatCompactCurrency(…)}` / `{formatBudgetPair(…)}` / `₹{…}` JSX child is inside `<Amount>`; variable-amount files listed explicitly; no `data-private` left). The Task 4 blur fence (`privacy-tags.test.ts`) is deleted.
+> - Known limits: amounts inside free text (notes, request details) and web-push notification bodies are not masked; mask stars sit slightly high next to Inter (accepted).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. For every UI step, load `ui-ux-pro-max`, `impeccable` and `emil-design-eng` guidance before writing markup/CSS.
 
 **Goal:** (1) Give admins a one-tap "Hide values" setting that blurs names, sites and numbers across the app for demos without changing any layout; (2) show the "Reporting from" site card on every log-entry form so users always know which site they are logging for.
@@ -198,3 +206,10 @@ Recorded 2026-11-09 on `feat/hide-values-and-reporting-site`.
 - Coverage fence adjusted against reality: `logs/[entryId]` (edit form only), `ToolsHub` / `ToolLedgerDrawer` (catalog names only) and `AssignmentPanel` (not rendered) removed. Existing `toolsViews` tests now compare visible text.
 - Visual QA (partial): real components (`ReportingFromCard`, `SiteRow`, entry summaries, a KPI block) rendered with the built CSS and screenshotted at 390px in both states. Layout identical; blur stays in its own box. Found and fixed: a truncated name's "…" stayed sharp (tag moved to the truncating element).
 - **Not yet done:** Task 5 steps 1–4 against the running app with a signed-in admin and supervisor (needs credentials), the reload-flash check, the reduced-motion check and the real-phone performance check (A10).
+
+### Revision verification (amounts only)
+
+- `npm test`: 1136 passed, 85 skipped, 1 failed — the same `lib/tools/query.test.ts` disposable-database guard.
+- Focused suites: 317/317 passed. `npm run lint` clean. `npm run build` compiled successfully.
+- RED observed for each new test before implementation (Amount module missing; CSS swap rules; 26 unwrapped currency children; Profile label).
+- Visual QA: real components rendered with the built CSS at 390px in both states — masks are fixed-length, no layout overlap, all non-money text unchanged.

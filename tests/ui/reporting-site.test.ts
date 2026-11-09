@@ -10,12 +10,13 @@ const CARD = "components/logs/ReportingFromCard.tsx";
 const FORM_PAGE = "app/app/logs/new/[categoryId]/page.tsx";
 
 describe("Reporting from card", () => {
-  test("is one shared component whose site text is hidden in demo mode", () => {
+  test("is one shared component", () => {
     expect(existsSync(path.join(repoRoot, CARD))).toBe(true);
     const card = read(CARD);
     expect(card).toContain("Reporting From");
     expect(card).toContain("No site selected");
-    expect(card).toContain("data-private");
+    // Site names stay visible: the client only hides amounts.
+    expect(card).not.toContain("data-private");
   });
 
   test("the category picker and the entry form both render it", () => {

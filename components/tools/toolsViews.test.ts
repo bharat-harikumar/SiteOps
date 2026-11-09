@@ -11,9 +11,6 @@ import { ToolsHub } from "./ToolsHub";
 import { ToolAddModal } from "./ToolAddModal";
 import { ToolSummaryTile } from "./ToolSummaryTile";
 
-// Visible text only: hide-values wraps numbers/names in <span data-private>.
-const visibleText = (html: string) => html.replace(/<[^>]+>/g, "");
-
 const tool = {
   toolId: "t",
   name: "Bending lever 8mm & 10mm",
@@ -161,7 +158,7 @@ describe("tool navigation and readable inventory", () => {
     expect(html).toContain("Receive from godown");
     expect(html).toContain("Return to godown");
     expect(html).toContain("Transfer");
-    expect(visibleText(html)).toContain("2 here");
+    expect(html).toContain("2 here");
     expect(html).not.toContain("Company Tools");
   });
   it("shows a precise return with quantity and destination before submission", () => {
@@ -178,8 +175,8 @@ describe("tool navigation and readable inventory", () => {
       }),
     );
     expect(html).toContain("Return to godown");
-    expect(visibleText(html)).toContain("3 available");
-    expect(visibleText(html)).toContain("Return 1 × Barrel from Kollam to Godown.");
+    expect(html).toContain("3 available");
+    expect(html).toContain("Return 1 × Barrel from Kollam to Godown.");
     expect(html.toLowerCase()).toContain('inputmode="numeric"');
   });
   it("offers a named send action instead of a generic manage action", () => {
@@ -219,7 +216,7 @@ describe("tool navigation and readable inventory", () => {
         createElement(SiteToolsCard, { siteId: "s" }),
       ),
     );
-    expect(visibleText(html)).toContain("6 items across 3 tool types");
+    expect(html).toContain("6 items across 3 tool types");
     expect(html).toContain("/app/sites/s/tools");
     expect(html).not.toContain("Company Tools");
   });

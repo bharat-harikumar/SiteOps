@@ -2,40 +2,40 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
 
-// "Hide values" wiring fences. Blur must only ever apply inside an Admin's
+// "Hide amounts" wiring fences. Masking must only ever apply inside an Admin's
 // AppShell (a supervisor on a device where an admin enabled it sees real
-// values), must be applied before first paint, and must never move layout.
+// amounts) and must be applied before first paint.
 const repoRoot = path.resolve(__dirname, "..", "..");
 const read = (rel: string) => readFileSync(path.join(repoRoot, rel), "utf8");
 
-const SCOPED_SELECTOR = 'html[data-privacy="on"] [data-privacy-scope] [data-private]';
+const SCOPE = 'html[data-privacy="on"] [data-privacy-scope]';
 
-function privacyRuleBody(css: string): string {
-  const start = css.indexOf(SCOPED_SELECTOR);
-  if (start === -1) return "";
-  return css.slice(css.indexOf("{", start) + 1, css.indexOf("}", start));
+// Selector → declarations, for every rule in the stylesheet.
+function rules(css: string): Array<[string, string]> {
+  const noComments = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  return [...noComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => [m[1].trim(), m[2].trim()]);
 }
 
-describe("hide-values CSS", () => {
+describe("hide-amounts CSS", () => {
   const css = read("app/globals.css");
+  const all = rules(css);
+  const rulesFor = (attr: string) => all.filter(([sel]) => sel.includes(attr));
 
-  test("blur is scoped to html[data-privacy=on] inside the admin scope", () => {
-    expect(css).toContain(SCOPED_SELECTOR);
-    expect(privacyRuleBody(css)).toMatch(/filter:\s*blur\(/);
+  test("the mask is hidden by default and the real amount shows", () => {
+    expect(rulesFor("[data-amount-mask]")).toContainEqual(["[data-amount-mask]", "display: none;"]);
+    expect(rulesFor("[data-amount-value]").filter(([sel]) => !sel.startsWith(SCOPE))).toEqual([]);
   });
 
-  test("no unscoped rule blurs [data-private]", () => {
-    const blurSelectors = [...css.matchAll(/([^{}]+)\{[^}]*filter:\s*blur\([^}]*\}/g)]
-      .map((m) => m[1].trim())
-      .filter((sel) => sel.includes("[data-private]"));
-    expect(blurSelectors).toEqual([SCOPED_SELECTOR]);
+  test("amounts swap to the mask only inside an admin scope with the setting on", () => {
+    expect(rulesFor("[data-amount-value]")).toEqual([[`${SCOPE} [data-amount-value]`, "display: none;"]]);
+    expect(rulesFor("[data-amount-mask]")).toContainEqual([`${SCOPE} [data-amount-mask]`, "display: inline;"]);
+    expect(rulesFor("[data-amount-mask]")).toHaveLength(2);
   });
 
-  test("the privacy rule never touches layout or colour", () => {
-    const body = privacyRuleBody(css);
-    for (const prop of ["width", "height", "margin", "padding", "display", "font", "letter-spacing", "color"]) {
-      expect(body, prop).not.toMatch(new RegExp(`(^|[;\\s])${prop}\\s*:`));
-    }
+  test("the old blur treatment is gone", () => {
+    expect(css).not.toContain("data-private");
+    // (backdrop-filter glass on cards is unrelated and stays.)
+    expect(css).not.toMatch(/(?<!backdrop-)filter:\s*blur\(/);
   });
 });
 
@@ -56,11 +56,12 @@ describe("hide-values wiring", () => {
 describe("hide-values toggle", () => {
   const profile = read("app/app/profile/ProfilePageClient.tsx");
 
-  test("Profile shows the Hide values toggle only to admins", () => {
+  test("Profile shows the Hide amounts toggle only to admins", () => {
     const guarded = profile.match(/isAdmin \? \(\s*<section[\s\S]*?<\/section>\s*\) : null/);
-    expect(guarded?.[0]).toContain('label="Hide values"');
+    expect(guarded?.[0]).toContain('label="Hide amounts"');
     expect(guarded?.[0]).toContain("<Toggle");
-    expect(profile.match(/Hide values/g)).toHaveLength(1);
+    expect(profile.match(/Hide amounts/g)).toHaveLength(1);
+    expect(profile).not.toContain("data-private");
     expect(profile).toMatch(/const isAdmin = initialProfile\.user\.role === ['"]Admin['"]/);
   });
 });
