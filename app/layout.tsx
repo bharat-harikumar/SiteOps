@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+import { HIDE_VALUES_BOOT_SCRIPT } from "@/lib/ui/privacy";
+
 import Providers from "./providers";
 import "./globals.css";
 
@@ -52,7 +54,12 @@ export default function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} bg-[#020617]`}>
+    // suppressHydrationWarning: the boot script adds data-privacy to <html>
+    // before React hydrates. Applies to this element only, not its children.
+    <html lang="en" className={`${inter.variable} bg-[#020617]`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: HIDE_VALUES_BOOT_SCRIPT }} />
+      </head>
       <body className="bg-[#020617] text-slate-200 antialiased min-h-dvh">
         <Providers>{children}</Providers>
         <SpeedInsights />

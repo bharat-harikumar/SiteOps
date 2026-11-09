@@ -8,9 +8,10 @@ export type SecurityHeader = { key: string; value: string };
 // then promote to enforcing Content-Security-Policy once a full week of real
 // reports (installed PWA included) comes back clean. See phase 7, S1 task 9.
 //
-// `'unsafe-inline'` stays in script-src deliberately. The app has ZERO inline
-// scripts of its own (grepped: no <script> tags, no dangerouslySetInnerHTML);
-// the only need comes from Next's own hydration payload. Removing it requires
+// `'unsafe-inline'` stays in script-src deliberately. The app has ONE inline
+// script of its own: the static hide-values boot script in app/layout.tsx
+// (lib/ui/privacy.ts), which must run before first paint. Otherwise the need
+// comes from Next's own hydration payload. Removing it requires
 // per-request nonces threaded through middleware, which is incompatible with the
 // statically prerendered auth routes. The honest trade is to take the win on
 // every other directive rather than ship a nonce scheme that breaks static
