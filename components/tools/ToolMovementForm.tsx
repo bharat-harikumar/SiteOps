@@ -241,7 +241,11 @@ export function ToolMovementForm({
           <p className="mt-1 text-sm text-slate-400">
             {action === "add" || action === "remove"
               ? "Company godown"
-              : `${from} → ${to}`}
+              : (
+                <>
+                  <span data-private>{from}</span> → <span data-private>{to}</span>
+                </>
+              )}
           </p>
         </div>
         <button
@@ -352,7 +356,7 @@ export function ToolMovementForm({
                 >
                   Quantity{" "}
                   <span className="font-normal text-slate-400">
-                    · {selected.available} available
+                    · <span data-private>{selected.available}</span> available
                     {action === "add" ? " to add" : ""}
                   </span>
                 </label>
@@ -492,7 +496,7 @@ export function ToolMovementForm({
             ) : null}
             {selected && !qtyError ? (
               <p className="break-words rounded-xl bg-white/5 p-3 text-sm leading-relaxed text-slate-300">
-                {sentence}
+                <span data-private>{sentence}</span>
               </p>
             ) : null}
             <button

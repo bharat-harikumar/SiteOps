@@ -46,16 +46,14 @@ const PRIVATE_SURFACES = [
   // Requests
   "app/app/requests/field/FieldRequestsPageClient.tsx",
   "app/app/requests/resource/ResourceRequestsPageClient.tsx",
-  // Tools
-  "components/tools/ToolsHub.tsx",
+  // Tools. ToolsHub and ToolLedgerDrawer only compose these and show catalog
+  // names; AssignmentPanel is not rendered anywhere.
   "components/tools/SiteTools.tsx",
   "components/tools/SiteToolsCard.tsx",
   "components/tools/ToolRow.tsx",
   "components/tools/ToolHistory.tsx",
-  "components/tools/ToolLedgerDrawer.tsx",
   "components/tools/ToolSummaryTile.tsx",
   "components/tools/ToolDashboardStrip.tsx",
-  "components/tools/AssignmentPanel.tsx",
   "components/tools/ToolMovementForm.tsx",
 ];
 

@@ -23,7 +23,12 @@ export function SiteToolsCard({ siteId }: { siteId: string }) {
               {data
                 ? data.itemCount === 0
                   ? "No tools at this site"
-                  : `${data.itemCount} ${data.itemCount === 1 ? "item" : "items"} across ${data.toolTypeCount} tool ${data.toolTypeCount === 1 ? "type" : "types"}`
+                  : (
+                    <>
+                      <span data-private>{data.itemCount}</span> {data.itemCount === 1 ? "item" : "items"} across{" "}
+                      <span data-private>{data.toolTypeCount}</span> tool {data.toolTypeCount === 1 ? "type" : "types"}
+                    </>
+                  )
                 : isLoading
                   ? "Loading tools…"
                   : "Tools unavailable"}
