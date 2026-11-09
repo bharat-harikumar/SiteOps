@@ -118,13 +118,13 @@ export default function CategoryDetailPageClient({
           </div>
 
           <div className="text-right">
-            <p className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
+            <p data-private className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Entries</p>
-            <p className="mt-2 text-sm font-bold text-sky-400">{formatCurrency(totalSpend)}</p>
+            <p data-private className="mt-2 text-sm font-bold text-sky-400">{formatCurrency(totalSpend)}</p>
             {quantityText ? (
               <p className="mt-1 text-xs font-bold text-slate-300">
                 <span className="text-[10px] uppercase tracking-widest text-slate-500">Total qty </span>
-                {quantityText}
+                <span data-private>{quantityText}</span>
               </p>
             ) : null}
           </div>

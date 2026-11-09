@@ -42,9 +42,9 @@ function ManpowerLine({
   return (
     <div className="flex items-baseline justify-between gap-4">
       <span className="text-[11px] text-slate-400 font-medium min-w-0 truncate">
-        • {role} · {count} {count === 1 ? "Person" : "People"}
+        • {role} · <span data-private>{count}</span> {count === 1 ? "Person" : "People"}
       </span>
-      <span className="text-[11px] font-semibold text-slate-400 shrink-0">
+      <span data-private className="text-[11px] font-semibold text-slate-400 shrink-0">
         {formatCurrency(salary ?? 0)}
       </span>
     </div>
@@ -117,10 +117,15 @@ export default function StageSummaryClient({
         <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-white uppercase">
           Work Stages
         </h1>
-        <p className="text-xs text-slate-500 font-semibold mt-1">{siteName}</p>
+        <p className="text-xs text-slate-500 font-semibold mt-1"><span data-private>{siteName}</span></p>
         <p className="text-sm text-slate-400 font-semibold mt-2">
-          {formatCurrency(tracked)} tracked
-          {budget ? ` of ${formatCurrency(budget)} budget` : ""}
+          <span data-private>{formatCurrency(tracked)}</span> tracked
+          {budget ? (
+            <>
+              {" of "}
+              <span data-private>{formatCurrency(budget)}</span> budget
+            </>
+          ) : null}
         </p>
       </section>
 
@@ -156,18 +161,18 @@ export default function StageSummaryClient({
                       </p>
                       <p className="text-xs text-slate-500 font-semibold mt-1">
                         {/* Derived from entry dates — stages have no tracked start/end. */}
-                        {span(row)} · {row.entryCount.toLocaleString("en-IN")}{" "}
+                        {span(row)} · <span data-private>{row.entryCount.toLocaleString("en-IN")}</span>{" "}
                         {row.entryCount === 1 ? "entry" : "entries"}
                       </p>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
                       <div className="text-right">
-                        <p className="text-lg font-extrabold text-sky-400">
+                        <p data-private className="text-lg font-extrabold text-sky-400">
                           {formatCurrency(row.total)}
                         </p>
                         {budget ? (
                           <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                            {((row.total / budget) * 100).toFixed(1)}% of budget
+                            <span data-private>{((row.total / budget) * 100).toFixed(1)}%</span> of budget
                           </p>
                         ) : null}
                       </div>
@@ -192,7 +197,7 @@ export default function StageSummaryClient({
                   <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
                     {TYPE_ORDER.filter((t) => row.byType[t] > 0).map((t) => (
                       <span key={t} className="text-[11px] font-semibold text-slate-500">
-                        {TYPE_LABELS[t]} {formatCurrency(row.byType[t])}
+                        {TYPE_LABELS[t]} <span data-private>{formatCurrency(row.byType[t])}</span>
                       </span>
                     ))}
                   </div>
@@ -219,11 +224,21 @@ export default function StageSummaryClient({
                           <span className="text-xs text-slate-300 font-semibold min-w-0 truncate">
                             {d.name}
                             <span className="text-slate-600 font-medium">
-                              {d.quantity != null && d.unit ? ` · ${d.quantity} ${d.unit}` : ""}
-                              {d.headCount ? ` · ${d.headCount} heads` : ""}
+                              {d.quantity != null && d.unit ? (
+                                <>
+                                  {" · "}
+                                  <span data-private>{d.quantity}</span> {d.unit}
+                                </>
+                              ) : null}
+                              {d.headCount ? (
+                                <>
+                                  {" · "}
+                                  <span data-private>{d.headCount}</span> heads
+                                </>
+                              ) : null}
                             </span>
                           </span>
-                          <span className="text-xs font-bold text-slate-300 shrink-0">
+                          <span data-private className="text-xs font-bold text-slate-300 shrink-0">
                             {formatCurrency(d.spend)}
                           </span>
                         </div>
@@ -238,7 +253,7 @@ export default function StageSummaryClient({
                         {d.otSpend ? (
                           <div className="pl-4 mt-0.5 flex items-baseline justify-between gap-4">
                             <span className="text-[11px] text-slate-400 font-medium">• Overtime (included)</span>
-                            <span className="text-[11px] font-semibold text-slate-400 shrink-0">
+                            <span data-private className="text-[11px] font-semibold text-slate-400 shrink-0">
                               {formatCurrency(d.otSpend)}
                             </span>
                           </div>

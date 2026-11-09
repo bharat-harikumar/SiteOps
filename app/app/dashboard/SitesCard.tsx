@@ -45,7 +45,7 @@ export function SitesCard({ sites }: { sites: SiteRowData[] }) {
           <h2 className="text-2xl font-extrabold tracking-tight text-white">Sites</h2>
           <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px] shadow-emerald-400" />
           <span className="flex items-baseline gap-1.5">
-            <span className="text-lg font-bold tabular-nums text-white">{liveCount}</span>
+            <span data-private className="text-lg font-bold tabular-nums text-white">{liveCount}</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Live</span>
           </span>
         </div>

@@ -158,11 +158,11 @@ export default function SiteDetailPageClient({
                 </span>
               </div>
               <h2 className="text-3xl font-extrabold text-white uppercase tracking-tight leading-none truncate">
-                {site.name}
+                <span data-private>{site.name}</span>
               </h2>
               <div className="flex items-center gap-1.5 text-slate-400 font-medium italic text-sm">
                 <MapPin className="w-4 h-4 text-sky-500" />
-                {site.location}
+                <span data-private>{site.location}</span>
               </div>
             </div>
             {(canEditSite || canDeleteSite) ? (
@@ -200,8 +200,9 @@ export default function SiteDetailPageClient({
                 val: formatBudgetPair(trackedSpend, site.budget),
                 sub: site.budget ? `${Math.round((Number(trackedSpend) / Number(site.budget)) * 100)}% used` : null,
                 icon: TrendingUp,
+                hidden: true,
               },
-              { label: 'Progress', val: `${progress}%`, icon: Clock, highlight: true },
+              { label: 'Progress', val: `${progress}%`, icon: Clock, highlight: true, hidden: true },
               { label: 'Status', val: site.status, icon: AlertCircle },
             ].map((stat) => (
               <div key={stat.label} className="space-y-0.5">
@@ -210,10 +211,10 @@ export default function SiteDetailPageClient({
                   <span className="text-[9px] font-bold uppercase tracking-widest leading-none">{stat.label}</span>
                 </div>
                 <p className={`text-xl font-extrabold tracking-tight ${stat.highlight ? 'text-sky-400' : 'text-white'}`}>
-                  {stat.val}
+                  <span data-private={'hidden' in stat ? '' : undefined}>{stat.val}</span>
                 </p>
                 {'sub' in stat && stat.sub ? (
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{stat.sub}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500"><span data-private>{stat.sub}</span></p>
                 ) : null}
               </div>
             ))}
@@ -267,10 +268,10 @@ export default function SiteDetailPageClient({
         <div className="flex items-center gap-3 shrink-0">
           <div className="text-right">
             <p className="text-lg font-extrabold text-sky-400">
-              {formatCompactCurrency(allOperationsSummary.totalSpend) ?? '₹0'}
+              <span data-private>{formatCompactCurrency(allOperationsSummary.totalSpend) ?? '₹0'}</span>
             </p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-              {allOperationsSummary.totalCount.toLocaleString('en-IN')} entries
+              <span data-private>{allOperationsSummary.totalCount.toLocaleString('en-IN')}</span> entries
             </p>
           </div>
           <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-sky-400 transition-colors" />
@@ -320,11 +321,11 @@ export default function SiteDetailPageClient({
               {/* Today: primary stat */}
               <div className="mt-4 flex items-baseline justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-3xl font-extrabold text-white leading-none">{summary.todayCount}</p>
+                  <p data-private className="text-3xl font-extrabold text-white leading-none">{summary.todayCount}</p>
                   <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Today</p>
                 </div>
                 {todaySpend ? (
-                  <p className="text-sm font-bold text-slate-200 shrink-0">{todaySpend}</p>
+                  <p data-private className="text-sm font-bold text-slate-200 shrink-0">{todaySpend}</p>
                 ) : null}
               </div>
 
@@ -334,15 +335,15 @@ export default function SiteDetailPageClient({
               {/* All-time: secondary stat */}
               <div className="flex items-center justify-between gap-3 text-xs">
                 <span className="font-semibold text-slate-400 truncate">
-                  {summary.totalCount.toLocaleString('en-IN')} {totalLabel} all-time
+                  <span data-private>{summary.totalCount.toLocaleString('en-IN')}</span> {totalLabel} all-time
                 </span>
                 {totalSpend ? (
-                  <span className="font-bold text-slate-300 shrink-0">{totalSpend}</span>
+                  <span data-private className="font-bold text-slate-300 shrink-0">{totalSpend}</span>
                 ) : null}
               </div>
               {summary.totalOtSpend ? (
                 <p className="mt-1 text-right text-[11px] font-semibold text-slate-500">
-                  incl. OT {formatCompactCurrency(summary.totalOtSpend)}
+                  incl. OT <span data-private>{formatCompactCurrency(summary.totalOtSpend)}</span>
                 </p>
               ) : null}
             </Link>

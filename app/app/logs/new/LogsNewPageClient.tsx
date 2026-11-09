@@ -76,8 +76,8 @@ export function LogsNewPageClient({ initialCategories, initialSites, siteId, rol
                       <MapPin className="w-5 h-5 text-slate-500" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-200 uppercase tracking-tight">{site.name}</h4>
-                      <p className="text-xs text-slate-500 font-medium italic">{site.location}</p>
+                      <h4 className="font-bold text-slate-200 uppercase tracking-tight"><span data-private>{site.name}</span></h4>
+                      <p className="text-xs text-slate-500 font-medium italic"><span data-private>{site.location}</span></p>
                     </div>
                   </div>
                   <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-600 group-hover:bg-sky-500 group-hover:text-slate-950 transition">

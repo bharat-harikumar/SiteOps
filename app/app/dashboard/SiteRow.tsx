@@ -62,13 +62,13 @@ export function SiteRow({ site }: { site: SiteRowData }) {
       {/* Name + meta */}
       <div className="min-w-0 flex-1">
         <span className="block truncate text-[15px] font-bold uppercase tracking-tight text-white transition-colors group-hover:text-sky-400">
-          {site.name}
+          <span data-private>{site.name}</span>
         </span>
         <div className="mt-1.5 flex items-center gap-2 text-xs leading-none text-slate-400">
           {/* min-w-0 + truncate: a long location used to push the badge off-row. */}
           <span className="inline-flex min-w-0 items-center gap-1">
             <MapPin className="h-3 w-3 text-slate-500 shrink-0" />
-            <span className="truncate leading-none">{site.location}</span>
+            <span data-private className="truncate leading-none">{site.location}</span>
           </span>
           {updated ? (
             <>

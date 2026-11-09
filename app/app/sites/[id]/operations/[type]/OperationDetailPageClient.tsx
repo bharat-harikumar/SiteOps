@@ -136,16 +136,16 @@ export default function OperationDetailPageClient({
                 <h1 className="text-2xl font-extrabold uppercase tracking-tight text-white">
                   {typeLabel[type]} Logs
                 </h1>
-                <p className="text-xs text-slate-500 font-semibold">{site.name}</p>
+                <p className="text-xs text-slate-500 font-semibold"><span data-private>{site.name}</span></p>
               </div>
             </div>
           </div>
 
           <div className="text-right">
-            <p className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
+            <p data-private className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Logs</p>
             {(type === "labour" || type === "material" || type === "machinery" || type === "expense") ? (
-              <p className="mt-2 text-sm font-bold text-sky-400">{formatCurrency(totalSpend)}</p>
+              <p data-private className="mt-2 text-sm font-bold text-sky-400">{formatCurrency(totalSpend)}</p>
             ) : null}
           </div>
         </div>
@@ -244,7 +244,7 @@ export default function OperationDetailPageClient({
               Site
             </span>
             <div className="input-standard flex items-center text-xs uppercase tracking-widest text-slate-500">
-              {site.location}
+              <span data-private>{site.location}</span>
             </div>
           </div>
         )}

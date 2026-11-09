@@ -133,7 +133,7 @@ function LabourOvertimeLine({ amount, splitRoles }: { amount: unknown; splitRole
   return (
     <p className="text-xs text-slate-400">
       {splitRoles ? "OT (masons + helpers)" : "OT"}:{" "}
-      <span className="font-semibold text-slate-200">{formatCurrency(value)}</span>
+      <span data-private className="font-semibold text-slate-200">{formatCurrency(value)}</span>
     </p>
   );
 }
@@ -161,20 +161,27 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
                 // reads as the role's total and hid a costing bug for months.
                 // Mirrors the ordinary line's `{n} people x {wage}` idiom below.
                 <p key={role}>
-                  {role}: {Number(count ?? 0)} people x {formatCurrency(Number(wage ?? 0))} ={" "}
-                  {formatCurrency(Number(count ?? 0) * Number(wage ?? 0))}
+                  {role}: <span data-private>{Number(count ?? 0)}</span> people x{" "}
+                  <span data-private>{formatCurrency(Number(wage ?? 0))}</span> ={" "}
+                  <span data-private>{formatCurrency(Number(count ?? 0) * Number(wage ?? 0))}</span>
                 </p>
               ),
             )}
           </div>
         ) : (
           <p className="text-xs text-slate-500">
-            {entry.peopleCount ?? 0} people{isMerged ? "" : ` x ${formatCurrency(wage)}`}
+            <span data-private>{entry.peopleCount ?? 0}</span> people
+            {isMerged ? null : (
+              <>
+                {" x "}
+                <span data-private>{formatCurrency(wage)}</span>
+              </>
+            )}
           </p>
         )}
         <LabourOvertimeLine amount={entry.otTotalAmount} splitRoles={hasSplitRoles} />
-        <p className="text-sm font-bold text-sky-400">{formatCurrency(entrySpend(entry, type))}</p>
-        {entry.remarks ? <p className="text-xs text-slate-500">{entry.remarks}</p> : null}
+        <p className="text-sm font-bold text-sky-400"><span data-private>{formatCurrency(entrySpend(entry, type))}</span></p>
+        {entry.remarks ? <p className="text-xs text-slate-500"><span data-private>{entry.remarks}</span></p> : null}
       </div>
     );
   }
@@ -190,12 +197,12 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
           </span>
         </div>
         <p className="text-xs text-slate-500">
-          {entry.quantity ?? 0} {entry.unit ?? ""}
+          <span data-private>{entry.quantity ?? 0}</span> {entry.unit ?? ""}
         </p>
         {hasCost ? (
-          <p className="text-sm font-bold text-sky-400">{formatCurrency(Number(entry.cost))}</p>
+          <p className="text-sm font-bold text-sky-400"><span data-private>{formatCurrency(Number(entry.cost))}</span></p>
         ) : null}
-        {entry.remarks ? <p className="text-xs text-slate-500">{entry.remarks}</p> : null}
+        {entry.remarks ? <p className="text-xs text-slate-500"><span data-private>{entry.remarks}</span></p> : null}
       </div>
     );
   }
@@ -211,10 +218,10 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
             </span>
           ) : null}
         </div>
-        <p className="text-xs text-slate-500">{entry.count ?? 0} units</p>
-        {entry.hoursActive ? <p className="text-xs text-slate-500">{entry.hoursActive} hours active</p> : null}
-        {entry.totalCost ? <p className="text-sm font-bold text-sky-400">{formatCurrency(Number(entry.totalCost ?? 0))}</p> : null}
-        {entry.remarks ? <p className="text-xs text-slate-500">{entry.remarks}</p> : null}
+        <p className="text-xs text-slate-500"><span data-private>{entry.count ?? 0}</span> units</p>
+        {entry.hoursActive ? <p className="text-xs text-slate-500"><span data-private>{entry.hoursActive}</span> hours active</p> : null}
+        {entry.totalCost ? <p className="text-sm font-bold text-sky-400"><span data-private>{formatCurrency(Number(entry.totalCost ?? 0))}</span></p> : null}
+        {entry.remarks ? <p className="text-xs text-slate-500"><span data-private>{entry.remarks}</span></p> : null}
       </div>
     );
   }
@@ -223,7 +230,7 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
     return (
       <div className="space-y-1">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="font-bold text-slate-100">{entry.description ?? "Expense"}</p>
+          <p className="font-bold text-slate-100"><span data-private>{entry.description ?? "Expense"}</span></p>
           {entry.workStage ? (
             <span className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-xs font-bold uppercase tracking-widest text-emerald-400">
               {entry.workStage}
@@ -231,7 +238,7 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
           ) : null}
         </div>
         <p className="text-xs text-slate-500">{entry.category ?? "Misc"}</p>
-        <p className="text-sm font-bold text-sky-400">{formatCurrency(Number(entry.amount ?? 0))}</p>
+        <p className="text-sm font-bold text-sky-400"><span data-private>{formatCurrency(Number(entry.amount ?? 0))}</span></p>
       </div>
     );
   }
@@ -240,7 +247,7 @@ export function renderEntrySummary(entry: Entry, type: EntryType) {
     <div className="space-y-1">
       <p className="font-bold text-slate-100">{entry.incidentType ?? "Incident"}</p>
       <p className="text-xs text-slate-500">{entry.severity ?? "Low"}</p>
-      <p className="text-xs text-slate-500">{entry.description ?? ""}</p>
+      <p className="text-xs text-slate-500"><span data-private>{entry.description ?? ""}</span></p>
     </div>
   );
 }

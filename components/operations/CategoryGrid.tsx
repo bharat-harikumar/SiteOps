@@ -41,8 +41,8 @@ export default function CategoryGrid({ entries, type, siteId }: CategoryGridProp
             <p className="font-bold text-slate-100 truncate">{summary.key}</p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-xs text-slate-500">{summary.count} entries</p>
-            <p className="text-sm font-bold text-sky-400">{formatCurrency(summary.totalSpend)}</p>
+            <p className="text-xs text-slate-500"><span data-private>{summary.count}</span> entries</p>
+            <p data-private className="text-sm font-bold text-sky-400">{formatCurrency(summary.totalSpend)}</p>
           </div>
           {summary.lastActivity ? (
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
