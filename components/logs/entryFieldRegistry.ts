@@ -113,7 +113,7 @@ export const REGISTRY_BY_TYPE = {
       catalogCategoryName: "Expense Category",
       noun: "Expense Category",
     },
-    { name: "description", label: "Description", kind: "text", required: true },
+    { name: "description", label: "Description", kind: "textarea", required: true },
     {
       name: "workStage",
       label: "Work Stage",

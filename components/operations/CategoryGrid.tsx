@@ -19,9 +19,9 @@ export default function CategoryGrid({ entries, type, siteId }: CategoryGridProp
 
   if (summaries.length === 0) {
     return (
-      <div className="text-center py-20 bg-white/2 rounded-3xl border border-dashed border-white/5">
-        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest italic">
-          No logs found.
+      <div className="text-center py-20 bg-white/2 rounded-2xl border border-dashed border-white/5">
+        <p className="text-slate-500 text-xs font-semibold">
+          No logs found
         </p>
       </div>
     );
@@ -33,20 +33,20 @@ export default function CategoryGrid({ entries, type, siteId }: CategoryGridProp
         <Link
           key={summary.key}
           href={`/app/sites/${siteId}/operations/${type}/${encodeURIComponent(summary.key)}`}
-          className="card-standard p-4 space-y-3 hover:border-sky-500/30 transition-colors"
+          className="card-standard p-4 space-y-3 hover:border-blue-500/30 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-sky-400 shrink-0">
+            <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-blue-400 shrink-0">
               <EntryTypeIcon type={type} className="w-6 h-6" />
             </div>
-            <p className="font-bold text-slate-100 truncate">{summary.key}</p>
+            <p className="font-semibold text-slate-100 truncate">{summary.key}</p>
           </div>
           <div className="flex items-center justify-between">
             <p className="text-xs text-slate-500">{summary.count} entries</p>
-            <p className="text-sm font-bold text-sky-400"><Amount>{formatCurrency(summary.totalSpend)}</Amount></p>
+            <p className="text-sm font-semibold text-blue-400"><Amount>{formatCurrency(summary.totalSpend)}</Amount></p>
           </div>
           {summary.lastActivity ? (
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+            <p className="text-xs font-semibold text-slate-500">
               {formatDate(summary.lastActivity)}
             </p>
           ) : null}

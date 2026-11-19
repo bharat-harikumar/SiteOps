@@ -72,7 +72,7 @@ export function UnitSelect({ label, value, onChange, required, allowedNames }: P
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400">
+      <label className="text-xs font-semibold text-slate-400">
         {label}
         {required && " *"}
       </label>

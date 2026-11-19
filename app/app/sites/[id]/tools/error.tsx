@@ -3,9 +3,9 @@ import Link from "next/link";
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <div role="alert" className="mx-auto max-w-4xl space-y-3 py-8">
-      <h1 className="text-xl font-bold text-white">Couldn't open tools</h1>
+      <h1 className="text-xl font-semibold text-white">Couldn't open tools</h1>
       <p className="text-sm text-slate-400">
-        Check your connection and try again.
+        Check your connection and try again
       </p>
       <div className="flex flex-wrap gap-3">
         <button

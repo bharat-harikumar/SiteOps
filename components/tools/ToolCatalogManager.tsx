@@ -27,7 +27,7 @@ export function ToolCatalogManager() {
               key={t}
               type="button"
               onClick={() => setSub(t)}
-              className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
+              className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
                 active
                   ? "bg-blue-600/20 text-blue-400 border border-blue-500/40 shadow-xs"
                   : "text-slate-400 hover:bg-white/5 hover:text-white border border-transparent"
@@ -117,13 +117,13 @@ function ToolsTable() {
   function rowActions(tool: ToolDTO): RowAction[] {
     const busy = busyId === tool.toolId;
     return [
-      { label: "Rename", icon: Pencil, tone: "text-sky-400", onSelect: () => setRenameTarget(tool), disabled: busy },
+      { label: "Rename", icon: Pencil, tone: "text-blue-400", onSelect: () => setRenameTarget(tool), disabled: busy },
       { label: "Delete", icon: Trash2, tone: "text-red-400", onSelect: () => void remove(tool), disabled: busy },
     ];
   }
 
   if (isLoading) return <p className="text-sm text-slate-400">Loading tools…</p>;
-  if (result && !result.ok) return <p className="text-sm text-rose-400">Failed to load tools.</p>;
+  if (result && !result.ok) return <p className="text-sm text-rose-400">Failed to load tools</p>;
 
   return (
     <div className="space-y-3">
@@ -135,7 +135,7 @@ function ToolsTable() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search tools by name..."
+            placeholder="Search tools"
             className="h-8.5 w-full rounded-lg border border-white/10 bg-slate-900 pl-9 pr-3 text-xs text-white outline-none placeholder-slate-400 focus:border-blue-500"
           />
         </div>
@@ -155,7 +155,7 @@ function ToolsTable() {
           <button
             type="button"
             onClick={() => setAddOpen(true)}
-            className="inline-flex h-8.5 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 text-xs font-bold text-white transition-colors hover:bg-blue-500"
+            className="inline-flex h-8.5 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white transition-colors hover:bg-blue-500"
           >
             <Plus className="h-3.5 w-3.5" />
             Add Tool
@@ -168,7 +168,7 @@ function ToolsTable() {
           <EmptyState onAdd={() => setAddOpen(true)} />
         ) : (
           <p className="rounded-xl border border-white/5 bg-slate-900/40 px-4 py-8 text-center text-xs text-slate-500">
-            No tools match your search.
+            No tools match your search
           </p>
         )
       ) : (
@@ -185,19 +185,19 @@ function ToolsTable() {
                 </span>
                 <div className="min-w-0 flex-1 space-y-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="truncate text-sm font-bold text-white">{tool.name}</h3>
-                    <span className="shrink-0 rounded-md bg-white/5 px-2 py-0.5 text-[10px] font-medium text-slate-400">
+                    <h3 className="truncate text-sm font-semibold text-white">{tool.name}</h3>
+                    <span className="shrink-0 rounded-md bg-white/5 px-2 py-0.5 text-xs font-medium text-slate-400">
                       {catName(tool.categoryId)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs flex-wrap">
-                    <span className="whitespace-nowrap rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
+                    <span className="whitespace-nowrap rounded-md bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-400 border border-emerald-500/20">
                       In Godown: {tool.free}
                     </span>
-                    <span className="whitespace-nowrap rounded-md bg-blue-500/15 px-2 py-0.5 text-[10px] font-semibold text-blue-400 border border-blue-500/20">
+                    <span className="whitespace-nowrap rounded-md bg-blue-500/15 px-2 py-0.5 text-xs font-semibold text-blue-400 border border-blue-500/20">
                       At Sites: {tool.totalQuantity - tool.free}
                     </span>
-                    <span className="whitespace-nowrap text-[10px] font-medium text-slate-400">
+                    <span className="whitespace-nowrap text-xs font-medium text-slate-400">
                       (Total {tool.totalQuantity})
                     </span>
                   </div>
@@ -233,13 +233,13 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
         <Wrench className="h-5 w-5 text-slate-400" />
       </div>
       <div>
-        <p className="font-bold text-sm text-white">No tools added yet</p>
-        <p className="mt-0.5 text-xs text-slate-400">Add your first company tool to start tracking stock.</p>
+        <p className="font-semibold text-sm text-white">No tools added yet</p>
+        <p className="mt-0.5 text-xs text-slate-400">Add your first company tool to start tracking stock</p>
       </div>
       <button
         type="button"
         onClick={onAdd}
-        className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-lg bg-blue-600 px-3 text-xs font-bold text-white transition-colors hover:bg-blue-500"
+        className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white transition-colors hover:bg-blue-500"
       >
         <Plus className="h-3.5 w-3.5" />
         Add Tool

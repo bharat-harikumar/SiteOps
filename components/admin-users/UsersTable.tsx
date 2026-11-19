@@ -37,7 +37,7 @@ export function UsersTable({
       {error ? (
         <div role="alert" className="flex items-center justify-between gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
           <span>{error}</span>
-          <button type="button" onClick={onRetry} className="flex items-center gap-1.5 text-xs font-bold uppercase">
+          <button type="button" onClick={onRetry} className="flex items-center gap-1.5 text-xs font-semibold">
             <RotateCw className="h-3.5 w-3.5" /> Retry
           </button>
         </div>
@@ -49,7 +49,7 @@ export function UsersTable({
             {hasFilters ? (query.trim() ? `No accounts match "${query.trim()}".` : 'No accounts match this filter.') : 'No accounts yet.'}
           </p>
           {hasFilters ? (
-            <button type="button" onClick={onClearFilters} className="mt-3 text-xs font-bold uppercase text-primary">
+            <button type="button" onClick={onClearFilters} className="mt-3 text-xs font-semibold text-primary">
               Clear filters
             </button>
           ) : null}
@@ -60,7 +60,7 @@ export function UsersTable({
         <>
           <table className="hidden w-full table-fixed text-left md:table">
             <thead>
-              <tr className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+              <tr className="text-xs font-semibold text-on-surface-variant">
                 <th scope="col" className="w-1/2 pb-2 pl-4 pr-3">Account</th>
                 <th scope="col" className="px-3 pb-2">Role</th>
                 <th scope="col" className="px-3 pb-2">Status</th>

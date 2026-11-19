@@ -32,3 +32,24 @@ describe("Reporting from card", () => {
     expect(page).toContain("Choose site");
   });
 });
+
+// Every page under a site shows which site it belongs to, under its title.
+describe("site sub-pages name their site", () => {
+  const pages = [
+    "app/app/sites/[id]/operations/[type]/AllOperationsPageClient.tsx",
+    "app/app/sites/[id]/operations/[type]/OperationDetailPageClient.tsx",
+    "app/app/sites/[id]/operations/[type]/[category]/CategoryDetailPageClient.tsx",
+  ];
+  test.each(pages)("%s renders site.name", (rel) => {
+    const src = read(rel);
+    expect(src).toContain("{site.name}");
+    expect(src).not.toContain("site: _site");
+  });
+});
+
+describe("transfer remarks", () => {
+  test("is a multi-line box", () => {
+    const form = read("components/transfers/TransferForm.tsx");
+    expect(form).toMatch(/<textarea[^>]*id="transfer-remarks"/s);
+  });
+});

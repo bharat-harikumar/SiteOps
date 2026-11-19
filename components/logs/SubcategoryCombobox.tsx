@@ -181,7 +181,7 @@ export function SubcategoryCombobox({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <label className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400">
+        <label className="text-xs font-semibold text-slate-400">
           {label}
           {required && " *"}
         </label>

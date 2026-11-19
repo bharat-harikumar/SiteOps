@@ -111,7 +111,7 @@ export function UnitsManager() {
     return [
       { label: "Move up", icon: ArrowUp, onSelect: () => void reorder(units, index, -1), disabled: index === 0 },
       { label: "Move down", icon: ArrowDown, onSelect: () => void reorder(units, index, 1), disabled: index === units.length - 1 },
-      { label: "Rename", icon: Pencil, tone: "text-sky-400", onSelect: () => setRenameTarget({ id: unit.unitId, name: unit.label }), disabled: busy },
+      { label: "Rename", icon: Pencil, tone: "text-blue-400", onSelect: () => setRenameTarget({ id: unit.unitId, name: unit.label }), disabled: busy },
       {
         label: unit.isActive ? "Deactivate" : "Activate",
         icon: unit.isActive ? Pause : Play,
@@ -123,7 +123,7 @@ export function UnitsManager() {
   }
 
   if (isLoading) return <p className="text-sm text-slate-400">Loading units…</p>;
-  if (result && !result.ok) return <p className="text-sm text-rose-400">Failed to load units.</p>;
+  if (result && !result.ok) return <p className="text-sm text-rose-400">Failed to load units</p>;
 
   return (
     <div className="space-y-5">
@@ -149,7 +149,7 @@ export function UnitsManager() {
 
       {groups.length === 0 ? (
         <p className="rounded-xl border border-white/5 bg-slate-900/40 px-4 py-6 text-center text-xs text-slate-500">
-          No units added.
+          No units added
         </p>
       ) : (
         groups.map((group) => {
@@ -163,7 +163,7 @@ export function UnitsManager() {
               className="space-y-3"
             >
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-base font-bold text-white">{group.category}</h2>
+                <h2 className="text-base font-semibold text-white">{group.category}</h2>
                 <CatalogAddModal noun="Unit" onCheckSimilarity={checkSimilarity} onCreate={makeCreate(group.category)} />
               </div>
               <ul className="space-y-2">
@@ -178,10 +178,10 @@ export function UnitsManager() {
                       <Ruler className="h-5 w-5" />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <h3 className="truncate text-sm font-bold text-white">{unit.label}</h3>
+                      <h3 className="truncate text-sm font-semibold text-white">{unit.label}</h3>
                       <div className="mt-1 flex items-center gap-2 text-xs">
                         <span
-                          className={`rounded-md px-2 py-0.5 text-[10px] font-semibold border ${
+                          className={`rounded-md px-2 py-0.5 text-xs font-semibold border ${
                             unit.isActive
                               ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20"
                               : "bg-slate-800 text-slate-400 border-slate-700"
@@ -189,7 +189,7 @@ export function UnitsManager() {
                         >
                           {unit.isActive ? "Active" : "Inactive"}
                         </span>
-                        <span className="text-[11px] text-slate-400 font-medium">
+                        <span className="text-xs text-slate-400 font-medium">
                           Usage {unit.usageCount}
                         </span>
                       </div>

@@ -21,7 +21,7 @@ export default function SignUpPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-container border border-outline mb-6">
             <ShieldAlert className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface uppercase">Registration closed</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-on-surface">Registration closed</h1>
           <p className="mt-2 text-sm text-on-surface-variant font-medium">
             SiteOps accounts are provisioned by an administrator. Contact your admin to get access.
           </p>
@@ -37,7 +37,7 @@ export default function SignUpPage() {
         <div className="card-standard py-8 px-6 sm:px-10 text-center">
           <Link
             href="/auth/sign-in"
-            className="font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest text-xs"
+            className="font-semibold text-primary hover:text-primary/80 transition-colors text-xs"
           >
             Back to sign in
           </Link>

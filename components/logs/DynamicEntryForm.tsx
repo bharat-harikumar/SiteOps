@@ -37,7 +37,7 @@ type Props = {
   siteId?: string;
 };
 
-const labelClass = "text-[11px] font-extrabold uppercase tracking-widest text-slate-400";
+const labelClass = "text-xs font-semibold text-slate-400";
 
 export function DynamicEntryForm({ categoryId, categoryName, siteId }: Props) {
   const router = useNavRouter();
@@ -130,7 +130,7 @@ export function DynamicEntryForm({ categoryId, categoryName, siteId }: Props) {
   if (fields.length === 0) {
     return (
       <div className="card-standard p-6 space-y-2">
-        <p className="text-sm font-bold text-slate-300">No fields defined for this category yet.</p>
+        <p className="text-sm font-semibold text-slate-300">No fields defined for this category yet</p>
         <p className="text-xs text-slate-500">
           {loadError ??
             "Propose fields against a subcategory of this category and have an admin approve them before logging."}

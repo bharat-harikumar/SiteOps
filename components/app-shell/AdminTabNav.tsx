@@ -41,7 +41,7 @@ export function AdminTabNav() {
             <span
               className={[
                 'relative z-10 flex items-center gap-1.5 transition-colors duration-200',
-                active ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-slate-200',
+                active ? 'text-blue-400 font-semibold' : 'text-slate-400 hover:text-slate-200',
               ].join(' ')}
             >
               <tab.icon

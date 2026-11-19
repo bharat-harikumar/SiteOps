@@ -55,8 +55,8 @@ export default function SignInPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-container border border-outline mb-6">
             <LogIn className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface uppercase">SITEOPS</h1>
-          <p className="mt-2 text-sm text-on-surface-variant font-medium">Command Access Portal</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-on-surface">SiteOps</h1>
+          <p className="mt-2 text-sm text-on-surface-variant font-medium">Sign in to manage your sites</p>
         </div>
       </motion.div>
 
@@ -69,8 +69,8 @@ export default function SignInPage() {
         <div className="card-standard py-8 px-6 sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-xs font-extrabold uppercase tracking-widest text-on-surface-variant mb-2">
-                EMAIL ADDRESS
+              <label htmlFor="email" className="block text-xs font-semibold text-on-surface-variant mb-2">
+                Email address
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant" />
@@ -89,8 +89,8 @@ export default function SignInPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-xs font-extrabold uppercase tracking-widest text-on-surface-variant mb-2">
-                PASSWORD
+              <label htmlFor="password" className="block text-xs font-semibold text-on-surface-variant mb-2">
+                Password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant" />
@@ -110,9 +110,9 @@ export default function SignInPage() {
 
             <button type="submit" disabled={isLoading} className="w-full btn-primary py-3.5 text-xs">
               {isLoading ? (
-                <><Loader2 className="w-5 h-5 animate-spin" />Authenticating...</>
+                <><Loader2 className="w-5 h-5 animate-spin" />Signing in…</>
               ) : (
-                <><LogIn className="w-5 h-5 mr-2" />Authorize Access</>
+                <><LogIn className="w-5 h-5 mr-2" />Sign in</>
               )}
             </button>
           </form>

@@ -235,7 +235,7 @@ export function ToolMovementForm({
     >
       <header className="flex items-start justify-between gap-3 border-b border-white/10 p-5">
         <div className="min-w-0">
-          <h2 id={`${id}-title`} className="text-lg font-bold text-white">
+          <h2 id={`${id}-title`} className="text-lg font-semibold text-white">
             {TITLES[action]}
           </h2>
           <p className="mt-1 text-sm text-slate-400">
@@ -263,7 +263,7 @@ export function ToolMovementForm({
           </p>
         ) : error ? (
           <div role="alert" className="text-sm text-slate-300">
-            <p>Couldn't load the latest choices.</p>
+            <p>Couldn't load the latest choices</p>
             <button
               type="button"
               onClick={onRetry}
@@ -314,7 +314,7 @@ export function ToolMovementForm({
             )}
             {tools.length === 0 ? (
               <p className="text-sm text-slate-400">
-                No tools available in godown.
+                No tools available in godown
               </p>
             ) : null}
             {pickDestination ? (
@@ -339,7 +339,7 @@ export function ToolMovementForm({
                 </select>
                 {sites.length === 0 ? (
                   <span className="mt-2 block text-sm text-slate-400">
-                    No other available sites to transfer to.
+                    No other available sites to transfer to
                   </span>
                 ) : null}
               </label>
@@ -433,7 +433,7 @@ export function ToolMovementForm({
             ) : null}
             {(needsReview || changed) && !uncertain ? (
               <div className="text-sm text-amber-200">
-                <p>Review the latest stock before saving this movement.</p>
+                <p>Review the latest stock before saving this movement</p>
                 <button
                   type="button"
                   disabled={

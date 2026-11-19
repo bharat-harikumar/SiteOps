@@ -38,7 +38,7 @@ export function TempPasswordField({
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-xs font-semibold uppercase text-on-surface-variant">
+      <label htmlFor={id} className="text-xs font-semibold text-on-surface-variant">
         {label}
       </label>
       <div className="flex gap-2">

@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
-/* Type floor: 12px (text-xs) for anything a user must read; 14px+ for labels on
-   interactive controls. 9-10px is reserved for decorative micro-labels that
-   duplicate adjacent content. Field supervisors read this app outdoors on
+/* Type floor: 12px (text-xs) is the smallest size anywhere; 14px+ for labels
+   on interactive controls. Sentence case, weights 400-600, no tracked caps. Field supervisors read this app outdoors on
    phones — see the 2026-07-17 audit, finding F17. tests/ui/contrast.test.ts
    fences the user-critical sites and the placeholder contrast floor (WCAG AA
    4.5:1 on the #020617 surface, which slate-500 does NOT meet at 4.24:1). */
@@ -100,11 +99,11 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    background-color: rgba(2, 6, 23, 0.8);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    /* Solid, not translucent: page titles showed through the header on
+       Android, where the blur often does not render. */
+    background-color: #020617;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     flex-shrink: 0;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     padding-top: env(safe-area-inset-top);
   }
 
@@ -114,11 +113,9 @@
     left: 0;
     right: 0;
     z-index: 50;
-    background-color: rgba(2, 6, 23, 0.85);
-    border-top: 1px solid rgba(255,255,255,0.05);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 -2px 20px rgba(0,0,0,0.5);
+    /* Solid for the same reason as .glass-header: list rows showed through. */
+    background-color: #020617;
+    border-top: 1px solid rgba(255,255,255,0.06);
     padding-bottom: env(safe-area-inset-bottom);
   }
 
@@ -126,30 +123,29 @@
     background-color: rgba(15, 23, 42, 0.5);
     border: 1px solid rgba(255,255,255,0.05);
     border-radius: 1rem;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
     /* No backdrop blur: cards sit on the flat page colour, so it blurred
        nothing visible while costing a GPU pass per card on low-end phones. */
     overflow: hidden;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-bold uppercase tracking-widest text-[11px] rounded-xl hover:bg-blue-500 transition shadow-lg shadow-blue-600/10 disabled:opacity-50 not-disabled:active:scale-[0.97];
+    @apply inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-semibold text-sm rounded-xl hover:bg-blue-500 transition-[background-color,transform] shadow-lg shadow-blue-600/10 disabled:opacity-50 not-disabled:active:scale-[0.97];
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-4 py-2 bg-white/5 text-slate-300 border border-white/5 font-bold uppercase tracking-widest text-[11px] rounded-xl hover:bg-white/10 transition not-disabled:active:scale-[0.97];
+    @apply inline-flex items-center justify-center px-4 py-2 bg-white/5 text-slate-300 border border-white/5 font-semibold text-sm rounded-xl hover:bg-white/10 transition-[background-color,transform] not-disabled:active:scale-[0.97];
   }
 
   .badge-emerald {
-    @apply px-2.5 py-1 bg-emerald-500/10 text-emerald-400 text-[9px] font-bold rounded-lg uppercase tracking-widest border border-emerald-500/20;
+    @apply px-2.5 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-medium rounded-md capitalize border border-emerald-500/20;
   }
 
   .badge-amber {
-    @apply px-2.5 py-1 bg-amber-500/10 text-amber-400 text-[9px] font-bold rounded-lg uppercase tracking-widest border border-amber-500/20;
+    @apply px-2.5 py-1 bg-amber-500/10 text-amber-400 text-xs font-medium rounded-md capitalize border border-amber-500/20;
   }
 
   .badge-sky {
-    @apply px-2.5 py-1 bg-blue-500/10 text-blue-400 text-[9px] font-bold rounded-lg uppercase tracking-widest border border-blue-500/20;
+    @apply px-2.5 py-1 bg-blue-500/10 text-blue-400 text-xs font-medium rounded-md capitalize border border-blue-500/20;
   }
 
   .input-standard {

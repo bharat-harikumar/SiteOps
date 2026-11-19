@@ -116,11 +116,11 @@ export default function EntryLogList({
       {groupedRows.map(({ date, rows }) => (
         <div key={date} className="space-y-2">
           <div className="flex items-center justify-between px-1">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">{formatDate(date)}</h2>
+            <h2 className="text-xs font-semibold text-slate-400">{formatDate(date)}</h2>
             {(type === "labour" || type === "material" || type === "machinery" || type === "expense") ? (
               <div className="flex items-center gap-2">
-                <span className="text-xs font-extrabold uppercase tracking-widest text-slate-500">Day total</span>
-                <span className="text-xs font-bold text-sky-400">
+                <span className="text-xs font-semibold text-slate-500">Day total</span>
+                <span className="text-xs font-semibold text-blue-400">
                   <Amount>{formatCurrency(rows.reduce((sum, row) => sum + row.total, 0))}</Amount>
                 </span>
               </div>
@@ -141,16 +141,16 @@ export default function EntryLogList({
                 data-highlight-target={rowHighlighted ? "" : undefined}
                 className={`card-standard p-4 flex items-start justify-between gap-4 transition-shadow ${
                   rowHighlighted && pulse
-                    ? "ring-2 ring-sky-400 ring-offset-2 ring-offset-[#020617]"
+                    ? "ring-2 ring-blue-400 ring-offset-2 ring-offset-[#020617]"
                     : ""
                 }`}
               >
                 <div className="min-w-0 flex-1">
                   {renderEntrySummary(entry, type)}
                   {(type === "labour" || type === "material" || type === "machinery" || type === "expense") ? (
-                    <div className="mt-3 rounded-xl border border-sky-500/10 bg-sky-500/5 px-3 py-2">
-                      <p className="text-xs font-extrabold uppercase tracking-widest text-slate-500">Running total</p>
-                      <p className="text-sm font-extrabold text-sky-400">
+                    <div className="mt-3 rounded-xl border border-blue-500/10 bg-blue-500/5 px-3 py-2">
+                      <p className="text-xs font-semibold text-slate-500">Running total</p>
+                      <p className="text-sm font-semibold text-blue-400">
                         <Amount>{formatCurrency(runningTotals.get(runningKey) ?? row.total)}</Amount>
                       </p>
                     </div>
@@ -161,7 +161,7 @@ export default function EntryLogList({
                     <Link
                       href={`/app/logs/${id}?type=${type}`}
                       aria-label="Edit entry"
-                      className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-slate-400 hover:text-sky-400 hover:bg-sky-500/10 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 flex items-center justify-center transition-colors"
                     >
                       <Edit3 className="w-4 h-4" />
                     </Link>
@@ -183,9 +183,9 @@ export default function EntryLogList({
       ))}
 
       {entries.length === 0 ? (
-        <div className="text-center py-20 bg-white/2 rounded-3xl border border-dashed border-white/5">
-          <p className="text-slate-500 text-xs font-bold uppercase tracking-widest italic">
-            No matching logs found.
+        <div className="text-center py-20 bg-white/2 rounded-2xl border border-dashed border-white/5">
+          <p className="text-slate-500 text-xs font-semibold">
+            No matching logs found
           </p>
         </div>
       ) : null}

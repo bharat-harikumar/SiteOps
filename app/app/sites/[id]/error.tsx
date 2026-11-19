@@ -19,8 +19,8 @@ export default function SiteDetailError({
 
   return (
     <PageStack>
-      <section className="rounded-3xl bg-red-500/10 p-6 text-red-300">
-        <h2 className="text-lg font-bold">Couldn&apos;t load site</h2>
+      <section className="rounded-2xl bg-red-500/10 p-6 text-red-300">
+        <h2 className="text-lg font-semibold">Couldn&apos;t load site</h2>
         <p className="mt-2 text-sm">
           The site detail failed to load. Try again or go back to the site list.
         </p>

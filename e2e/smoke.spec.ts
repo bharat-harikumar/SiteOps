@@ -14,7 +14,7 @@ test('sign-in page loads', async ({ page }) => {
   // doubles as a check that the inputs stay properly associated.
   await expect(page.getByLabel(/email/i)).toBeVisible();
   await expect(page.getByLabel(/password/i)).toBeVisible();
-  await expect(page.getByRole('button', { name: /authorize access/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^sign in$/i })).toBeVisible();
 });
 
 test('app redirects to sign-in when not authenticated', async ({ page }) => {

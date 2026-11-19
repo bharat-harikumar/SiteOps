@@ -20,7 +20,7 @@ const TYPE_LABELS: Record<StageEntryType, string> = {
 // per-type cards on the site detail page.
 const TYPE_BARS: Record<StageEntryType, string> = {
   material: "bg-amber-500",
-  labour: "bg-sky-500",
+  labour: "bg-blue-500",
   machinery: "bg-violet-500",
   expense: "bg-emerald-500",
 };
@@ -42,10 +42,10 @@ function ManpowerLine({
   if (!count) return null;
   return (
     <div className="flex items-baseline justify-between gap-4">
-      <span className="text-[11px] text-slate-400 font-medium min-w-0 truncate">
+      <span className="text-xs text-slate-400 font-medium min-w-0 truncate">
         • {role} · {count} {count === 1 ? "Person" : "People"}
       </span>
-      <span className="text-[11px] font-semibold text-slate-400 shrink-0">
+      <span className="text-xs font-semibold text-slate-400 shrink-0">
         <Amount>{formatCurrency(salary ?? 0)}</Amount>
       </span>
     </div>
@@ -107,15 +107,15 @@ export default function StageSummaryClient({
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 pt-2 pb-24">
-      <section className="card-standard p-5 border-sky-500/10 bg-sky-500/5">
+      <section className="card-standard p-5 border-blue-500/10 bg-blue-500/5">
         <Link
           href={`/app/sites/${siteId}`}
-          className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-sky-400 hover:text-sky-300"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
           Back to site
         </Link>
-        <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-white uppercase">
+        <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
           Work Stages
         </h1>
         <p className="text-xs text-slate-500 font-semibold mt-1">{siteName}</p>
@@ -132,7 +132,7 @@ export default function StageSummaryClient({
 
       {rows.length === 0 ? (
         <p className="card-standard p-6 text-sm text-slate-500 font-semibold">
-          No entries logged for this site yet.
+          No entries logged for this site yet
         </p>
       ) : (
         <ul className="space-y-3">
@@ -149,12 +149,12 @@ export default function StageSummaryClient({
                   type="button"
                   onClick={() => toggle(row)}
                   aria-expanded={open}
-                  className="w-full p-5 text-left focus:outline-none focus:ring-2 focus:ring-sky-500/70 hover:bg-white/5 transition-colors"
+                  className="w-full p-5 text-left focus:outline-none focus:ring-2 focus:ring-blue-500/70 hover:bg-white/5 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0 flex-1">
                       <p
-                        className={`text-sm font-extrabold uppercase tracking-wide break-words ${
+                        className={`text-sm font-semibold tracking-wide break-words ${
                           row.kind === "stage" ? "text-white" : "text-slate-400"
                         }`}
                       >
@@ -168,11 +168,11 @@ export default function StageSummaryClient({
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
                       <div className="text-right">
-                        <p className="text-lg font-extrabold text-sky-400">
+                        <p className="text-lg font-semibold text-blue-400">
                           <Amount>{formatCurrency(row.total)}</Amount>
                         </p>
                         {budget ? (
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                          <p className="text-xs font-semibold text-slate-500">
                             <Amount mask="**%">{`${((row.total / budget) * 100).toFixed(1)}%`}</Amount> of budget
                           </p>
                         ) : null}
@@ -197,7 +197,7 @@ export default function StageSummaryClient({
 
                   <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
                     {TYPE_ORDER.filter((t) => row.byType[t] > 0).map((t) => (
-                      <span key={t} className="text-[11px] font-semibold text-slate-500">
+                      <span key={t} className="text-xs font-semibold text-slate-500">
                         {TYPE_LABELS[t]} <Amount>{formatCurrency(row.byType[t])}</Amount>
                       </span>
                     ))}
@@ -216,7 +216,7 @@ export default function StageSummaryClient({
                     )}
                     {detail[row.key]?.length === 0 && (
                       <p className="text-xs text-slate-500 font-semibold">
-                        No material or labour entries in this stage.
+                        No material or labour entries in this stage
                       </p>
                     )}
                     {detail[row.key]?.map((d) => (
@@ -229,7 +229,7 @@ export default function StageSummaryClient({
                               {d.headCount ? ` · ${d.headCount} heads` : ""}
                             </span>
                           </span>
-                          <span className="text-xs font-bold text-slate-300 shrink-0">
+                          <span className="text-xs font-semibold text-slate-300 shrink-0">
                             <Amount>{formatCurrency(d.spend)}</Amount>
                           </span>
                         </div>
@@ -243,8 +243,8 @@ export default function StageSummaryClient({
 
                         {d.otSpend ? (
                           <div className="pl-4 mt-0.5 flex items-baseline justify-between gap-4">
-                            <span className="text-[11px] text-slate-400 font-medium">• Overtime (included)</span>
-                            <span className="text-[11px] font-semibold text-slate-400 shrink-0">
+                            <span className="text-xs text-slate-400 font-medium">• Overtime (included)</span>
+                            <span className="text-xs font-semibold text-slate-400 shrink-0">
                               <Amount>{formatCurrency(d.otSpend)}</Amount>
                             </span>
                           </div>

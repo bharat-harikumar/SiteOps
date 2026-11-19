@@ -12,9 +12,9 @@ export default function AdminCatalogPage() {
             <LayoutGrid className="h-6 w-6" />
           </span>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">Catalog Management</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-white">Catalog Management</h1>
             <p className="mt-0.5 text-xs text-slate-400">
-              Manage work types, materials, equipment, units, and tools catalog.
+              Manage work types, materials, equipment, units, and tools catalog
             </p>
           </div>
         </div>

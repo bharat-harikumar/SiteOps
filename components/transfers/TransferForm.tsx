@@ -129,20 +129,20 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
   return (
     <div className="max-w-2xl mx-auto pt-4 pb-20 px-4">
       <div className="mb-8">
-        <h3 className="text-xl font-extrabold tracking-tight text-white uppercase">Transfer Resources</h3>
-        <p className="text-sm text-slate-500 font-medium italic">Move labor or materials between active project zones.</p>
+        <h3 className="text-xl font-semibold tracking-tight text-white">Transfer resources</h3>
+        <p className="text-sm text-slate-500 font-medium">Move labour or materials from one site to another</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <section className="card-standard p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
             <div className="space-y-2">
-              <label htmlFor="transfer-from-site" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1.5 ml-1">
-                From (Source)
+              <label htmlFor="transfer-from-site" className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 ml-1">
+                From site
               </label>
               <div className="relative">
                 <select id="transfer-from-site" required value={fromSiteId} onChange={(e) => setFromSiteId(e.target.value)} className="input-standard pl-10 appearance-none bg-slate-900">
-                  <option value="" className="bg-slate-900">Select Origin</option>
+                  <option value="" className="bg-slate-900">Select site</option>
                   {sites.map((s) => <option key={s.siteId} value={s.siteId} className="bg-slate-900">{s.name}</option>)}
                 </select>
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -150,17 +150,17 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
               </div>
             </div>
 
-            <div className="hidden md:flex absolute top-2/3 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-sky-500 text-slate-950 rounded-full items-center justify-center shadow-lg shadow-sky-500/20 border-4 border-slate-900">
+            <div className="hidden md:flex absolute top-2/3 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-blue-500 text-slate-950 rounded-full items-center justify-center shadow-lg shadow-blue-500/20 border-4 border-slate-900">
               <ArrowRightLeft className="w-4 h-4" />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="transfer-to-site" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1.5 ml-1">
-                To (Destination)
+              <label htmlFor="transfer-to-site" className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 ml-1">
+                To site
               </label>
               <div className="relative">
                 <select id="transfer-to-site" required value={toSiteId} onChange={(e) => setToSiteId(e.target.value)} className="input-standard pl-10 appearance-none bg-slate-900">
-                  <option value="" className="bg-slate-900">Select Destination</option>
+                  <option value="" className="bg-slate-900">Select site</option>
                   {sites.filter((s) => s.siteId !== fromSiteId).map((s) => <option key={s.siteId} value={s.siteId} className="bg-slate-900">{s.name}</option>)}
                 </select>
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-400" />
@@ -174,13 +174,13 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
           <div className="space-y-3">
             {/* This labels a pair of toggle buttons, not a form control, so it
                 is a group label rather than a <label htmlFor>. */}
-            <p id="transfer-resource-type" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Resource Type</p>
+            <p id="transfer-resource-type" className="text-xs font-semibold text-slate-500 ml-1">Resource Type</p>
             <div role="group" aria-labelledby="transfer-resource-type" className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setResourceType('Materials')}
-                className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition uppercase tracking-widest text-[10px] font-bold ${
-                  resourceType === 'Materials' ? 'bg-sky-500/10 border-sky-500 text-sky-400' : 'bg-white/5 border-white/5 text-slate-500'
+                className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition text-xs font-semibold ${
+                  resourceType === 'Materials' ? 'bg-blue-500/10 border-blue-500 text-blue-400' : 'bg-white/5 border-white/5 text-slate-500'
                 }`}
               >
                 <Package className="w-5 h-5" /> Material
@@ -188,8 +188,8 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
               <button
                 type="button"
                 onClick={() => setResourceType('Labour')}
-                className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition uppercase tracking-widest text-[10px] font-bold ${
-                  resourceType === 'Labour' ? 'bg-sky-500/10 border-sky-500 text-sky-400' : 'bg-white/5 border-white/5 text-slate-500'
+                className={`flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition text-xs font-semibold ${
+                  resourceType === 'Labour' ? 'bg-blue-500/10 border-blue-500 text-blue-400' : 'bg-white/5 border-white/5 text-slate-500'
                 }`}
               >
                 <Users className="w-5 h-5" /> Workforce
@@ -199,7 +199,7 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
 
           {resourceType === 'Labour' ? (
             <div className="space-y-2">
-              <label htmlFor="transfer-work-type" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Work Type</label>
+              <label htmlFor="transfer-work-type" className="text-xs font-semibold text-slate-500 ml-1">Work Type</label>
               <select id="transfer-work-type" value={workTypeEnum} onChange={(e) => setWorkTypeEnum(e.target.value)} disabled={labourLoading} className="input-standard appearance-none bg-slate-900">
                 <option value="" className="bg-slate-900">
                   {labourLoading ? 'Loading…' : labourWorkTypes.length ? 'Select…' : 'No work types available'}
@@ -210,7 +210,7 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label htmlFor="transfer-material-type" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Material Type</label>
+                <label htmlFor="transfer-material-type" className="text-xs font-semibold text-slate-500 ml-1">Material Type</label>
                 <select id="transfer-material-type" value={materialTypeEnum} onChange={(e) => setMaterialTypeEnum(e.target.value)} disabled={materialLoading} className="input-standard appearance-none bg-slate-900">
                   <option value="" className="bg-slate-900">
                     {materialLoading ? 'Loading…' : materialTypes.length ? 'Select…' : 'No material types available'}
@@ -225,26 +225,26 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2 md:col-span-1">
-              <label htmlFor="transfer-quantity" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Quantity</label>
+              <label htmlFor="transfer-quantity" className="text-xs font-semibold text-slate-500 ml-1">Quantity</label>
               <input id="transfer-quantity" type="number" inputMode="decimal" min="0" step="0.01" required value={quantity} onChange={(e) => setQuantity(e.target.value)} className="input-standard" />
             </div>
             <div className="space-y-2 md:col-span-2">
-              <label htmlFor="transfer-remarks" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Transfer Remarks</label>
-              <input id="transfer-remarks" type="text" value={remarks} onChange={(e) => setRemarks(e.target.value)} className="input-standard" placeholder="Add loading/transport details..." />
+              <label htmlFor="transfer-remarks" className="text-xs font-semibold text-slate-500 ml-1">Transfer Remarks</label>
+              <textarea id="transfer-remarks" rows={3} value={remarks} onChange={(e) => setRemarks(e.target.value)} className="input-standard min-h-[88px] resize-none" placeholder="Add loading/transport details..." />
             </div>
           </div>
         </section>
 
-        <section className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-start gap-4 backdrop-blur-md">
+        <section className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-start gap-4">
           <AlertCircle className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-          <p className="text-xs text-slate-400 font-medium leading-relaxed italic">
-            Command Protocol: Both sector supervisors must verify dispatch and receipt logs before completion.
+          <p className="text-xs text-slate-400 font-medium leading-relaxed">
+            The transfer stays pending until an admin approves it
           </p>
         </section>
 
         <div className="pt-2">
-          <button type="submit" disabled={isLoading} className="w-full btn-primary py-4 uppercase">
-            {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <><Truck className="w-6 h-6 mr-3" />Initialize Asset Transfer</>}
+          <button type="submit" disabled={isLoading} className="w-full btn-primary py-4">
+            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Truck className="w-5 h-5 mr-2" />Request transfer</>}
           </button>
         </div>
       </form>

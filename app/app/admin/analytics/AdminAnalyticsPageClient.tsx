@@ -42,8 +42,8 @@ export function AdminAnalyticsPageClient({
   return (
     <div className="space-y-4">
       <section className="card-standard p-5">
-        <p className="text-[10px] font-black uppercase tracking-[0.35em] text-on-surface-variant">Pulse</p>
-        <h2 className="mt-2 text-2xl font-black text-on-surface">Admin analytics</h2>
+        <p className="text-xs font-semibold text-on-surface-variant">Pulse</p>
+        <h2 className="mt-2 text-2xl font-semibold text-on-surface">Admin analytics</h2>
         <p className="mt-2 max-w-2xl text-sm font-medium text-on-surface-variant">
           Periodic stats now come from the live admin analytics API and stay route-driven.
         </p>
@@ -58,7 +58,7 @@ export function AdminAnalyticsPageClient({
         </div>
       ) : null}
 
-      <label className="grid gap-2 rounded-[1.75rem] border border-outline-variant bg-surface p-4 text-sm font-semibold text-on-surface shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+      <label className="grid gap-2 rounded-2xl border border-outline-variant bg-surface p-4 text-sm font-semibold text-on-surface">
         Period
         <select
           value={period}
@@ -74,35 +74,35 @@ export function AdminAnalyticsPageClient({
       {result?.ok ? (
         <section className="grid gap-3">
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <div className="rounded-[1.5rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-on-surface-variant">Sites</div>
-              <div className="mt-2 text-2xl font-black text-on-surface">{result.data.sites}</div>
+            <div className="rounded-2xl border border-outline-variant bg-surface p-4">
+              <div className="text-xs font-semibold text-on-surface-variant">Sites</div>
+              <div className="mt-2 text-2xl font-semibold text-on-surface">{result.data.sites}</div>
             </div>
-            <div className="rounded-[1.5rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-on-surface-variant">Labour</div>
-              <div className="mt-2 text-2xl font-black text-on-surface">{result.data.entries.labour}</div>
+            <div className="rounded-2xl border border-outline-variant bg-surface p-4">
+              <div className="text-xs font-semibold text-on-surface-variant">Labour</div>
+              <div className="mt-2 text-2xl font-semibold text-on-surface">{result.data.entries.labour}</div>
             </div>
-            <div className="rounded-[1.5rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-on-surface-variant">Expense</div>
-              <div className="mt-2 text-2xl font-black text-on-surface">{result.data.entries.expense}</div>
+            <div className="rounded-2xl border border-outline-variant bg-surface p-4">
+              <div className="text-xs font-semibold text-on-surface-variant">Expense</div>
+              <div className="mt-2 text-2xl font-semibold text-on-surface">{result.data.entries.expense}</div>
             </div>
-            <div className="rounded-[1.5rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-on-surface-variant">Requests</div>
-              <div className="mt-2 text-2xl font-black text-on-surface">{result.data.resourceRequests}</div>
+            <div className="rounded-2xl border border-outline-variant bg-surface p-4">
+              <div className="text-xs font-semibold text-on-surface-variant">Requests</div>
+              <div className="mt-2 text-2xl font-semibold text-on-surface">{result.data.resourceRequests}</div>
             </div>
           </div>
 
-          <div className="rounded-[1.75rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-            <h3 className="text-lg font-black text-on-surface">Breakdown</h3>
+          <div className="rounded-2xl border border-outline-variant bg-surface p-4">
+            <h3 className="text-lg font-semibold text-on-surface">Breakdown</h3>
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-3">
-              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Material: <span className="font-black">{result.data.entries.material}</span></div>
-              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Machinery: <span className="font-black">{result.data.entries.machinery}</span></div>
-              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Incident: <span className="font-black">{result.data.entries.incident}</span></div>
+              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Material: <span className="font-semibold">{result.data.entries.material}</span></div>
+              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Machinery: <span className="font-semibold">{result.data.entries.machinery}</span></div>
+              <div className="rounded-2xl bg-surface-container-low px-3 py-3">Incident: <span className="font-semibold">{result.data.entries.incident}</span></div>
             </div>
           </div>
         </section>
       ) : (
-        <div className="rounded-3xl border border-outline-variant bg-surface px-4 py-6 text-sm font-medium text-on-surface-variant">
+        <div className="rounded-2xl border border-outline-variant bg-surface px-4 py-6 text-sm font-medium text-on-surface-variant">
           Loading analytics...
         </div>
       )}

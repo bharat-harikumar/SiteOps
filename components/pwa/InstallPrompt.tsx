@@ -87,7 +87,7 @@ export function InstallPrompt() {
           <Download className="h-5 w-5 text-primary" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold text-on-surface leading-tight">Install SiteOps</p>
+          <p className="text-sm font-semibold text-on-surface leading-tight">Install SiteOps</p>
           <p className="text-xs text-on-surface-variant leading-tight">
             {showIosHint
               ? 'Tap Share, then “Add to Home Screen”.'
@@ -98,7 +98,7 @@ export function InstallPrompt() {
           <button
             type="button"
             onClick={install}
-            className="shrink-0 rounded-xl bg-primary px-3 py-2 text-xs font-bold uppercase tracking-widest text-on-primary"
+            className="shrink-0 rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-on-primary"
           >
             Install
           </button>

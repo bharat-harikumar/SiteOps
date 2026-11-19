@@ -238,7 +238,7 @@ function SuggestBody(props: {
       <div className="px-4 py-4">
         {recents.length > 0 ? (
           <>
-            <p className="text-[11px] uppercase tracking-widest text-slate-600 px-1 mb-2">
+            <p className="text-xs text-slate-600 px-1 mb-2">
               Recent searches
             </p>
             <div className="space-y-1">
@@ -256,7 +256,7 @@ function SuggestBody(props: {
           </>
         ) : (
           <p className="text-sm text-slate-600 px-1 py-8 text-center">
-            Type at least 2 characters to search remarks across every site.
+            Type at least 2 characters to search remarks across every site
           </p>
         )}
       </div>
@@ -294,7 +294,7 @@ function SuggestBody(props: {
       <button
         type="button"
         onClick={onSeeAll}
-        className="w-full flex items-center justify-center gap-2 px-4 py-3 border-t border-white/5 text-sm text-sky-400 hover:bg-white/5"
+        className="w-full flex items-center justify-center gap-2 px-4 py-3 border-t border-white/5 text-sm text-blue-400 hover:bg-white/5"
       >
         See all results for “{query}”
         <CornerDownLeft className="w-4 h-4" aria-hidden />
@@ -322,7 +322,7 @@ function ResultsBody(props: {
         <p className="text-sm text-slate-400 truncate">
           Results for <span className="text-white font-semibold">“{query}”</span>
         </p>
-        <p className="text-[11px] uppercase tracking-widest text-slate-600 shrink-0 ml-3" aria-live="polite">
+        <p className="text-xs text-slate-600 shrink-0 ml-3" aria-live="polite">
           {totalLoaded}
           {hasMore ? '+' : ''} found
         </p>
@@ -336,7 +336,7 @@ function ResultsBody(props: {
             onClick={() => onFilter(f.value)}
             className={`px-3 py-1 rounded-full text-xs whitespace-nowrap border transition-colors ${
               sourceFilter === f.value
-                ? 'bg-sky-500/15 border-sky-500/40 text-sky-300'
+                ? 'bg-blue-500/15 border-blue-500/40 text-blue-300'
                 : 'border-white/10 text-slate-400 hover:bg-white/5'
             }`}
           >
@@ -347,7 +347,7 @@ function ResultsBody(props: {
 
       {results.length === 0 && !loading ? (
         <p className="px-6 py-12 text-center text-sm text-slate-500">
-          No results in this category.
+          No results in this category
         </p>
       ) : (
         <ul className="py-1 pb-10">

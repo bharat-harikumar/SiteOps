@@ -9,6 +9,8 @@ import { Clock3 } from "lucide-react";
 
 import { EntryTypeIcon } from "@/components/constants/EntryTypeIcon";
 import { DateFilterField } from "@/components/operations/DateFilterField";
+import { FilterPanel } from "@/components/operations/FilterPanel";
+import { countActiveFilters } from "@/components/operations/filterCount";
 import EntryLogList from "@/components/operations/EntryLogList";
 import CategoryGrid from "@/components/operations/CategoryGrid";
 import { buildGroupedRows } from "@/components/operations/categoryView";
@@ -119,22 +121,22 @@ export default function OperationDetailPageClient({
 
   return (
     <div className="space-y-6 pt-2 pb-20 max-w-5xl mx-auto">
-      <section className="card-standard p-5 border-sky-500/10 bg-sky-500/5">
+      <section className="card-standard p-5 border-blue-500/10 bg-blue-500/5">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-3 min-w-0">
             <Link
               href={`/app/sites/${siteId}`}
-              className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-sky-400 hover:text-sky-300"
+              className="inline-flex items-center gap-2 text-xs font-semibold text-blue-400 hover:text-blue-300"
             >
               <Clock3 className="w-3.5 h-3.5" />
               Back to site
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-sky-400">
+              <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-blue-400">
                 <EntryTypeIcon type={type} className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-extrabold uppercase tracking-tight text-white">
+                <h1 className="text-2xl font-semibold tracking-tight text-white">
                   {typeLabel[type]} Logs
                 </h1>
                 <p className="text-xs text-slate-500 font-semibold">{site.name}</p>
@@ -143,10 +145,10 @@ export default function OperationDetailPageClient({
           </div>
 
           <div className="text-right">
-            <p className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Logs</p>
+            <p className="text-2xl font-semibold text-white">{visibleLogCount}</p>
+            <p className="text-xs font-semibold text-slate-500">Logs</p>
             {(type === "labour" || type === "material" || type === "machinery" || type === "expense") ? (
-              <p className="mt-2 text-sm font-bold text-sky-400"><Amount>{formatCurrency(totalSpend)}</Amount></p>
+              <p className="mt-2 text-sm font-semibold text-blue-400"><Amount>{formatCurrency(totalSpend)}</Amount></p>
             ) : null}
           </div>
         </div>
@@ -157,8 +159,8 @@ export default function OperationDetailPageClient({
           <button
             type="button"
             onClick={() => selectView("category")}
-            className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-colors ${
-              view === "category" ? "bg-sky-500 text-white" : "text-slate-400 hover:text-slate-200"
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
+              view === "category" ? "bg-blue-500 text-white" : "text-slate-400 hover:text-slate-200"
             }`}
           >
             By Category
@@ -166,8 +168,8 @@ export default function OperationDetailPageClient({
           <button
             type="button"
             onClick={() => selectView("all")}
-            className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-colors ${
-              view === "all" ? "bg-sky-500 text-white" : "text-slate-400 hover:text-slate-200"
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
+              view === "all" ? "bg-blue-500 text-white" : "text-slate-400 hover:text-slate-200"
             }`}
           >
             All Logs
@@ -179,10 +181,10 @@ export default function OperationDetailPageClient({
         <CategoryGrid entries={entries} type={type} siteId={siteId} />
       ) : (
         <>
-      <section className="card-standard overflow-visible p-4 grid gap-4 md:grid-cols-5">
+      <FilterPanel activeCount={countActiveFilters(initialFilters)} gridClassName="md:grid-cols-5">
         <DateFilterField
           id="filter-from"
-          label="From Date"
+          label="From date"
           value={filters.from}
           onChange={(value) => setFilters((state) => ({ ...state, from: value }))}
           openId={openDateField}
@@ -190,7 +192,7 @@ export default function OperationDetailPageClient({
         />
         <DateFilterField
           id="filter-to"
-          label="To Date"
+          label="To date"
           value={filters.to}
           onChange={(value) => setFilters((state) => ({ ...state, to: value }))}
           openId={openDateField}
@@ -199,7 +201,7 @@ export default function OperationDetailPageClient({
         <div className="space-y-2">
           <label
             htmlFor="filter-category"
-            className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
+            className="text-xs font-semibold text-slate-400"
           >
             Category
           </label>
@@ -222,9 +224,9 @@ export default function OperationDetailPageClient({
           <div className="space-y-2">
             <label
               htmlFor="filter-stage"
-              className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
+              className="text-xs font-semibold text-slate-400"
             >
-              Work Stage
+              Work stage
             </label>
             <select
               id="filter-stage"
@@ -241,10 +243,10 @@ export default function OperationDetailPageClient({
           </div>
         ) : (
           <div className="space-y-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+            <span className="text-xs font-semibold text-slate-400">
               Site
             </span>
-            <div className="input-standard flex items-center text-xs uppercase tracking-widest text-slate-500">
+            <div className="input-standard flex items-center text-xs text-slate-500">
               {site.location}
             </div>
           </div>
@@ -252,9 +254,9 @@ export default function OperationDetailPageClient({
         <div className="space-y-2">
           <label
             htmlFor="filter-sort"
-            className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
+            className="text-xs font-semibold text-slate-400"
           >
-            Sort By
+            Sort by
           </label>
           <select
             id="filter-sort"
@@ -275,20 +277,20 @@ export default function OperationDetailPageClient({
         </div>
         <div className="grid gap-3 md:col-span-5 md:grid-cols-[1fr_auto]">
           <button type="button" onClick={applyFilters} className="btn-primary h-12 py-3">
-            Apply Filters
+            Apply filters
           </button>
           <button type="button" onClick={clearFilters} className="btn-secondary h-12 py-3">
-            Clear Filters
+            Clear filters
           </button>
         </div>
-      </section>
+      </FilterPanel>
 
       {type === "material" ? (
         <section className="grid gap-3 md:grid-cols-3">
           {stageTotals.map((item) => (
             <div key={item.stage} className="card-standard p-4">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{item.stage}</p>
-              <p className="mt-1 text-lg font-extrabold text-white"><Amount>{formatCurrency(item.total)}</Amount></p>
+              <p className="text-xs font-semibold text-slate-500">{item.stage}</p>
+              <p className="mt-1 text-lg font-semibold text-white"><Amount>{formatCurrency(item.total)}</Amount></p>
             </div>
           ))}
         </section>

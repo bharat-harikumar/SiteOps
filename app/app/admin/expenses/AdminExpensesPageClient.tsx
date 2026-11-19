@@ -60,8 +60,8 @@ export function AdminExpensesPageClient({
   return (
     <div className="space-y-4">
       <section className="card-standard p-5">
-        <p className="text-[10px] font-black uppercase tracking-[0.35em] text-on-surface-variant">Expenses</p>
-        <h2 className="mt-2 text-2xl font-black text-on-surface">Site spend browser</h2>
+        <p className="text-xs font-semibold text-on-surface-variant">Expenses</p>
+        <h2 className="mt-2 text-2xl font-semibold text-on-surface">Site spend browser</h2>
         <p className="mt-2 max-w-2xl text-sm font-medium text-on-surface-variant">
           This route is wired to the live sites list and the per-site expense entry API.
         </p>
@@ -74,7 +74,7 @@ export function AdminExpensesPageClient({
         <ApiUnavailableBanner endpoint={expensesResult.endpoint} method={expensesResult.method} />
       ) : null}
 
-      <label className="grid gap-2 rounded-[1.75rem] border border-outline-variant bg-surface p-4 text-sm font-semibold text-on-surface shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+      <label className="grid gap-2 rounded-2xl border border-outline-variant bg-surface p-4 text-sm font-semibold text-on-surface">
         Site
         <select
           value={siteId}
@@ -90,18 +90,18 @@ export function AdminExpensesPageClient({
       </label>
 
       <section className="grid grid-cols-2 gap-3">
-        <div className="rounded-[1.5rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-          <div className="text-[10px] font-black uppercase tracking-[0.28em] text-on-surface-variant">Expenses</div>
-          <div className="mt-2 text-2xl font-black text-on-surface">{expenses.length}</div>
+        <div className="rounded-2xl border border-outline-variant bg-surface p-4">
+          <div className="text-xs font-semibold text-on-surface-variant">Expenses</div>
+          <div className="mt-2 text-2xl font-semibold text-on-surface">{expenses.length}</div>
         </div>
-        <div className="rounded-[1.5rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-          <div className="text-[10px] font-black uppercase tracking-[0.28em] text-on-surface-variant">Total</div>
-          <div className="mt-2 text-2xl font-black text-on-surface"><Amount>₹{total.toLocaleString('en-IN')}</Amount></div>
+        <div className="rounded-2xl border border-outline-variant bg-surface p-4">
+          <div className="text-xs font-semibold text-on-surface-variant">Total</div>
+          <div className="mt-2 text-2xl font-semibold text-on-surface"><Amount>₹{total.toLocaleString('en-IN')}</Amount></div>
         </div>
       </section>
 
-      <section className="rounded-[1.75rem] border border-outline-variant bg-surface p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-        <h3 className="text-lg font-black text-on-surface">Expense entries</h3>
+      <section className="rounded-2xl border border-outline-variant bg-surface p-4">
+        <h3 className="text-lg font-semibold text-on-surface">Expense entries</h3>
         <div className="mt-4 grid gap-3">
           {expensesResult?.ok ? (
             expenses.length > 0 ? (
@@ -109,19 +109,19 @@ export function AdminExpensesPageClient({
                 <article key={entry.id} className="rounded-2xl bg-surface-container-low px-4 py-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <div className="text-base font-black text-on-surface">{entry.description}</div>
+                      <div className="text-base font-semibold text-on-surface">{entry.description}</div>
                       <div className="text-sm text-on-surface-variant">{formatDate(entry.date)}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-base font-black text-on-surface"><Amount>₹{Number(entry.amount).toLocaleString('en-IN')}</Amount></div>
-                      <div className="text-xs font-black uppercase tracking-[0.24em] text-on-surface-variant">{entry.category}</div>
+                      <div className="text-base font-semibold text-on-surface"><Amount>₹{Number(entry.amount).toLocaleString('en-IN')}</Amount></div>
+                      <div className="text-xs font-semibold text-on-surface-variant">{entry.category}</div>
                     </div>
                   </div>
                 </article>
               ))
             ) : (
               <div className="rounded-2xl border border-outline-variant bg-surface px-4 py-4 text-sm font-medium text-on-surface-variant">
-                No expense entries found for this site.
+                No expense entries found for this site
               </div>
             )
           ) : (

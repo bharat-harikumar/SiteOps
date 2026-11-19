@@ -18,7 +18,7 @@ type Props = {
 
 type CreatedSite = { siteId: string };
 
-const labelClass = "text-xs font-semibold uppercase text-on-surface-variant";
+const labelClass = "text-xs font-semibold text-on-surface-variant";
 const inputClass =
   "h-11 w-full rounded border border-outline bg-surface-container-lowest px-3 text-sm text-on-surface focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary";
 
@@ -70,9 +70,9 @@ export function SitesNewPageClient({ role, supervisors }: Props) {
   return (
     <div className="flex flex-col gap-4">
       <header>
-        <h2 className="text-lg font-bold text-white">Create Site</h2>
+        <h2 className="text-lg font-semibold text-white">Create Site</h2>
         <p className="text-sm text-on-surface-variant">
-          Add a new construction site to your operations roster.
+          Add a new construction site to your operations roster
         </p>
       </header>
 
@@ -114,7 +114,7 @@ export function SitesNewPageClient({ role, supervisors }: Props) {
         <button
           type="submit"
           disabled={submitting}
-          className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded bg-primary text-xs font-semibold uppercase text-on-primary hover:bg-sky-400 disabled:opacity-60"
+          className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded bg-primary text-xs font-semibold text-on-primary hover:bg-blue-400 disabled:opacity-60"
         >
           <MapPinPlus className="w-[18px] h-[18px]" />
           {submitting ? "Creating…" : "Create Site"}

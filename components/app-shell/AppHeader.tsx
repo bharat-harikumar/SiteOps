@@ -65,7 +65,7 @@ export function AppHeader({ role, email = '', initialUnread = 0 }: Props) {
   }, [pathname]);
 
   return (
-    <header className="glass-header safe-area-top fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-background/80">
+    <header className="glass-header safe-area-top fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-background">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {!isDashboard ? (
@@ -94,16 +94,16 @@ export function AppHeader({ role, email = '', initialUnread = 0 }: Props) {
               <ChevronLeft className="w-5 h-5 text-slate-400" />
             </button>
           ) : (
-            <div className="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center text-slate-950 font-bold shrink-0">
+            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-slate-950 font-semibold shrink-0">
               S
             </div>
           )}
           <div className="flex flex-col">
-            <span className="text-xl font-extrabold tracking-tight text-white uppercase leading-none">
+            <span className="text-xl font-semibold tracking-tight text-white leading-none">
               SiteOps
             </span>
-            <span className="mt-1.5 text-xs font-medium tracking-wide text-slate-400 leading-none">
-              {role === 'Admin' ? 'Admin Command Interface' : 'Supervisor Command Interface'}
+            <span className="mt-1.5 text-xs font-medium text-slate-400 leading-none">
+              {role === 'Admin' ? 'Admin' : 'Supervisor'}
             </span>
           </div>
         </div>
@@ -111,7 +111,7 @@ export function AppHeader({ role, email = '', initialUnread = 0 }: Props) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setSearchOpen(true)}
-            className="p-3 text-slate-400 hover:text-sky-400 transition-colors"
+            className="p-3 text-slate-400 hover:text-blue-400 transition-colors"
             aria-label="Search remarks"
           >
             <Search className="w-5 h-5" />
@@ -119,7 +119,7 @@ export function AppHeader({ role, email = '', initialUnread = 0 }: Props) {
 
           <button
             onClick={() => router.push('/app/notifications')}
-            className="p-3 text-slate-400 hover:text-sky-400 transition-colors relative"
+            className="p-3 text-slate-400 hover:text-blue-400 transition-colors relative"
             // The count lives in the button's own name: an aria-label on a
             // child span is ignored once the button has one.
             aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
@@ -128,7 +128,7 @@ export function AppHeader({ role, email = '', initialUnread = 0 }: Props) {
             {unread > 0 ? (
               <span
                 aria-hidden
-                className="absolute top-1.5 right-1 min-w-[18px] h-[18px] px-1 grid place-items-center bg-blue-600 text-white text-[11px] font-bold leading-none tabular-nums rounded-full border-2 border-slate-950"
+                className="absolute top-1 right-0.5 min-w-5 h-5 px-1 grid place-items-center bg-blue-600 text-white text-xs font-semibold leading-none tabular-nums rounded-full border-2 border-slate-950"
               >
                 {unread > 99 ? '99+' : unread}
               </span>
@@ -144,15 +144,15 @@ export function AppHeader({ role, email = '', initialUnread = 0 }: Props) {
             aria-current={onProfile ? 'page' : undefined}
           >
             <div className="text-right hidden sm:block">
-              <p className="max-w-[14rem] truncate text-xs font-bold text-white leading-none">{email || 'Signed in'}</p>
-              <p className="text-[11px] text-slate-400 uppercase tracking-widest mt-1">{role}</p>
+              <p className="max-w-[14rem] truncate text-xs font-semibold text-white leading-none">{email || 'Signed in'}</p>
+              <p className="text-xs text-slate-400 mt-1">{role}</p>
             </div>
             <div
-              className={`w-9 h-9 bg-white/5 rounded-full border flex items-center justify-center group-hover:border-sky-500 transition-colors overflow-hidden shadow-lg ${
-                onProfile ? 'border-sky-500' : 'border-white/5'
+              className={`w-9 h-9 bg-white/5 rounded-full border flex items-center justify-center group-hover:border-blue-500 transition-colors overflow-hidden ${
+                onProfile ? 'border-blue-500' : 'border-white/5'
               }`}
             >
-              <User className={`w-5 h-5 ${onProfile ? 'text-sky-400' : 'text-slate-400'}`} />
+              <User className={`w-5 h-5 ${onProfile ? 'text-blue-400' : 'text-slate-400'}`} />
             </div>
           </button>
         </div>

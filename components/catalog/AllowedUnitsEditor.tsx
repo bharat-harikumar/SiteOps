@@ -81,9 +81,9 @@ export function AllowedUnitsEditor({ subcategoryId, name, onClose }: Props) {
       className="w-full max-w-md rounded-2xl border border-outline-variant bg-surface-container-lowest p-4"
     >
       <div className="space-y-3">
-        <h3 className="text-lg font-extrabold text-white">Allowed units — {name}</h3>
+        <h3 className="text-lg font-semibold text-white">Allowed units — {name}</h3>
         {loadFailed ? (
-          <p className="text-sm text-error">Failed to load units.</p>
+          <p className="text-sm text-error">Failed to load units</p>
         ) : !data ? (
           <p className="text-sm text-on-surface-variant">Loading…</p>
         ) : (
@@ -119,14 +119,14 @@ export function AllowedUnitsEditor({ subcategoryId, name, onClose }: Props) {
                 type="button"
                 disabled={saving}
                 onClick={() => void save()}
-                className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold uppercase text-on-primary disabled:opacity-60"
+                className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary disabled:opacity-60"
               >
                 {saving ? "Saving…" : "Save"}
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl border border-outline px-4 py-2.5 text-sm font-semibold uppercase text-on-surface-variant"
+                className="rounded-xl border border-outline px-4 py-2.5 text-sm font-semibold text-on-surface-variant"
               >
                 Cancel
               </button>

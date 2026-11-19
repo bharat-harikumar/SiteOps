@@ -19,7 +19,7 @@ type Site = {
   supervisorId: string;
 };
 
-const labelClass = "text-[11px] font-extrabold uppercase tracking-widest text-slate-400";
+const labelClass = "text-xs font-semibold text-slate-400";
 const inputClass = "input-standard bg-slate-900";
 
 export function EditSiteModal({
@@ -78,7 +78,7 @@ export function EditSiteModal({
       className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-950 shadow-2xl"
     >
       <div className="space-y-4 p-5">
-        <h3 className="text-lg font-extrabold uppercase tracking-tight text-white">Edit Site</h3>
+        <h3 className="text-lg font-semibold tracking-tight text-white">Edit Site</h3>
 
         <div className="flex flex-col gap-2">
           <label className={labelClass}>Name</label>

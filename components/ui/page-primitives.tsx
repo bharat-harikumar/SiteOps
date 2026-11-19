@@ -14,18 +14,18 @@ export function SimpleCard({ children, className = '' }: { children: React.React
 export function PageHeading({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="px-1 mb-8">
-      <h2 className="text-2xl font-extrabold tracking-tight text-white uppercase">{title}</h2>
-      {subtitle && <p className="text-sm text-slate-500 font-medium italic mt-1.5">{subtitle}</p>}
+      <h2 className="text-2xl font-semibold tracking-tight text-white">{title}</h2>
+      {subtitle && <p className="text-sm text-slate-500 font-medium mt-1.5">{subtitle}</p>}
     </div>
   );
 }
 
-export function EmptyState({ message = 'No data found.' }: { message?: string }) {
+export function EmptyState({ message = 'No data found' }: { message?: string }) {
   return (
-    <div className="text-center py-24 bg-white/2 rounded-3xl border border-dashed border-white/5 backdrop-blur-sm">
+    <div className="text-center py-24 bg-white/2 rounded-2xl border border-dashed border-white/5">
       <AlertCircle className="w-12 h-12 text-slate-600 mx-auto mb-4" aria-hidden />
       {/* The only text on an otherwise blank screen, so it clears the 12px floor. */}
-      <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">{message}</p>
+      <p className="text-slate-400 text-xs font-semibold">{message}</p>
     </div>
   );
 }
@@ -48,10 +48,10 @@ export function PageHero({
   description?: string;
 }) {
   return (
-    <div className={`rounded-3xl bg-gradient-to-br from-sky-500/10 to-slate-900/60 border border-sky-500/10 p-6 backdrop-blur-md ${className}`}>
-      {eyebrow && <p className="text-[9px] font-bold uppercase tracking-widest text-sky-400 mb-2">{eyebrow}</p>}
-      {title && <h2 className="text-2xl font-extrabold tracking-tight text-white uppercase mb-1">{title}</h2>}
-      {description && <p className="text-sm text-slate-500 font-medium italic">{description}</p>}
+    <div className={`rounded-2xl bg-slate-900/60 border border-white/[0.06] p-6 ${className}`}>
+      {eyebrow && <p className="text-xs font-semibold text-blue-400 mb-2">{eyebrow}</p>}
+      {title && <h2 className="text-2xl font-semibold tracking-tight text-white mb-1">{title}</h2>}
+      {description && <p className="text-sm text-slate-500 font-medium">{description}</p>}
       {children}
     </div>
   );

@@ -13,30 +13,30 @@ export function ReportingFromCard({
 }) {
   return (
     <div
-      className={`card-standard p-4 ${site ? "border-sky-500/10 bg-sky-500/5" : ""}`}
+      className={`card-standard p-4 ${site ? "border-blue-500/10 bg-blue-500/5" : ""}`}
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div
             className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
-              site ? "bg-sky-500/10 border-sky-500/20" : "bg-white/5 border-white/5"
+              site ? "bg-blue-500/10 border-blue-500/20" : "bg-white/5 border-white/5"
             }`}
           >
-            <MapPin className={`w-5 h-5 ${site ? "text-sky-400" : "text-slate-500"}`} />
+            <MapPin className={`w-5 h-5 ${site ? "text-blue-400" : "text-slate-500"}`} />
           </div>
           <div className="min-w-0">
-            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Reporting From</p>
+            <p className="text-xs font-semibold text-slate-500">Reporting From</p>
             {site ? (
               <>
-                <p className="text-sm font-bold text-white truncate">
+                <p className="text-sm font-semibold text-white truncate">
                   {site.name}
                 </p>
-                <p className="text-xs text-slate-500 italic truncate">
+                <p className="text-xs text-slate-500 truncate">
                   {site.location}
                 </p>
               </>
             ) : (
-              <p className="text-sm font-bold text-slate-300">No site selected</p>
+              <p className="text-sm font-semibold text-slate-300">No site selected</p>
             )}
           </div>
         </div>

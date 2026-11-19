@@ -14,7 +14,7 @@ export default function OfflinePage() {
       <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-container border border-outline mb-6">
         <CloudOff className="w-8 h-8 text-primary" />
       </div>
-      <h1 className="text-2xl font-extrabold tracking-tight text-on-surface uppercase">
+      <h1 className="text-2xl font-semibold tracking-tight text-on-surface">
         You&apos;re offline
       </h1>
       <p className="mt-3 max-w-sm text-sm text-on-surface-variant font-medium">
