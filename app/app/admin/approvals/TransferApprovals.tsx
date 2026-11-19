@@ -66,7 +66,7 @@ export function TransferApprovals({ initialTransfers }: { initialTransfers: Tran
 
   return (
     <div className="card-standard p-4">
-      <h3 className="text-lg font-bold text-slate-100">Transfer requests</h3>
+      <h3 className="text-lg font-semibold text-slate-100">Transfer requests</h3>
 
       {result && !result.ok && result.kind === 'endpoint_unavailable' ? (
         <div className="mt-3">
@@ -79,7 +79,7 @@ export function TransferApprovals({ initialTransfers }: { initialTransfers: Tran
           <article key={transfer.transferId} className="rounded-2xl border border-white/5 bg-slate-900/40 px-4 py-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="text-base font-black text-slate-100">{transfer.resourceType} Transfer</div>
+                <div className="text-base font-semibold text-slate-100">{transfer.resourceType} Transfer</div>
                 <div className="text-sm text-slate-400">{transfer.fromSiteId} → {transfer.toSiteId}</div>
               </div>
               <span className="badge-sky">{transfer.status}</span>
@@ -110,7 +110,7 @@ export function TransferApprovals({ initialTransfers }: { initialTransfers: Tran
           </article>
         )) : null}
         {result?.ok && optimistic.length === 0 ? (
-          <p className="text-sm text-slate-400">No transfer requests.</p>
+          <p className="text-sm text-slate-400">No transfer requests</p>
         ) : null}
       </div>
     </div>

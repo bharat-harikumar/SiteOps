@@ -278,7 +278,7 @@ export function CatalogManager() {
     const actions: RowAction[] = [
       { label: "Move up", icon: ArrowUp, onSelect: () => void reorder(list, index, -1), disabled: index === 0 },
       { label: "Move down", icon: ArrowDown, onSelect: () => void reorder(list, index, 1), disabled: index === count - 1 },
-      { label: "Rename", icon: Pencil, tone: "text-sky-400", onSelect: () => setRenameTarget({ id: item.subcategoryId, name: item.name, noun: list.noun }), disabled: busy },
+      { label: "Rename", icon: Pencil, tone: "text-blue-400", onSelect: () => setRenameTarget({ id: item.subcategoryId, name: item.name, noun: list.noun }), disabled: busy },
       {
         label: item.isActive ? "Deactivate" : "Activate",
         icon: item.isActive ? Pause : Play,
@@ -326,7 +326,7 @@ export function CatalogManager() {
       </div>
     );
   }
-  if (result && !result.ok) return <p className="text-sm text-rose-400">Failed to load catalog.</p>;
+  if (result && !result.ok) return <p className="text-sm text-rose-400">Failed to load catalog</p>;
 
   const mergeCandidates: MergeCandidate[] = mergeState
     ? mergeState.list.items
@@ -346,7 +346,7 @@ export function CatalogManager() {
               key={op.operation}
               type="button"
               onClick={() => setActiveOperation(i)}
-              className={`flex cursor-pointer items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
+              className={`flex cursor-pointer items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
                 active
                   ? "bg-blue-600/20 text-blue-400 border border-blue-500/40 shadow-xs"
                   : "border border-white/5 bg-slate-900/60 text-slate-400 hover:bg-white/5 hover:text-white"
@@ -386,7 +386,7 @@ export function CatalogManager() {
             className="space-y-3"
           >
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-base font-bold text-white">{list.noun}</h2>
+              <h2 className="text-base font-semibold text-white">{list.noun}</h2>
               {singleListNoun ? null : (
                 <CatalogAddModal
                   noun={list.noun}
@@ -401,7 +401,7 @@ export function CatalogManager() {
 
             {items.length === 0 ? (
               <p className="rounded-xl border border-white/5 bg-slate-900/40 px-4 py-6 text-center text-xs text-slate-500">
-                No items added.
+                No items added
               </p>
             ) : (
               <ul className="space-y-2">
@@ -416,10 +416,10 @@ export function CatalogManager() {
                       <RowIcon className="h-5 w-5" />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <h3 className="truncate text-sm font-bold text-white">{item.name}</h3>
+                      <h3 className="truncate text-sm font-semibold text-white">{item.name}</h3>
                       <div className="mt-1 flex items-center gap-2 text-xs">
                         <span
-                          className={`rounded-md px-2 py-0.5 text-[10px] font-semibold border ${
+                          className={`rounded-md px-2 py-0.5 text-xs font-semibold border ${
                             item.isActive
                               ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20"
                               : "bg-slate-800 text-slate-400 border-slate-700"
@@ -427,7 +427,7 @@ export function CatalogManager() {
                         >
                           {item.isActive ? "Active" : "Inactive"}
                         </span>
-                        <span className="text-[11px] text-slate-400 font-medium">
+                        <span className="text-xs text-slate-400 font-medium">
                           Usage {item.usageCount}
                         </span>
                       </div>

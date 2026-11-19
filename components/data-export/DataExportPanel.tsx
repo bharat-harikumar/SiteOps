@@ -112,14 +112,14 @@ export function DataExportPanel() {
   return (
     <div className="space-y-6">
       {/* Full JSON backup */}
-      <section className="rounded-2xl border border-white/[0.06] bg-slate-950/40 p-5 shadow-2xl shadow-black/50 backdrop-blur-xl">
+      <section className="rounded-2xl border border-white/[0.06] bg-slate-950/40 p-5">
         <div className="flex items-start gap-3">
-          <Database className="mt-0.5 h-5 w-5 shrink-0 text-sky-400" />
+          <Database className="mt-0.5 h-5 w-5 shrink-0 text-blue-400" />
           <div className="min-w-0 flex-1">
-            <h2 className="text-base font-bold text-white">Full backup (JSON)</h2>
+            <h2 className="text-base font-semibold text-white">Full backup (JSON)</h2>
             <p className="mt-1 text-sm text-on-surface-variant">
               A consistent snapshot of all {TABLE_KEYS.length} tables, money preserved exactly.
-              Contains all data including user contact info — keep it safe.
+              Contains all data including user contact info — keep it safe
             </p>
           </div>
         </div>
@@ -127,7 +127,7 @@ export function DataExportPanel() {
           type="button"
           onClick={exportFull}
           disabled={fullBusy}
-          className="mt-4 inline-flex items-center gap-2 rounded-xl border border-sky-500/20 bg-gradient-to-r from-sky-500/15 to-indigo-500/15 px-4 py-2.5 text-sm font-bold text-sky-300 transition-colors hover:from-sky-500/25 hover:to-indigo-500/25 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-4 inline-flex items-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/15 px-4 py-2.5 text-sm font-semibold text-blue-300 transition-colors hover:bg-blue-500/25 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {fullBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
           Download full backup (JSON)
@@ -135,11 +135,11 @@ export function DataExportPanel() {
       </section>
 
       {/* Per-table CSV — pick one or many, then export */}
-      <section className="rounded-2xl border border-white/[0.06] bg-slate-950/40 p-5 shadow-2xl shadow-black/50 backdrop-blur-xl">
+      <section className="rounded-2xl border border-white/[0.06] bg-slate-950/40 p-5">
         <div className="flex items-start gap-3">
           <FileSpreadsheet className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
           <div className="min-w-0 flex-1">
-            <h2 className="text-base font-bold text-white">Table CSV export</h2>
+            <h2 className="text-base font-semibold text-white">Table CSV export</h2>
             <p className="mt-1 text-sm text-on-surface-variant">
               Pick one or more tables, then export. Each downloads as a spreadsheet-ready CSV.
             </p>
@@ -168,7 +168,7 @@ export function DataExportPanel() {
               <div
                 role="listbox"
                 aria-label="Tables to export"
-                className="absolute z-[60] mt-2 w-full overflow-hidden rounded-xl border border-white/[0.08] bg-slate-900/95 shadow-2xl shadow-black/60 backdrop-blur-xl"
+                className="absolute z-[60] mt-2 w-full overflow-hidden rounded-xl border border-white/[0.08] bg-slate-900 shadow-2xl shadow-black/60"
               >
                 <div className="flex items-center gap-2 border-b border-white/[0.06] px-3 py-2">
                   <Search className="h-4 w-4 shrink-0 text-slate-500" />
@@ -195,7 +195,7 @@ export function DataExportPanel() {
                   type="button"
                   onClick={toggleAllFiltered}
                   disabled={filtered.length === 0}
-                  className="flex w-full cursor-pointer items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider text-emerald-400 hover:bg-white/[0.04] disabled:opacity-40"
+                  className="flex w-full cursor-pointer items-center justify-between px-3 py-2 text-xs font-semibold text-emerald-400 hover:bg-white/[0.04] disabled:opacity-40"
                 >
                   {allFilteredSelected ? 'Clear all' : 'Select all'}
                   <span className="text-slate-500">{filtered.length}</span>
@@ -226,7 +226,7 @@ export function DataExportPanel() {
                             {on && <Check className="h-3 w-3" strokeWidth={3} />}
                           </span>
                           <span className="flex-1 truncate">{friendly(key)}</span>
-                          <span className="truncate font-mono text-[10px] text-slate-600">{key}</span>
+                          <span className="truncate font-mono text-xs text-slate-600">{key}</span>
                         </button>
                       </li>
                     );
@@ -241,7 +241,7 @@ export function DataExportPanel() {
             type="button"
             onClick={exportSelected}
             disabled={csvBusy || selected.size === 0}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/15 to-teal-500/15 px-4 py-2.5 text-sm font-bold text-emerald-300 transition-colors hover:from-emerald-500/25 hover:to-teal-500/25 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/15 px-4 py-2.5 text-sm font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/25 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {csvBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             {csvBusy ? 'Exporting…' : `Export${selected.size ? ` (${selected.size})` : ''}`}

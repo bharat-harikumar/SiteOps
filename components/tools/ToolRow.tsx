@@ -47,7 +47,7 @@ export function ToolRow({
       </p>
       {tool.free === 0 ? (
         <p className="mt-2 text-xs text-slate-400">
-          None available to send from godown.
+          None available to send from godown
         </p>
       ) : null}
       <details className="mt-2 border-t border-white/5">
@@ -71,7 +71,7 @@ export function ToolRow({
             ))}
           </ul>
         ) : (
-          <p className="pb-3 text-sm text-slate-400">No tools at sites.</p>
+          <p className="pb-3 text-sm text-slate-400">No tools at sites</p>
         )}
         <div className="flex flex-wrap gap-2">
           {(

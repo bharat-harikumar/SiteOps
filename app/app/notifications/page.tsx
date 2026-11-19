@@ -101,7 +101,7 @@ export default function NotificationsPage() {
     <div className="space-y-5 pb-20">
       <header className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight text-on-surface">Alerts</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-on-surface">Alerts</h2>
           <p className="text-sm text-on-surface-variant">
             {unreadCount} unread of {result?.ok ? result.data.total : items.length}
           </p>
@@ -163,7 +163,7 @@ export default function NotificationsPage() {
                     <span>{formatDateTime(notification.createdAt)}</span>
                     <div className="flex items-center gap-3">
                       {notification.linkToView ? (
-                        <Link href={notification.linkToView} className="text-xs font-semibold uppercase text-primary">
+                        <Link href={notification.linkToView} className="text-xs font-semibold text-primary">
                           View
                         </Link>
                       ) : null}
@@ -172,7 +172,7 @@ export default function NotificationsPage() {
                           type="button"
                           onClick={() => markRead(notification.id)}
                           disabled={refreshing}
-                          className="text-xs font-semibold uppercase text-primary"
+                          className="text-xs font-semibold text-primary"
                         >
                           Mark read
                         </button>

@@ -21,9 +21,9 @@ export default async function TransfersNewPage({
     return (
       <div className="max-w-2xl mx-auto pt-4 pb-20 px-4">
         <div className="card-standard p-6">
-          <h2 className="text-xl font-extrabold tracking-tight text-on-surface uppercase">Supervisors only</h2>
+          <h2 className="text-xl font-semibold tracking-tight text-on-surface">Supervisors only</h2>
           <p className="mt-2 text-sm text-on-surface-variant">
-            Cross-site transfers can only be requested by Supervisors.
+            Cross-site transfers can only be requested by Supervisors
           </p>
         </div>
       </div>

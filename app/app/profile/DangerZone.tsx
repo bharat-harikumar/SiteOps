@@ -37,15 +37,15 @@ export function DangerZone() {
 
   return (
     <section className="card-standard flex flex-col gap-3 rounded-2xl border border-red-500/20 p-4">
-      <h3 className="text-lg font-extrabold tracking-tight text-error">Danger Zone</h3>
+      <h3 className="text-lg font-semibold tracking-tight text-error">Danger Zone</h3>
       <p className="text-xs text-on-surface-variant">
         Permanently delete every site and all logs across the workspace. User accounts are kept.
-        This cannot be undone.
+        This cannot be undone
       </p>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-11 w-full items-center justify-center gap-2 rounded border border-red-500/40 bg-red-500/10 text-xs font-semibold uppercase text-error transition hover:bg-red-500/20 active:scale-[0.98]"
+        className="flex h-11 w-full items-center justify-center gap-2 rounded border border-red-500/40 bg-red-500/10 text-xs font-semibold text-error transition hover:bg-red-500/20 active:scale-[0.98]"
       >
         <Trash2 className="w-[18px] h-[18px]" />
         Delete Everything
@@ -57,10 +57,10 @@ export function DangerZone() {
         className="w-full max-w-md rounded-2xl border border-red-500/20 bg-slate-950 shadow-2xl"
       >
         <div className="space-y-4 p-5">
-          <h3 className="text-lg font-extrabold uppercase tracking-tight text-white">Delete everything?</h3>
+          <h3 className="text-lg font-semibold tracking-tight text-white">Delete everything?</h3>
           <p className="text-sm text-slate-400">
             This removes all sites and logs for the whole workspace. Type{" "}
-            <span className="font-bold text-white">{PHRASE}</span> to confirm.
+            <span className="font-semibold text-white">{PHRASE}</span> to confirm.
           </p>
           <input
             value={text}
@@ -76,7 +76,7 @@ export function DangerZone() {
               type="button"
               onClick={() => void purge()}
               disabled={busy || text !== PHRASE}
-              className="h-11 flex-1 rounded-2xl border border-red-500/40 bg-red-500/20 text-xs font-extrabold uppercase tracking-widest text-red-300 transition-colors hover:bg-red-500/30 disabled:opacity-40"
+              className="h-11 flex-1 rounded-2xl border border-red-500/40 bg-red-500/20 text-xs font-semibold text-red-300 transition-colors hover:bg-red-500/30 disabled:opacity-40"
             >
               {busy ? "Deleting…" : "Delete everything"}
             </button>

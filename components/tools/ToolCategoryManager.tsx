@@ -72,7 +72,7 @@ export function ToolCategoryManager() {
   function rowActions(cat: ToolCategoryDTO): RowAction[] {
     const busy = busyId === cat.categoryId;
     return [
-      { label: "Rename", tone: "text-sky-400", onSelect: () => rename(cat), disabled: busy },
+      { label: "Rename", tone: "text-blue-400", onSelect: () => rename(cat), disabled: busy },
       {
         label: cat.isActive ? "Deactivate" : "Activate",
         tone: "text-amber-400",
@@ -83,7 +83,7 @@ export function ToolCategoryManager() {
   }
 
   if (isLoading) return <p className="text-sm text-on-surface-variant">Loading categories…</p>;
-  if (result && !result.ok) return <p className="text-sm text-error">Failed to load categories.</p>;
+  if (result && !result.ok) return <p className="text-sm text-error">Failed to load categories</p>;
 
   return (
     <div className="space-y-4">
@@ -104,25 +104,25 @@ export function ToolCategoryManager() {
           onChange={(e) => setPrefix(e.target.value.toUpperCase())}
           placeholder="Prefix"
           maxLength={8}
-          className="h-10 w-24 rounded-xl border border-outline bg-surface-container-low px-3 text-sm uppercase text-on-surface"
+          className="h-10 w-24 rounded-xl border border-outline bg-surface-container-low px-3 text-sm text-on-surface"
         />
         <button
           type="button"
           disabled={!name.trim() || !prefix.trim() || busyId === "__new"}
           onClick={() => void create()}
-          className="h-10 shrink-0 cursor-pointer rounded-xl bg-primary px-4 text-sm font-bold text-on-primary transition-colors hover:opacity-90 disabled:opacity-40"
+          className="h-10 shrink-0 cursor-pointer rounded-xl bg-primary px-4 text-sm font-semibold text-on-primary transition-colors hover:opacity-90 disabled:opacity-40"
         >
           Add
         </button>
       </div>
 
-      <label className="flex items-center gap-2 text-xs font-semibold uppercase text-on-surface-variant">
+      <label className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant">
         <input type="checkbox" checked={showInactive} onChange={(e) => setShowInactive(e.target.checked)} />
         Show inactive
       </label>
 
       {visible.length === 0 ? (
-        <p className="text-sm text-on-surface-variant">No categories yet.</p>
+        <p className="text-sm text-on-surface-variant">No categories yet</p>
       ) : (
         <>
           {/* Mobile: stacked cards + overflow menu so nothing overflows the viewport. */}
@@ -135,7 +135,7 @@ export function ToolCategoryManager() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="truncate font-semibold text-white">{cat.name}</p>
-                    <span className="rounded-md bg-white/5 px-1.5 py-0.5 font-mono text-[11px] text-on-surface-variant">
+                    <span className="rounded-md bg-white/5 px-1.5 py-0.5 font-mono text-xs text-on-surface-variant">
                       {cat.codePrefix}
                     </span>
                   </div>
@@ -156,7 +156,7 @@ export function ToolCategoryManager() {
           <div className="hidden overflow-x-auto rounded-2xl border border-outline-variant bg-surface-container-lowest md:block">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-widest text-slate-400">
+                <tr className="text-left text-xs text-slate-400">
                   <th className="px-4 py-3">Name</th>
                   <th className="px-4 py-3">Prefix</th>
                   <th className="px-4 py-3">Status</th>
@@ -179,7 +179,7 @@ export function ToolCategoryManager() {
                           type="button"
                           disabled={busyId === cat.categoryId}
                           onClick={() => rename(cat)}
-                          className="cursor-pointer rounded px-2 py-1 text-sky-400 transition-colors hover:bg-sky-500/10 disabled:opacity-40"
+                          className="cursor-pointer rounded px-2 py-1 text-blue-400 transition-colors hover:bg-blue-500/10 disabled:opacity-40"
                         >
                           Rename
                         </button>

@@ -29,7 +29,7 @@ type ProfileResponse = {
   } | null;
 };
 
-const labelClass = 'text-xs font-semibold uppercase text-on-surface-variant';
+const labelClass = 'text-xs font-semibold text-on-surface-variant';
 const inputClass =
   'h-11 w-full rounded border border-outline bg-surface-container-lowest px-3 text-sm text-on-surface focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
 
@@ -106,11 +106,11 @@ export function ProfilePageClient({
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
           <CircleUserRound className="w-10 h-10" />
         </div>
-        <h2 className="text-xl font-bold text-on-surface">{user?.email ?? '—'}</h2>
+        <h2 className="text-xl font-semibold text-on-surface">{user?.email ?? '—'}</h2>
         {profile?.designation ? (
           <p className="text-sm text-on-surface-variant">{profile.designation}</p>
         ) : null}
-        <span className="mt-1 rounded-full bg-primary-container px-3 py-1 text-xs font-semibold uppercase text-on-primary-container">
+        <span className="mt-1 rounded-full bg-primary-container px-3 py-1 text-xs font-semibold text-on-primary-container">
           {user?.role ?? '—'}
         </span>
       </section>
@@ -126,7 +126,7 @@ export function ProfilePageClient({
 
       <section className="card-standard rounded-2xl">
         <header className="border-b border-outline-variant px-4 py-3">
-          <h3 className="text-xs font-semibold uppercase text-on-surface-variant">Account Details</h3>
+          <h3 className="text-xs font-semibold text-on-surface-variant">Account Details</h3>
         </header>
         <ReadOnlyRow label="Name" value={profile?.fullName ?? '—'} />
         <ReadOnlyRow label="Phone" value={profile?.phone ?? '—'} />
@@ -136,7 +136,7 @@ export function ProfilePageClient({
 
       {isAdmin ? (
         <section className="card-standard rounded-2xl p-4 flex flex-col gap-3">
-          <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Privacy</h3>
+          <h3 className="text-lg font-semibold tracking-tight text-on-surface">Privacy</h3>
           <p className="text-xs text-on-surface-variant">
             Show ₹ **** instead of budgets and amounts. Applies to this device only.
           </p>
@@ -145,7 +145,7 @@ export function ProfilePageClient({
       ) : null}
 
       <form onSubmit={update} className="card-standard flex flex-col gap-4 rounded-2xl p-4">
-        <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Update Profile</h3>
+        <h3 className="text-lg font-semibold tracking-tight text-on-surface">Update Profile</h3>
         <div className="flex flex-col gap-2">
           <label htmlFor="fullName" className={labelClass}>Full Name</label>
           <input id="fullName" name="fullName" defaultValue={profile?.fullName ?? ''} maxLength={120} className={inputClass} />
@@ -165,7 +165,7 @@ export function ProfilePageClient({
         <button
           type="submit"
           disabled={saving}
-          className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded bg-primary text-xs font-semibold uppercase text-on-primary hover:bg-sky-400 disabled:opacity-60"
+          className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded bg-primary text-xs font-semibold text-on-primary hover:bg-blue-400 disabled:opacity-60"
         >
           <Save className="w-[18px] h-[18px]" />
           {saving ? 'Saving…' : 'Save'}
@@ -173,11 +173,11 @@ export function ProfilePageClient({
       </form>
 
       <section className="card-standard rounded-2xl p-4 flex flex-col gap-3">
-        <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Security</h3>
-        <p className="text-xs text-on-surface-variant">Change the password you use to sign in.</p>
+        <h3 className="text-lg font-semibold tracking-tight text-on-surface">Security</h3>
+        <p className="text-xs text-on-surface-variant">Change the password you use to sign in</p>
         <Link
           href="/auth/change-password"
-          className="flex h-11 w-full items-center justify-center gap-2 rounded border border-outline bg-surface-container-lowest text-xs font-semibold uppercase text-on-surface hover:border-primary transition active:scale-[0.98]"
+          className="flex h-11 w-full items-center justify-center gap-2 rounded border border-outline bg-surface-container-lowest text-xs font-semibold text-on-surface hover:border-primary transition active:scale-[0.98]"
         >
           <KeyRound className="w-[18px] h-[18px]" />
           Change password
@@ -185,12 +185,12 @@ export function ProfilePageClient({
       </section>
 
       <section className="card-standard rounded-2xl p-4 flex flex-col gap-3">
-        <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Session Operations</h3>
+        <h3 className="text-lg font-semibold tracking-tight text-on-surface">Session Operations</h3>
         <p className="text-xs text-on-surface-variant">Sign out of your active operator session. This will clear cached resources and require authorization to command again.</p>
         <button
           type="button"
           onClick={handleSignOut}
-          className="flex h-11 w-full items-center justify-center gap-2 rounded border border-red-500/30 bg-red-500/10 text-xs font-semibold uppercase text-error hover:bg-red-500/20 transition active:scale-[0.98]"
+          className="flex h-11 w-full items-center justify-center gap-2 rounded border border-red-500/30 bg-red-500/10 text-xs font-semibold text-error hover:bg-red-500/20 transition active:scale-[0.98]"
         >
           <LogOut className="w-[18px] h-[18px]" />
           Sign Out

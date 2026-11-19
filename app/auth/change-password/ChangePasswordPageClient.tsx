@@ -78,7 +78,7 @@ export function ChangePasswordPageClient({ forced }: { forced: boolean }) {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-container border border-outline mb-6">
             <KeyRound className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface uppercase">{copy.heading}</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-on-surface">{copy.heading}</h1>
           <p className="mt-2 text-sm text-on-surface-variant font-medium">{copy.intro}</p>
           <p className="mt-1 text-xs text-on-surface-variant">
             You&apos;ll be signed out on all devices and need to sign in again with your new password.
@@ -95,7 +95,7 @@ export function ChangePasswordPageClient({ forced }: { forced: boolean }) {
         <div className="card-standard py-8 px-6 sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="currentPassword" className="block text-xs font-extrabold uppercase tracking-widest text-on-surface-variant mb-2">
+              <label htmlFor="currentPassword" className="block text-xs font-semibold text-on-surface-variant mb-2">
                 {copy.currentLabel}
               </label>
               <div className="relative">
@@ -115,8 +115,8 @@ export function ChangePasswordPageClient({ forced }: { forced: boolean }) {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-xs font-extrabold uppercase tracking-widest text-on-surface-variant mb-2">
-                NEW PASSWORD
+              <label htmlFor="password" className="block text-xs font-semibold text-on-surface-variant mb-2">
+                New password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant" />
@@ -135,8 +135,8 @@ export function ChangePasswordPageClient({ forced }: { forced: boolean }) {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-xs font-extrabold uppercase tracking-widest text-on-surface-variant mb-2">
-                CONFIRM PASSWORD
+              <label htmlFor="confirmPassword" className="block text-xs font-semibold text-on-surface-variant mb-2">
+                Confirm password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant" />
@@ -167,7 +167,7 @@ export function ChangePasswordPageClient({ forced }: { forced: boolean }) {
             <div className="mt-4 text-center">
               <Link
                 href="/app/profile"
-                className="text-xs font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
+                className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
               >
                 Cancel
               </Link>
@@ -180,7 +180,7 @@ export function ChangePasswordPageClient({ forced }: { forced: boolean }) {
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
+                className="font-semibold text-primary hover:text-primary/80 transition-colors"
               >
                 Sign out
               </button>

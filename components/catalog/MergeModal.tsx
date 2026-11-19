@@ -46,14 +46,14 @@ export function MergeModal({ open, sourceName, candidates, onClose, onMerge }: P
     <ModalShell
       open={open}
       onClose={onClose}
-      className="flex max-h-[85vh] w-full max-w-md flex-col rounded-3xl border border-white/10 bg-[#0b1220] p-5 shadow-2xl"
+      className="flex max-h-[85vh] w-full max-w-md flex-col rounded-2xl border border-white/10 bg-[#0b1220] p-5 shadow-2xl"
     >
       <div className="mb-4 flex items-center gap-3">
         <span className="grid h-10 w-10 place-items-center rounded-2xl bg-violet-500/15 text-violet-400 ring-1 ring-violet-500/20">
           <Combine className="h-5 w-5" />
         </span>
         <div className="min-w-0">
-          <h3 className="text-lg font-extrabold text-white">Merge item</h3>
+          <h3 className="text-lg font-semibold text-white">Merge item</h3>
           <p className="flex items-center gap-1.5 truncate text-xs text-slate-500">
             <span className="truncate font-semibold text-slate-300">{sourceName}</span>
             <ArrowRight className="h-3 w-3 shrink-0" />
@@ -64,7 +64,7 @@ export function MergeModal({ open, sourceName, candidates, onClose, onMerge }: P
 
       {candidates.length === 0 ? (
         <p className="rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-8 text-center text-sm text-slate-500">
-          No other items to merge into.
+          No other items to merge into
         </p>
       ) : (
         <div className="-mx-1 min-h-0 flex-1 space-y-1.5 overflow-y-auto px-1">
@@ -84,7 +84,7 @@ export function MergeModal({ open, sourceName, candidates, onClose, onMerge }: P
                 <span className={`truncate text-sm font-semibold ${active ? "text-white" : "text-slate-200"}`}>
                   {c.name}
                 </span>
-                <span className="shrink-0 text-[11px] text-slate-500">Usage {c.usageCount}</span>
+                <span className="shrink-0 text-xs text-slate-500">Usage {c.usageCount}</span>
               </button>
             );
           })}
@@ -102,7 +102,7 @@ export function MergeModal({ open, sourceName, candidates, onClose, onMerge }: P
         <button
           type="button"
           onClick={onClose}
-          className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-slate-300 transition-colors hover:bg-white/10"
+          className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-300 transition-colors hover:bg-white/10"
         >
           Cancel
         </button>
@@ -110,7 +110,7 @@ export function MergeModal({ open, sourceName, candidates, onClose, onMerge }: P
           type="button"
           disabled={!target || merging}
           onClick={() => void handleMerge()}
-          className="flex-1 rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-violet-400 disabled:opacity-40"
+          className="flex-1 rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-400 disabled:opacity-40"
         >
           {merging ? "Merging…" : "Merge"}
         </button>

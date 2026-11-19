@@ -14,7 +14,7 @@ const inter = Inter({
   variable: "--font-inter",
   display: "swap",
   // No weight list: Inter is variable, so one file covers 100–900. A fixed
-  // 400–700 list left the 80+ font-extrabold (800) headings rendering at 700.
+  // 400–700 list left the 80+ font-semibold (800) headings rendering at 700.
 });
 
 export const metadata: Metadata = {

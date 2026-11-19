@@ -18,14 +18,14 @@ export type SiteRowData = {
 const STATUS_STYLES: Record<SiteRowData['status'], { badge: string; dot: string }> = {
   'In Progress': { badge: 'badge-emerald', dot: 'bg-emerald-400' },
   Blocked: { badge: 'badge-amber', dot: 'bg-amber-400' },
-  Completed: { badge: 'badge-sky', dot: 'bg-sky-400' },
+  Completed: { badge: 'badge-sky', dot: 'bg-blue-400' },
 };
 
 // A small deterministic palette for the leading icon tile so each site reads as
 // a distinct object (matches the multi-colour tiles in the design). Colour is
 // derived from the id so it stays stable across renders and reloads.
 const TILE_STYLES = [
-  'bg-sky-500/15 text-sky-300 ring-sky-500/20',
+  'bg-blue-500/15 text-blue-300 ring-blue-500/20',
   'bg-violet-500/15 text-violet-300 ring-violet-500/20',
   'bg-amber-500/15 text-amber-300 ring-amber-500/20',
   'bg-emerald-500/15 text-emerald-300 ring-emerald-500/20',
@@ -61,7 +61,7 @@ export function SiteRow({ site }: { site: SiteRowData }) {
 
       {/* Name + meta */}
       <div className="min-w-0 flex-1">
-        <span className="block truncate text-[15px] font-bold uppercase tracking-tight text-white transition-colors group-hover:text-sky-400">
+        <span className="block truncate text-[15px] font-semibold tracking-tight text-white transition-colors group-hover:text-blue-400">
           {site.name}
         </span>
         <div className="mt-1.5 flex items-center gap-2 text-xs leading-none text-slate-400">

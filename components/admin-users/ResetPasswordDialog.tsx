@@ -62,7 +62,7 @@ export function ResetPasswordDialog({
       ariaLabelledBy="reset-password-title"
       className="w-full max-w-md rounded-2xl border border-outline-variant bg-surface-container-low p-5 shadow-xl"
     >
-      <h2 id="reset-password-title" className="flex items-center gap-2 text-lg font-black text-on-surface">
+      <h2 id="reset-password-title" className="flex items-center gap-2 text-lg font-semibold text-on-surface">
         <KeyRound className="h-5 w-5" /> {done ? 'Password reset' : 'Reset password'}
       </h2>
       <p className="mt-1 truncate text-sm text-on-surface-variant" title={label}>{label}</p>
@@ -99,7 +99,7 @@ export function ResetPasswordDialog({
               type="submit"
               autoFocus
               disabled={saving || !isPasswordLongEnough(password)}
-              className="flex h-11 items-center justify-center gap-2 rounded bg-primary px-5 text-xs font-semibold uppercase text-on-primary hover:bg-sky-400 disabled:opacity-60"
+              className="flex h-11 items-center justify-center gap-2 rounded bg-primary px-5 text-xs font-semibold text-on-primary hover:bg-blue-400 disabled:opacity-60"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
               {saving ? 'Resetting…' : 'Reset password'}

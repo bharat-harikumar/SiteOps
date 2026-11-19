@@ -44,11 +44,11 @@ export function LogsNewPageClient({ initialCategories, initialSites, siteId, rol
           >
             <div className="flex items-center justify-between px-1 mb-6">
               <div>
-                <h3 className="text-xl font-extrabold tracking-tight text-white uppercase">
+                <h3 className="text-xl font-semibold tracking-tight text-white">
                   Where are you reporting from?
                 </h3>
-                <p className="text-sm text-slate-500 font-medium italic mt-1.5">
-                  Select the active project zone for this operational log.
+                <p className="text-sm text-slate-500 font-medium mt-1.5">
+                  Choose the site this entry is for
                 </p>
               </div>
               <button
@@ -72,15 +72,15 @@ export function LogsNewPageClient({ initialCategories, initialSites, siteId, rol
                   className="card-standard p-5 flex items-center justify-between text-left hover:bg-white/5 transition active:scale-[0.99]"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
+                    <div className="w-12 h-12 bg-white/5 border border-white/5 rounded-xl flex items-center justify-center shrink-0">
                       <MapPin className="w-5 h-5 text-slate-500" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-200 uppercase tracking-tight">{site.name}</h4>
-                      <p className="text-xs text-slate-500 font-medium italic">{site.location}</p>
+                      <h4 className="font-semibold text-slate-200 tracking-tight">{site.name}</h4>
+                      <p className="text-xs text-slate-500 font-medium">{site.location}</p>
                     </div>
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-600 group-hover:bg-sky-500 group-hover:text-slate-950 transition">
+                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-600 group-hover:bg-blue-500 group-hover:text-slate-950 transition">
                     <ChevronRight className="w-5 h-5" />
                   </div>
                 </motion.button>

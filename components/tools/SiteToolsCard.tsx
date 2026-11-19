@@ -18,7 +18,7 @@ export function SiteToolsCard({ siteId }: { siteId: string }) {
             <Wrench className="h-5 w-5 text-blue-400" aria-hidden="true" />
           </span>
           <span className="min-w-0">
-            <span className="block text-base font-bold text-white">Tools</span>
+            <span className="block text-base font-semibold text-white">Tools</span>
             <span className="mt-1 block text-sm text-slate-400">
               {data
                 ? data.itemCount === 0

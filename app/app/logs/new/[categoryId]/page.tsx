@@ -67,8 +67,8 @@ export default async function LogsNewCategoryPage({
           <ArrowLeft className="w-[18px] h-[18px]" />
         </Link>
         <div>
-          <h2 className="text-2xl font-extrabold tracking-tight text-white uppercase">Log {category.name}</h2>
-          <p className="text-sm text-slate-500 font-medium italic">Step 2 of 2 — fill the form to create a new entry.</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-white">Log {category.name}</h2>
+          <p className="text-sm text-slate-500 font-medium">Step 2 of 2 — fill in the entry</p>
         </div>
       </div>
       <ReportingFromCard

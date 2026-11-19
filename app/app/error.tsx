@@ -19,8 +19,8 @@ export default function AppError({
 
   return (
     <PageStack>
-      <section className="rounded-3xl bg-red-500/10 p-6 text-red-300">
-        <h2 className="text-lg font-bold">Something went wrong</h2>
+      <section className="rounded-2xl bg-red-500/10 p-6 text-red-300">
+        <h2 className="text-lg font-semibold">Something went wrong</h2>
         <p className="mt-2 text-sm">
           We hit an unexpected error loading this page. Anything you had already
           saved is safe; unsaved changes on this screen may need re-entering.

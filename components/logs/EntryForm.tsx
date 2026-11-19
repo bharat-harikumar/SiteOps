@@ -45,7 +45,7 @@ type Props = {
 
 type FieldValue = string | number | SubcategoryOption | UnitOption | null;
 
-const labelClass = "text-[11px] font-extrabold uppercase tracking-widest text-slate-400";
+const labelClass = "text-xs font-semibold text-slate-400";
 const inputClass =
   "input-standard";
 const textareaClass =
@@ -218,7 +218,7 @@ export function EntryForm({
       } else if (f.kind === "subcategory") {
         const sub = v as SubcategoryOption | null;
         if (sub) payload[f.name] = sub.name;
-        else if (isEdit && f.clearable) payload[f.name] = null;   // send null → PATCH unsets it
+        else if (isEdit && f.clearable) payload[f.name] = null; // send null → PATCH unsets it
       } else if (f.kind === "number") {
         if (v !== "" && v !== null && v !== undefined) payload[f.name] = Number(v);
       } else if (v !== "" && v !== null && v !== undefined) {
@@ -393,7 +393,7 @@ export function EntryForm({
             type="button"
             onClick={() => void handleDelete()}
             disabled={deleting}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-[11px] font-bold uppercase tracking-widest text-red-400 hover:bg-red-500/20 transition disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-xs font-semibold text-red-400 hover:bg-red-500/20 transition disabled:opacity-50"
           >
             <Trash2 className="w-[18px] h-[18px]" />
             {deleting ? "Deleting…" : "Delete Entry"}
@@ -585,7 +585,7 @@ function SplitLabourFields({
       )}
       {roles.map(([label, countName, amountName]) => (
         <section key={label} className="space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-4">
-          <p className="text-[10px] font-extrabold uppercase tracking-widest text-sky-400">{label}</p>
+          <p className="text-xs font-semibold text-blue-400">{label}</p>
           <div className="space-y-2">
             <label htmlFor={`split-${countName}`} className={labelClass}>Count</label>
             <input
@@ -622,11 +622,11 @@ function SplitLabourFields({
           </p>
         </section>
       ))}
-      <p className="md:col-span-2 flex items-center justify-between rounded-xl border border-sky-500/20 bg-sky-500/10 px-4 py-3 text-sm font-bold text-slate-200">
-        <span className="text-[10px] font-extrabold uppercase tracking-widest text-sky-400">
+      <p className="md:col-span-2 flex items-center justify-between rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-sm font-semibold text-slate-200">
+        <span className="text-xs font-semibold text-blue-400">
           Entry total
         </span>
-        <span className="text-sky-400">{formatCurrency(entryTotal)}</span>
+        <span className="text-blue-400">{formatCurrency(entryTotal)}</span>
       </p>
     </div>
   );
@@ -651,7 +651,7 @@ function LabourOvertimeFields({
           aria-labelledby="overtime-heading"
           className="space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-4"
         >
-          <h3 id="overtime-heading" className="text-[10px] font-extrabold uppercase tracking-widest text-sky-400">
+          <h3 id="overtime-heading" className="text-xs font-semibold text-blue-400">
             Overtime (OT)
           </h3>
           {children}

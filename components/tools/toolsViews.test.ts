@@ -77,7 +77,7 @@ describe("tool navigation and readable inventory", () => {
       }),
     );
     expect(html.replaceAll("&#x27;", "'")).toContain(
-      "Couldn't load tool categories.",
+      "Couldn't load tool categories",
     );
     expect(html).toContain("Retry categories");
   });

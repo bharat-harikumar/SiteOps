@@ -8,6 +8,8 @@ import { ArrowLeft, Search } from "lucide-react";
 
 import { EntryTypeIcon } from "@/components/constants/EntryTypeIcon";
 import { DateFilterField } from "@/components/operations/DateFilterField";
+import { FilterPanel } from "@/components/operations/FilterPanel";
+import { countActiveFilters } from "@/components/operations/filterCount";
 import EntryLogList from "@/components/operations/EntryLogList";
 import {
   buildGroupedRows,
@@ -45,7 +47,7 @@ type Props = {
 };
 
 export default function CategoryDetailPageClient({
-  site: _site,
+  site,
   siteId,
   type,
   category,
@@ -98,33 +100,34 @@ export default function CategoryDetailPageClient({
 
   return (
     <div className="space-y-6 pt-2 pb-20 max-w-5xl mx-auto">
-      <section className="card-standard p-5 border-sky-500/10 bg-sky-500/5">
+      <section className="card-standard p-5 border-blue-500/10 bg-blue-500/5">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-3 min-w-0">
             <Link
               href={`/app/sites/${siteId}/operations/${type}`}
-              className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-sky-400 hover:text-sky-300"
+              className="inline-flex items-center gap-2 text-xs font-semibold text-blue-400 hover:text-blue-300"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to {type}
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-sky-400">
+              <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-blue-400">
                 <EntryTypeIcon type={type} className="w-6 h-6" />
               </div>
-              <div>
-                <h1 className="text-2xl font-extrabold uppercase tracking-tight text-white">{category}</h1>
+              <div className="min-w-0">
+                <h1 className="text-2xl font-semibold tracking-tight text-white break-words">{category}</h1>
+                <p className="text-xs text-slate-500 font-semibold break-words">{site.name}</p>
               </div>
             </div>
           </div>
 
           <div className="text-right">
-            <p className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Entries</p>
-            <p className="mt-2 text-sm font-bold text-sky-400"><Amount>{formatCurrency(totalSpend)}</Amount></p>
+            <p className="text-2xl font-semibold text-white">{visibleLogCount}</p>
+            <p className="text-xs font-semibold text-slate-500">Entries</p>
+            <p className="mt-2 text-sm font-semibold text-blue-400"><Amount>{formatCurrency(totalSpend)}</Amount></p>
             {quantityText ? (
-              <p className="mt-1 text-xs font-bold text-slate-300">
-                <span className="text-[10px] uppercase tracking-widest text-slate-500">Total qty </span>
+              <p className="mt-1 text-xs font-semibold text-slate-300">
+                <span className="text-xs text-slate-500">Total qty </span>
                 {quantityText}
               </p>
             ) : null}
@@ -132,11 +135,13 @@ export default function CategoryDetailPageClient({
         </div>
       </section>
 
-      <section className="card-standard overflow-visible p-4 grid gap-4 md:grid-cols-5">
-        <div className="md:col-span-5 space-y-2">
+      <FilterPanel
+        activeCount={countActiveFilters(initialFilters)}
+        gridClassName="md:grid-cols-4"
+        lead={<div className="space-y-2">
           <label
             htmlFor="filter-search"
-            className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
+            className="text-xs font-semibold text-slate-400"
           >
             Search
           </label>
@@ -151,10 +156,11 @@ export default function CategoryDetailPageClient({
               className="input-standard pl-9"
             />
           </div>
-        </div>
+        </div>}
+      >
         <DateFilterField
           id="filter-from"
-          label="From Date"
+          label="From date"
           value={filters.from}
           onChange={(value) => setFilters((state) => ({ ...state, from: value }))}
           openId={openDateField}
@@ -162,7 +168,7 @@ export default function CategoryDetailPageClient({
         />
         <DateFilterField
           id="filter-to"
-          label="To Date"
+          label="To date"
           value={filters.to}
           onChange={(value) => setFilters((state) => ({ ...state, to: value }))}
           openId={openDateField}
@@ -172,9 +178,9 @@ export default function CategoryDetailPageClient({
           <div className="space-y-2">
             <label
               htmlFor="filter-stage"
-              className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
+              className="text-xs font-semibold text-slate-400"
             >
-              Work Stage
+              Work stage
             </label>
             <select
               id="filter-stage"
@@ -193,9 +199,9 @@ export default function CategoryDetailPageClient({
         <div className="space-y-2">
           <label
             htmlFor="filter-sort"
-            className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
+            className="text-xs font-semibold text-slate-400"
           >
-            Sort By
+            Sort by
           </label>
           <select
             id="filter-sort"
@@ -210,15 +216,15 @@ export default function CategoryDetailPageClient({
             <option value="lowest_spend" className="bg-slate-900">Lowest spend</option>
           </select>
         </div>
-        <div className="grid gap-3 md:col-span-5 md:grid-cols-[1fr_auto]">
+        <div className="grid gap-3 md:col-span-4 md:grid-cols-[1fr_auto]">
           <button type="button" onClick={applyFilters} className="btn-primary h-12 py-3">
-            Apply Filters
+            Apply filters
           </button>
           <button type="button" onClick={clearFilters} className="btn-secondary h-12 py-3">
-            Clear Filters
+            Clear filters
           </button>
         </div>
-      </section>
+      </FilterPanel>
 
       <EntryLogList
         siteId={siteId}

@@ -107,7 +107,7 @@ export function DateFilterField({
     <div ref={containerRef} className={open ? "relative z-[90] space-y-2" : "relative space-y-2"}>
       <label
         htmlFor={id}
-        className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
+        className="text-xs font-semibold text-slate-400"
       >
         {label}
       </label>
@@ -115,7 +115,7 @@ export function DateFilterField({
         id={id}
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex h-14 w-full cursor-pointer items-center justify-between rounded-2xl border border-white/8 bg-white/[0.04] px-5 text-left text-slate-100 transition-colors hover:border-sky-500/30 hover:bg-white/[0.06] focus:border-sky-500/70 focus:outline-none focus:ring-2 focus:ring-sky-500/25"
+        className="flex h-14 w-full cursor-pointer items-center justify-between rounded-2xl border border-white/8 bg-white/[0.04] px-5 text-left text-slate-100 transition-colors hover:border-blue-500/30 hover:bg-white/[0.06] focus:border-blue-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/25"
       >
         <span className={value ? "text-base font-medium text-slate-100" : "text-base font-medium text-slate-500"}>
           {formatDateFieldValue(value)}
@@ -124,9 +124,9 @@ export function DateFilterField({
       </button>
 
       {open ? (
-        <div className="absolute left-0 top-full z-50 mt-2 w-[min(22rem,calc(100vw-3rem))] rounded-2xl border border-sky-500/20 bg-slate-950 p-4 shadow-2xl shadow-sky-950/40">
+        <div className="absolute left-0 top-full z-50 mt-2 w-[min(22rem,calc(100vw-3rem))] rounded-2xl border border-blue-500/20 bg-slate-950 p-4 shadow-2xl shadow-blue-950/40">
           <div className="flex items-center justify-between pb-3">
-            <p className="text-sm font-extrabold uppercase tracking-widest text-white">
+            <p className="text-sm font-semibold text-white">
               {monthLabel(viewDate)}
             </p>
             <div className="flex items-center gap-2">
@@ -134,7 +134,7 @@ export function DateFilterField({
                 type="button"
                 onClick={() => changeMonth(-1)}
                 aria-label="Previous month"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-400 transition-colors hover:border-sky-500/30 hover:text-sky-400"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-400 transition-colors hover:border-blue-500/30 hover:text-blue-400"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -142,7 +142,7 @@ export function DateFilterField({
                 type="button"
                 onClick={() => changeMonth(1)}
                 aria-label="Next month"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-400 transition-colors hover:border-sky-500/30 hover:text-sky-400"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-400 transition-colors hover:border-blue-500/30 hover:text-blue-400"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -153,7 +153,7 @@ export function DateFilterField({
             {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
               <div
                 key={`${day}-${index}`}
-                className="flex h-8 items-center justify-center text-[10px] font-extrabold uppercase tracking-widest text-slate-500"
+                className="flex h-8 items-center justify-center text-xs font-semibold text-slate-500"
               >
                 {day}
               </div>
@@ -173,12 +173,12 @@ export function DateFilterField({
                   type="button"
                   onClick={() => selectDate(date)}
                   className={[
-                    "flex h-10 items-center justify-center rounded-xl text-sm font-bold transition-colors",
+                    "flex h-10 items-center justify-center rounded-xl text-sm font-semibold transition-colors",
                     isSelected
-                      ? "bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/20"
-                      : "text-slate-200 hover:bg-sky-500/10 hover:text-sky-400",
+                      ? "bg-blue-500 text-slate-950 shadow-lg shadow-blue-500/20"
+                      : "text-slate-200 hover:bg-blue-500/10 hover:text-blue-400",
                     !isCurrentMonth && !isSelected ? "text-slate-700" : "",
-                    isToday && !isSelected ? "border border-sky-500/40" : "",
+                    isToday && !isSelected ? "border border-blue-500/40" : "",
                   ].join(" ")}
                 >
                   {date.getDate()}
@@ -194,14 +194,14 @@ export function DateFilterField({
                 onChange("");
                 setOpen(false);
               }}
-              className="rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-widest text-slate-500 transition-colors hover:bg-white/5 hover:text-slate-200"
+              className="rounded-xl px-3 py-2 text-xs font-semibold text-slate-500 transition-colors hover:bg-white/5 hover:text-slate-200"
             >
               Clear
             </button>
             <button
               type="button"
               onClick={() => selectDate(new Date())}
-              className="rounded-xl bg-sky-500 px-3 py-2 text-xs font-extrabold uppercase tracking-widest text-slate-950 transition-colors hover:bg-sky-400"
+              className="rounded-xl bg-blue-500 px-3 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-blue-400"
             >
               Today
             </button>

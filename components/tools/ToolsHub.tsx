@@ -67,9 +67,9 @@ export function ToolsHub() {
     <div className="mx-auto w-full max-w-4xl space-y-5 py-5 pb-28">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold text-white">Company Tools</h1>
+          <h1 className="text-2xl font-semibold text-white">Company Tools</h1>
           <p className="mt-1 text-sm text-slate-400">
-            See what you own and where it is.
+            See what you own and where it is
           </p>
         </div>
         <button
@@ -119,7 +119,7 @@ export function ToolsHub() {
         </div>
       ) : !inventory.data?.ok ? (
         <div role="alert" className="card-standard p-5">
-          <p className="text-sm text-slate-300">Couldn't load company tools.</p>
+          <p className="text-sm text-slate-300">Couldn't load company tools</p>
           <button
             type="button"
             onClick={() => void inventory.mutate()}

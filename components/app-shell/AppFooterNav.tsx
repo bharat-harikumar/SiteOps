@@ -39,7 +39,7 @@ export function AppFooterNav({ role }: { role: Role }) {
               aria-current={item.active ? 'page' : undefined}
               className="-mt-8 grid h-16 w-16 shrink-0 place-items-center rounded-full bg-blue-600 text-white shadow-[0_0_24px] shadow-blue-600/50 ring-8 ring-[#020617] transition-[background-color,transform] duration-150 ease-out hover:bg-blue-500 active:scale-95"
             >
-              <item.icon className="h-7 w-7" strokeWidth={2.5} />
+              <item.icon className="h-6 w-6" strokeWidth={2} />
             </Link>
           ) : (
             <Link
@@ -48,11 +48,11 @@ export function AppFooterNav({ role }: { role: Role }) {
               aria-current={item.active ? 'page' : undefined}
               className={cn(
                 'flex flex-1 select-none flex-col items-center justify-center gap-1.5 transition-[color,transform] duration-150 ease-out active:scale-[0.97]',
-                item.active ? 'text-blue-500' : 'text-slate-400 hover:text-slate-200',
+                item.active ? 'text-blue-400' : 'text-slate-400 hover:text-slate-200',
               )}
             >
-              <item.icon className="h-6 w-6" strokeWidth={item.active ? 2.5 : 2} />
-              <span className="text-[11px] font-semibold leading-none">{item.label}</span>
+              <item.icon className="h-6 w-6" strokeWidth={2} />
+              <span className="text-xs font-semibold leading-none">{item.label}</span>
             </Link>
           ),
         )}

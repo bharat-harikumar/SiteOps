@@ -49,6 +49,11 @@ describe("resolveEntryFields", () => {
     ]);
   });
 
+  it("gives expense description a multi-line box so long text stays readable", () => {
+    const description = resolveEntryFields("Expense").find((f) => f.name === "description");
+    expect(description?.kind).toBe("textarea");
+  });
+
   it("returns incident fields for 'Incident'", () => {
     expect(resolveEntryFields("Incident").map((f) => f.name)).toEqual([
       "incidentType", "severity", "description", "durationEstimate",

@@ -38,7 +38,7 @@ export function ToolHistory({
   if (error)
     return (
       <div role="alert" className="py-6 text-sm text-slate-300">
-        <p>Couldn't load movement history.</p>
+        <p>Couldn't load movement history</p>
         <button
           type="button"
           onClick={onRetry}
@@ -56,7 +56,7 @@ export function ToolHistory({
             className="mx-auto mb-3 h-6 w-6 text-slate-400"
             aria-hidden="true"
           />
-          <p className="text-sm text-slate-300">No movements recorded yet.</p>
+          <p className="text-sm text-slate-300">No movements recorded yet</p>
         </div>
       ) : (
         <ol className="space-y-3">
@@ -74,7 +74,7 @@ export function ToolHistory({
                     {MOVEMENT_LABELS[m.kind] ?? "Tool movement"}
                   </p>
                 </div>
-                <span className="shrink-0 text-base font-bold tabular-nums text-white">
+                <span className="shrink-0 text-base font-semibold tabular-nums text-white">
                   ×{m.quantity}
                 </span>
               </div>

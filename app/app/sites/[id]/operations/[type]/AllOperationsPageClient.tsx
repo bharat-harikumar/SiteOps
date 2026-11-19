@@ -13,6 +13,8 @@ import { requestJson } from "@/lib/http/client";
 import { confirmDialog } from "@/lib/ui/confirm";
 import { formatDate } from "@/lib/utils/formatDate";
 import { DateFilterField } from "@/components/operations/DateFilterField";
+import { FilterPanel } from "@/components/operations/FilterPanel";
+import { countActiveFilters } from "@/components/operations/filterCount";
 import { getTypeColor, getTypeActiveGlowColor, getTypeDotColor } from "@/components/operations/typeStyles";
 import {
   formatCurrency,
@@ -242,18 +244,18 @@ export default function AllOperationsPageClient({
 
   return (
     <div className="space-y-6 pt-2 pb-20 max-w-5xl mx-auto">
-      <section className="card-standard p-5 border-sky-500/10 bg-sky-500/5">
+      <section className="card-standard p-5 border-blue-500/10 bg-blue-500/5">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-3 min-w-0">
             <Link
               href={`/app/sites/${siteId}`}
-              className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-sky-400 hover:text-sky-300"
+              className="inline-flex items-center gap-2 text-xs font-semibold text-blue-400 hover:text-blue-300"
             >
               <Clock3 className="w-3.5 h-3.5" />
               Back to site
             </Link>
             <div>
-              <h1 className="text-2xl font-extrabold uppercase tracking-tight text-white">
+              <h1 className="text-2xl font-semibold tracking-tight text-white">
                 All Operations
               </h1>
               <p className="text-xs text-slate-500 font-semibold">{site.name}</p>
@@ -261,9 +263,9 @@ export default function AllOperationsPageClient({
           </div>
 
           <div className="text-right">
-            <p className="text-2xl font-extrabold text-white">{visibleLogCount}</p>
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Logs</p>
-            <p className="mt-2 text-sm font-bold text-sky-400"><Amount>{formatCurrency(grandTotal)}</Amount></p>
+            <p className="text-2xl font-semibold text-white">{visibleLogCount}</p>
+            <p className="text-xs font-semibold text-slate-500">Logs</p>
+            <p className="mt-2 text-sm font-semibold text-blue-400"><Amount>{formatCurrency(grandTotal)}</Amount></p>
           </div>
         </div>
       </section>
@@ -303,10 +305,10 @@ export default function AllOperationsPageClient({
         </div>
       ) : null}
 
-      <section className="card-standard overflow-visible p-4 grid gap-4 md:grid-cols-3">
+      <FilterPanel activeCount={countActiveFilters(initialFilters, initialFilters.types.length > 0 && initialFilters.types.length < SPEND_TYPES.length ? 1 : 0)} gridClassName="md:grid-cols-3">
         <DateFilterField
           id="filter-from"
-          label="From Date"
+          label="From date"
           value={filters.from}
           onChange={(value) => setFilters((state) => ({ ...state, from: value }))}
           openId={openDateField}
@@ -314,7 +316,7 @@ export default function AllOperationsPageClient({
         />
         <DateFilterField
           id="filter-to"
-          label="To Date"
+          label="To date"
           value={filters.to}
           onChange={(value) => setFilters((state) => ({ ...state, to: value }))}
           openId={openDateField}
@@ -323,9 +325,9 @@ export default function AllOperationsPageClient({
         <div className="space-y-2">
           <label
             htmlFor="filter-sort"
-            className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400"
+            className="text-xs font-semibold text-slate-400"
           >
-            Sort By
+            Sort by
           </label>
           <select
             id="filter-sort"
@@ -344,12 +346,12 @@ export default function AllOperationsPageClient({
         </div>
 
         <div className="flex items-center justify-between gap-2 md:col-span-3">
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+          <span className="text-xs font-semibold text-slate-400">
             Operation Types
           </span>
           <div className="flex items-center gap-2">
             <span
-              className={`rounded-md px-2.5 py-0.5 text-[10px] font-semibold transition ${
+              className={`rounded-md px-2.5 py-0.5 text-xs font-semibold transition ${
                 allSelected
                   ? "bg-blue-500/15 text-blue-400 border border-blue-500/30"
                   : "bg-slate-800 text-slate-400 border border-slate-700"
@@ -360,7 +362,7 @@ export default function AllOperationsPageClient({
             <button
               type="button"
               onClick={toggleAllTypes}
-              className="text-[10px] font-bold text-sky-400 hover:text-sky-300 underline cursor-pointer"
+              className="text-xs font-semibold text-blue-400 hover:text-blue-300 underline cursor-pointer"
             >
               {allSelected ? "Deselect All" : "Select All"}
             </button>
@@ -380,7 +382,7 @@ export default function AllOperationsPageClient({
                 type="button"
                 onClick={() => toggleType(type)}
                 aria-pressed={active}
-                className={`inline-flex h-11 items-center justify-between gap-2.5 rounded-xl px-3.5 text-[11px] font-bold uppercase tracking-widest transition cursor-pointer ${
+                className={`inline-flex h-11 items-center justify-between gap-2.5 rounded-xl px-3.5 text-xs font-semibold transition cursor-pointer ${
                   active
                     ? getTypeActiveGlowColor(type)
                     : "border border-white/10 bg-slate-900/60 text-slate-400 hover:border-white/20 hover:text-white"
@@ -402,10 +404,10 @@ export default function AllOperationsPageClient({
 
         {!applyEnabled ? (
           <p
-            className="md:col-span-3 -mb-1 text-[11px] font-bold uppercase tracking-widest text-amber-400"
+            className="md:col-span-3 -mb-1 text-xs font-semibold text-amber-400"
             role="alert"
           >
-            Select at least one operation type to apply.
+            Select at least one operation type to apply
           </p>
         ) : null}
         <div className="grid gap-3 md:col-span-3 md:grid-cols-[1fr_auto]">
@@ -416,22 +418,22 @@ export default function AllOperationsPageClient({
             aria-disabled={!applyEnabled}
             className="btn-primary h-12 py-3 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Apply Filters
+            Apply filters
           </button>
           <button type="button" onClick={clearFilters} className="btn-secondary h-12 py-3">
-            Clear Filters
+            Clear filters
           </button>
         </div>
-      </section>
+      </FilterPanel>
 
       <section className="space-y-4">
         {groupedRows.map(({ date, rows: dayRows, dayTotal }) => (
           <div key={date} className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">{formatDate(date)}</h2>
+              <h2 className="text-xs font-semibold text-slate-400">{formatDate(date)}</h2>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-extrabold uppercase tracking-widest text-slate-500">Day total</span>
-                <span className="text-xs font-bold text-sky-400"><Amount>{formatCurrency(dayTotal)}</Amount></span>
+                <span className="text-xs font-semibold text-slate-500">Day total</span>
+                <span className="text-xs font-semibold text-blue-400"><Amount>{formatCurrency(dayTotal)}</Amount></span>
               </div>
             </div>
 
@@ -443,12 +445,12 @@ export default function AllOperationsPageClient({
                   data-entry-id={row.id}
                   data-highlight-target={rowHighlighted ? "" : undefined}
                   className={`card-standard p-4 flex items-start justify-between gap-4 transition-shadow ${
-                    rowHighlighted && pulse ? "ring-2 ring-sky-400 ring-offset-2 ring-offset-[#020617]" : ""
+                    rowHighlighted && pulse ? "ring-2 ring-blue-400 ring-offset-2 ring-offset-[#020617]" : ""
                   }`}
                 >
                   <div className="min-w-0 flex-1 space-y-2">
                     <span
-                      className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-xs font-bold uppercase tracking-widest ${getTypeColor(row.type)}`}
+                      className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-xs font-semibold ${getTypeColor(row.type)}`}
                     >
                       <EntryTypeIcon type={row.type} className="w-3 h-3" />
                       {typeLabel[row.type]}
@@ -459,7 +461,7 @@ export default function AllOperationsPageClient({
                     <Link
                       href={`/app/logs/${row.id}?type=${row.type}`}
                       aria-label="Edit entry"
-                      className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-slate-400 hover:text-sky-400 hover:bg-sky-500/10 flex items-center justify-center transition-colors"
+                      className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 flex items-center justify-center transition-colors"
                     >
                       <Edit3 className="w-4 h-4" />
                     </Link>
@@ -480,9 +482,9 @@ export default function AllOperationsPageClient({
         ))}
 
         {visibleLogCount === 0 ? (
-          <div className="text-center py-20 bg-white/2 rounded-3xl border border-dashed border-white/5">
-            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest italic">
-              No matching logs found.
+          <div className="text-center py-20 bg-white/2 rounded-2xl border border-dashed border-white/5">
+            <p className="text-slate-500 text-xs font-semibold">
+              No matching logs found
             </p>
           </div>
         ) : null}

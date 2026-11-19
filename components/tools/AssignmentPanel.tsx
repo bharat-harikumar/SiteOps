@@ -56,7 +56,7 @@ export function AssignmentPanel({
 
   return (
     <div className="rounded-lg border border-white/5 px-3.5 py-2.5">
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">Assigned to sites</p>
+      <p className="text-xs font-semibold text-on-surface-variant">Assigned to sites</p>
 
       <div className="mt-2.5 space-y-3">
         <div className="flex items-center gap-2 text-xs text-on-surface-variant">
@@ -131,7 +131,7 @@ export function AssignmentPanel({
         {/* Units to assign controls */}
         {addSiteId ? (
           <div className="space-y-2 pt-1">
-            <span className="text-[11px] text-on-surface-variant">Units to assign</span>
+            <span className="text-xs text-on-surface-variant">Units to assign</span>
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
@@ -161,12 +161,12 @@ export function AssignmentPanel({
               >
                 <Plus className="h-3.5 w-3.5" />
               </button>
-              <span className="text-[11px] tabular-nums text-on-surface-variant whitespace-nowrap">of {free} free</span>
+              <span className="text-xs tabular-nums text-on-surface-variant whitespace-nowrap">of {free} free</span>
               <button
                 type="button"
                 disabled={!addSiteId || free < 1}
                 onClick={addRow}
-                className="ml-auto h-8 shrink-0 cursor-pointer rounded-xl bg-blue-600 px-3.5 text-xs font-bold text-white transition-colors hover:bg-blue-500 disabled:opacity-40"
+                className="ml-auto h-8 shrink-0 cursor-pointer rounded-xl bg-blue-600 px-3.5 text-xs font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-40"
               >
                 Add
               </button>
@@ -174,7 +174,7 @@ export function AssignmentPanel({
           </div>
         ) : null}
 
-        <p className={`text-[11px] font-semibold ${free < 0 ? "text-error" : "text-emerald-400"}`}>
+        <p className={`text-xs font-semibold ${free < 0 ? "text-error" : "text-emerald-400"}`}>
           {free < 0 ? `Over-assigned by ${-free}` : `${free} free of ${total}`}
         </p>
       </div>

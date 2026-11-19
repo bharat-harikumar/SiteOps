@@ -23,7 +23,7 @@ type ResourceRequest = {
   requestedBy: string;
 };
 
-const labelClass = 'text-xs font-semibold uppercase text-on-surface-variant';
+const labelClass = 'text-xs font-semibold text-on-surface-variant';
 const inputClass =
   'h-11 w-full rounded border border-outline bg-surface-container-lowest px-3 text-sm text-on-surface focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
 const textareaClass =
@@ -110,9 +110,9 @@ export function ResourceRequestsPageClient({
   return (
     <div className="space-y-5 pb-20">
       <header>
-        <h2 className="text-2xl font-extrabold tracking-tight text-on-surface">Resource Requests</h2>
+        <h2 className="text-2xl font-semibold tracking-tight text-on-surface">Resource Requests</h2>
         <p className="text-sm text-on-surface-variant">
-          Request labour, materials, machinery, or funds.
+          Request labour, materials, machinery, or funds
         </p>
       </header>
 
@@ -126,7 +126,7 @@ export function ResourceRequestsPageClient({
       ) : null}
 
       <form onSubmit={submit} className="card-standard flex flex-col gap-4 rounded-2xl p-4">
-        <h3 className="text-lg font-extrabold tracking-tight text-on-surface">New Request</h3>
+        <h3 className="text-lg font-semibold tracking-tight text-on-surface">New Request</h3>
         <div className="flex flex-col gap-2">
           <label htmlFor="siteId" className={labelClass}>Site ID</label>
           <input id="siteId" name="siteId" required className={inputClass} />
@@ -150,7 +150,7 @@ export function ResourceRequestsPageClient({
         </div>
         <button
           type="submit"
-          className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded bg-primary text-xs font-semibold uppercase text-on-primary hover:bg-sky-400"
+          className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded bg-primary text-xs font-semibold text-on-primary hover:bg-blue-400"
         >
           <Send className="w-[18px] h-[18px]" />
           Submit Request
@@ -159,8 +159,8 @@ export function ResourceRequestsPageClient({
 
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-on-surface">Request Queue</h3>
-          <span className="rounded-full bg-surface-container-low px-2 py-1 text-[10px] font-semibold text-on-surface-variant">
+          <h3 className="text-lg font-semibold text-on-surface">Request Queue</h3>
+          <span className="rounded-full bg-surface-container-low px-2 py-1 text-xs font-semibold text-on-surface-variant">
             {items.length}
           </span>
         </div>
@@ -182,17 +182,17 @@ export function ResourceRequestsPageClient({
                       })()}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-sm font-semibold text-on-surface">{request.requestType}</div>
-                      <div className="text-[10px] font-semibold text-on-surface-variant">Site {request.siteId}</div>
+                      <div className="text-sm font-semibold text-on-surface capitalize">{request.requestType}</div>
+                      <div className="text-xs font-semibold text-on-surface-variant">Site {request.siteId}</div>
                     </div>
                   </div>
-                  <span className={`rounded-full px-2 py-1 text-xs font-semibold uppercase ${statusChip(request.status)}`}>
+                  <span className={`rounded-full px-2 py-1 text-xs font-semibold capitalize ${statusChip(request.status)}`}>
                     {request.status}
                   </span>
                 </div>
                 <p className="text-sm text-on-surface">{request.details}</p>
-                <p className="text-[10px] font-semibold text-on-surface-variant">
-                  <span className="uppercase">Reason:</span> {request.reason}
+                <p className="text-xs font-semibold text-on-surface-variant">
+                  <span className="font-medium">Reason:</span> {request.reason}
                 </p>
                 {request.status === 'Pending' ? (
                   <div className="flex flex-wrap gap-2">
@@ -200,7 +200,7 @@ export function ResourceRequestsPageClient({
                       type="button"
                       disabled={pendingId === request.requestId}
                       onClick={() => review(request.requestId, 'Approved')}
-                      className="flex h-11 items-center gap-1 rounded bg-primary px-3 text-xs font-semibold uppercase text-on-primary disabled:opacity-60"
+                      className="flex h-11 items-center gap-1 rounded bg-primary px-3 text-xs font-semibold text-on-primary disabled:opacity-60"
                     >
                       <Check className="w-4 h-4" />
                       Approve
@@ -209,7 +209,7 @@ export function ResourceRequestsPageClient({
                       type="button"
                       disabled={pendingId === request.requestId}
                       onClick={() => review(request.requestId, 'Declined')}
-                      className="flex h-11 items-center gap-1 rounded border border-outline px-3 text-xs font-semibold uppercase text-on-surface-variant disabled:opacity-60"
+                      className="flex h-11 items-center gap-1 rounded border border-outline px-3 text-xs font-semibold text-on-surface-variant disabled:opacity-60"
                     >
                       <X className="w-4 h-4" />
                       Decline

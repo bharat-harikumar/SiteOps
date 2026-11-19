@@ -14,7 +14,7 @@ export function ToolDashboardStrip() {
   if (!result?.ok)
     return (
       <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-400">
-        <span>Inventory totals unavailable.</span>
+        <span>Inventory totals unavailable</span>
         <button
           type="button"
           onClick={() => void mutate()}

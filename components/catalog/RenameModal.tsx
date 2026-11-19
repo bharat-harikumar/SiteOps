@@ -48,21 +48,21 @@ export function RenameModal({ open, noun, currentName, onClose, onSubmit }: Prop
     <ModalShell
       open={open}
       onClose={onClose}
-      className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0b1220] p-5 shadow-2xl"
+      className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0b1220] p-5 shadow-2xl"
     >
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-sky-500/15 text-sky-400 ring-1 ring-sky-500/20">
+          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/20">
             <Pencil className="h-5 w-5" />
           </span>
           <div>
-            <h3 className="text-lg font-extrabold text-white">Rename {noun}</h3>
+            <h3 className="text-lg font-semibold text-white">Rename {noun}</h3>
             <p className="truncate text-xs text-slate-500">Currently "{currentName}"</p>
           </div>
         </div>
 
         <div>
-          <label htmlFor="rename-input" className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          <label htmlFor="rename-input" className="mb-1.5 block text-xs font-semibold text-slate-400">
             New name
           </label>
           <input
@@ -83,7 +83,7 @@ export function RenameModal({ open, noun, currentName, onClose, onSubmit }: Prop
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-slate-300 transition-colors hover:bg-white/10"
+            className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-300 transition-colors hover:bg-white/10"
           >
             Cancel
           </button>
@@ -91,7 +91,7 @@ export function RenameModal({ open, noun, currentName, onClose, onSubmit }: Prop
             type="button"
             disabled={!canSave}
             onClick={() => void handleSubmit()}
-            className="flex-1 rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-slate-950 transition-colors hover:bg-sky-400 disabled:opacity-40"
+            className="flex-1 rounded-xl bg-blue-500 px-4 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-blue-400 disabled:opacity-40"
           >
             {saving ? "Saving…" : "Save"}
           </button>

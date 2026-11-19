@@ -38,7 +38,7 @@ export function SearchHitRow({ hit, query, active = false, optionId, onSelect }:
       aria-selected={active}
       onClick={() => onSelect(hit)}
       className={`w-full text-left flex items-start gap-3 px-4 py-3 rounded-2xl transition-colors ${
-        active ? 'bg-sky-500/10' : 'hover:bg-white/5'
+        active ? 'bg-blue-500/10' : 'hover:bg-white/5'
       }`}
     >
       <span className="mt-0.5 w-8 h-8 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
@@ -48,7 +48,7 @@ export function SearchHitRow({ hit, query, active = false, optionId, onSelect }:
         <span className="block text-sm text-slate-200 line-clamp-2 break-words">
           {parts.map((part, i) =>
             part.match ? (
-              <mark key={i} className="bg-transparent text-sky-300 font-semibold">
+              <mark key={i} className="bg-transparent text-blue-300 font-semibold">
                 {part.text}
               </mark>
             ) : (
@@ -56,12 +56,12 @@ export function SearchHitRow({ hit, query, active = false, optionId, onSelect }:
             ),
           )}
         </span>
-        <span className="mt-1 block text-[11px] uppercase tracking-wider text-slate-500 truncate">
+        <span className="mt-1 block text-xs text-slate-500 truncate">
           {hit.siteName} · {SOURCE_LABEL[hit.source]} · {formatShortDate(hit.date)}
         </span>
       </span>
       {hit.amount != null && (
-        <span className="mt-0.5 shrink-0 text-xs font-bold text-sky-400 tabular-nums">
+        <span className="mt-0.5 shrink-0 text-xs font-semibold text-blue-400 tabular-nums">
           <Amount>{formatCurrency(hit.amount)}</Amount>
         </span>
       )}

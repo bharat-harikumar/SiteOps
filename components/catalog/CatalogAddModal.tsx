@@ -117,8 +117,8 @@ export function CatalogAddModal({ noun, disabled, withRemark, solid, onCheckSimi
         onClick={() => setOpen(true)}
         className={
           solid
-            ? "inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-bold text-blue-400 transition hover:bg-blue-500/25 disabled:opacity-40"
-            : "inline-flex items-center gap-1.5 rounded-full border border-sky-500/40 bg-sky-500/10 px-4 py-2.5 text-sm font-bold text-sky-400 transition hover:bg-sky-500/20 disabled:opacity-40"
+            ? "inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-semibold text-blue-400 transition hover:bg-blue-500/25 disabled:opacity-40"
+            : "inline-flex items-center gap-1.5 rounded-full border border-blue-500/40 bg-blue-500/10 px-4 py-2.5 text-sm font-semibold text-blue-400 transition hover:bg-blue-500/20 disabled:opacity-40"
         }
       >
         <Plus className="h-4 w-4" strokeWidth={2.5} />
@@ -131,7 +131,7 @@ export function CatalogAddModal({ noun, disabled, withRemark, solid, onCheckSimi
         className="w-full max-w-md rounded-2xl border border-outline-variant bg-surface-container-lowest p-4"
       >
         <div className="space-y-3">
-          <h3 className="text-lg font-extrabold text-white">Create {noun}</h3>
+          <h3 className="text-lg font-semibold text-white">Create {noun}</h3>
           <input
             type="text"
             value={name}
@@ -152,7 +152,7 @@ export function CatalogAddModal({ noun, disabled, withRemark, solid, onCheckSimi
 
           {confirmOverride?.length ? (
             <div className="rounded-xl border border-warning/50 bg-warning/10 p-3">
-              <p className="text-xs font-semibold uppercase text-warning">Similar {noun.toLowerCase()} found</p>
+              <p className="text-xs font-semibold text-warning">Similar {noun.toLowerCase()} found</p>
               <ul className="mt-2 flex flex-wrap gap-2">
                 {confirmOverride.slice(0, 4).map((item) => (
                   <li key={item.id} className="rounded-full bg-surface-container-low px-3 py-1 text-xs text-on-surface-variant">
@@ -164,7 +164,7 @@ export function CatalogAddModal({ noun, disabled, withRemark, solid, onCheckSimi
           ) : null}
 
           {requiresReview && !confirmOverride?.length ? (
-            <p className="text-xs font-semibold text-warning">This looks similar and will require admin review.</p>
+            <p className="text-xs font-semibold text-warning">This looks similar and will require admin review</p>
           ) : null}
 
           <div className="flex gap-2 pt-1">
@@ -172,14 +172,14 @@ export function CatalogAddModal({ noun, disabled, withRemark, solid, onCheckSimi
               type="button"
               disabled={!name.trim() || creating}
               onClick={() => void handleCreate()}
-              className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold uppercase text-on-primary disabled:opacity-60"
+              className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary disabled:opacity-60"
             >
               {creating ? "Saving..." : confirmOverride?.length ? "Create anyway" : `Create ${noun}`}
             </button>
             <button
               type="button"
               onClick={close}
-              className="rounded-xl border border-outline px-4 py-2.5 text-sm font-semibold uppercase text-on-surface-variant"
+              className="rounded-xl border border-outline px-4 py-2.5 text-sm font-semibold text-on-surface-variant"
             >
               Cancel
             </button>

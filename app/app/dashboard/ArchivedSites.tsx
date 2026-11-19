@@ -58,16 +58,16 @@ export function ArchivedSites({ sites }: { sites: ArchivedSite[] }) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex w-full cursor-pointer items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/50"
+        className="flex w-full cursor-pointer items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
       >
         <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/5 text-slate-400 ring-1 ring-white/10">
           <Archive className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[15px] font-bold text-white">Archived Sites</p>
+          <p className="text-[15px] font-semibold text-white">Archived Sites</p>
           <p className="truncate text-xs text-slate-500">View and manage archived projects</p>
         </div>
-        <span className="grid h-7 min-w-7 place-items-center rounded-full bg-white/10 px-2 text-xs font-bold tabular-nums text-slate-300">
+        <span className="grid h-7 min-w-7 place-items-center rounded-full bg-white/10 px-2 text-xs font-semibold tabular-nums text-slate-300">
           {sites.length}
         </span>
         <ChevronRight
@@ -87,21 +87,21 @@ export function ArchivedSites({ sites }: { sites: ArchivedSite[] }) {
             {sites.map((s) => (
               <li key={s.siteId} className="flex items-center justify-between gap-3 px-4 py-3.5">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-bold uppercase tracking-tight text-slate-200">{s.name}</p>
-                  <p className="text-[11px] text-slate-500">{s.location}</p>
+                  <p className="truncate text-sm font-semibold text-slate-200">{s.name}</p>
+                  <p className="text-xs text-slate-500">{s.location}</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <button
                     onClick={() => void restore(s.siteId)}
                     disabled={busyId === s.siteId}
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-slate-300 transition-colors hover:text-sky-400 disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 transition-colors hover:text-blue-400 disabled:opacity-50"
                   >
                     <ArchiveRestore className="h-3.5 w-3.5" /> Restore
                   </button>
                   <button
                     onClick={() => void purge(s)}
                     disabled={busyId === s.siteId}
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-red-400 transition-colors hover:bg-red-500/20 disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-400 transition-colors hover:bg-red-500/20 disabled:opacity-50"
                   >
                     <Trash2 className="h-3.5 w-3.5" /> Delete
                   </button>

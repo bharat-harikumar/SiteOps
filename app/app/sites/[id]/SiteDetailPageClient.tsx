@@ -145,24 +145,24 @@ export default function SiteDetailPageClient({
 
   return (
     <div className="space-y-6 pt-2 pb-20 max-w-4xl mx-auto">
-      <section className="card-standard p-6 border-sky-500/10 bg-sky-500/5 relative overflow-hidden">
+      <section className="card-standard p-6 border-blue-500/10 bg-blue-500/5 relative overflow-hidden">
         <Layers className="absolute -right-6 -bottom-6 w-32 h-32 text-white/5 rotate-12" />
         <div className="relative z-10 space-y-4">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
             <div className="space-y-3 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 bg-sky-500 text-slate-950 text-[9px] font-bold rounded uppercase tracking-widest">
+                <span className="px-2 py-0.5 bg-blue-500 text-slate-950 text-xs font-semibold rounded">
                   Active Site
                 </span>
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                <span className="text-xs font-semibold text-slate-500">
                   #{site.siteId.slice(0, 8)}
                 </span>
               </div>
-              <h2 className="text-3xl font-extrabold text-white uppercase tracking-tight leading-none truncate">
+              <h2 className="text-3xl font-semibold text-white tracking-tight leading-none truncate">
                 {site.name}
               </h2>
-              <div className="flex items-center gap-1.5 text-slate-400 font-medium italic text-sm">
-                <MapPin className="w-4 h-4 text-sky-500" />
+              <div className="flex items-center gap-1.5 text-slate-400 font-medium text-sm">
+                <MapPin className="w-4 h-4 text-blue-500" />
                 {site.location}
               </div>
             </div>
@@ -172,7 +172,7 @@ export default function SiteDetailPageClient({
                   <button
                     onClick={() => setEditOpen(true)}
                     aria-label="Edit site"
-                    className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-300 transition hover:border-sky-500/40 hover:text-sky-400"
+                    className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-semibold text-slate-300 transition hover:border-blue-500/40 hover:text-blue-400"
                   >
                     <Edit3 className="w-4 h-4" /> Edit
                   </button>
@@ -183,7 +183,7 @@ export default function SiteDetailPageClient({
                     disabled={deletingSite}
                     title="Archive site"
                     aria-label="Archive site"
-                    className="inline-flex items-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs font-bold uppercase tracking-widest text-red-400 transition hover:bg-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs font-semibold text-red-400 transition hover:bg-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {deletingSite ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                     Archive
@@ -217,13 +217,13 @@ export default function SiteDetailPageClient({
               <div key={stat.label} className="space-y-0.5">
                 <div className="flex items-center gap-1 text-slate-500">
                   <stat.icon className="w-3.5 h-3.5" />
-                  <span className="text-[9px] font-bold uppercase tracking-widest leading-none">{stat.label}</span>
+                  <span className="text-xs font-semibold leading-none">{stat.label}</span>
                 </div>
-                <p className={`text-xl font-extrabold tracking-tight ${stat.highlight ? 'text-sky-400' : 'text-white'}`}>
+                <p className={`text-xl font-semibold tracking-tight ${stat.highlight ? 'text-blue-400' : 'text-white'}`}>
                   {stat.val}
                 </p>
                 {'sub' in stat && stat.sub ? (
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{stat.sub}</p>
+                  <p className="text-xs font-semibold text-slate-500">{stat.sub}</p>
                 ) : null}
               </div>
             ))}
@@ -231,7 +231,7 @@ export default function SiteDetailPageClient({
 
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5">
             <div
-              className="h-full rounded-full bg-sky-500 transition-[width] duration-500 ease-out"
+              className="h-full rounded-full bg-blue-500 transition-[width] duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -241,49 +241,49 @@ export default function SiteDetailPageClient({
       <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Link
           href={`/app/logs/new?siteId=${encodeURIComponent(siteId)}`}
-          className="btn-primary flex py-4 gap-3 uppercase shadow-sky-500/20"
+          className="btn-primary flex py-4 gap-3 shadow-blue-500/20"
         >
           <Plus className="w-5 h-5" />
           <span className="flex-1 text-center">New Log Entry</span>
         </Link>
         <Link
           href={`/app/transfers/new?fromSite=${encodeURIComponent(siteId)}`}
-          className="btn-secondary flex py-4 gap-3 uppercase border-white/10"
+          className="btn-secondary flex py-4 gap-3 border-white/10"
         >
-          <Repeat className="w-5 h-5 text-sky-500" />
+          <Repeat className="w-5 h-5 text-blue-500" />
           <span className="flex-1 text-center">Transfer Resources</span>
         </Link>
       </section>
 
       <div className="flex items-center justify-between px-1">
-        <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2">
-          Operations Queue <FileText className="w-4 h-4 text-sky-500" />
+        <h3 className="text-xs font-semibold text-slate-300 flex items-center gap-2">
+          Operations Queue <FileText className="w-4 h-4 text-blue-500" />
         </h3>
       </div>
 
       <Link
         href={`/app/sites/${siteId}/operations/all`}
-        className="card-standard group flex items-center justify-between gap-4 p-5 border-2 border-sky-500/25 bg-sky-500/5 hover:bg-sky-500/10 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500/70"
+        className="card-standard group flex items-center justify-between gap-4 p-5 border-2 border-blue-500/25 bg-blue-500/5 hover:bg-blue-500/10 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/70"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-11 h-11 shrink-0 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+          <div className="w-11 h-11 shrink-0 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
             <LayoutGrid className="w-6 h-6" />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-extrabold uppercase tracking-widest text-white">All Operations</p>
+            <p className="text-sm font-semibold text-white">All Operations</p>
             <p className="text-xs text-slate-500 font-semibold truncate">Every expense, one date range</p>
           </div>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <div className="text-right">
-            <p className="text-lg font-extrabold text-sky-400">
+            <p className="text-lg font-semibold text-blue-400">
               <Amount>{formatCompactCurrency(allOperationsSummary.totalSpend) ?? '₹0'}</Amount>
             </p>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+            <p className="text-xs font-semibold text-slate-500">
               {allOperationsSummary.totalCount.toLocaleString('en-IN')} entries
             </p>
           </div>
-          <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-sky-400 transition-colors" />
+          <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-blue-400 transition-colors" />
         </div>
       </Link>
 
@@ -296,7 +296,7 @@ export default function SiteDetailPageClient({
             <Layers className="w-6 h-6" />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-extrabold uppercase tracking-widest text-white">Work Stages</p>
+            <p className="text-sm font-semibold text-white">Work Stages</p>
             <p className="text-xs text-slate-500 font-semibold truncate">What each phase cost</p>
           </div>
         </div>
@@ -315,14 +315,14 @@ export default function SiteDetailPageClient({
             <Link
               key={operation.type}
               href={`/app/sites/${siteId}/operations/${operation.type}`}
-              className={`card-standard group p-5 border-2 ${getTypeColor(operation.type).split(' ')[2]} hover:bg-white/5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500/70`}
+              className={`card-standard group p-5 border-2 ${getTypeColor(operation.type).split(' ')[2]} hover:bg-white/5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/70`}
             >
               {/* Header: badge + icon */}
               <div className="flex items-start justify-between gap-3">
-                <span className={`inline-flex text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-lg border ${getTypeColor(operation.type)}`}>
+                <span className={`inline-flex text-xs font-semibold px-2 py-0.5 rounded-lg border ${getTypeColor(operation.type)}`}>
                   {operation.label}
                 </span>
-                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 group-hover:text-sky-400 transition-colors shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 group-hover:text-blue-400 transition-colors shrink-0">
                   <EntryTypeIcon type={operation.type} className="w-6 h-6" />
                 </div>
               </div>
@@ -330,11 +330,11 @@ export default function SiteDetailPageClient({
               {/* Today: primary stat */}
               <div className="mt-4 flex items-baseline justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-3xl font-extrabold text-white leading-none">{summary.todayCount}</p>
-                  <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Today</p>
+                  <p className="text-3xl font-semibold text-white leading-none">{summary.todayCount}</p>
+                  <p className="mt-1 text-xs font-semibold text-slate-500">Today</p>
                 </div>
                 {todaySpend ? (
-                  <p className="text-sm font-bold text-slate-200 shrink-0"><Amount>{todaySpend}</Amount></p>
+                  <p className="text-sm font-semibold text-slate-200 shrink-0"><Amount>{todaySpend}</Amount></p>
                 ) : null}
               </div>
 
@@ -347,11 +347,11 @@ export default function SiteDetailPageClient({
                   {summary.totalCount.toLocaleString('en-IN')} {totalLabel} all-time
                 </span>
                 {totalSpend ? (
-                  <span className="font-bold text-slate-300 shrink-0"><Amount>{totalSpend}</Amount></span>
+                  <span className="font-semibold text-slate-300 shrink-0"><Amount>{totalSpend}</Amount></span>
                 ) : null}
               </div>
               {summary.totalOtSpend ? (
-                <p className="mt-1 text-right text-[11px] font-semibold text-slate-500">
+                <p className="mt-1 text-right text-xs font-semibold text-slate-500">
                   incl. OT <Amount>{formatCompactCurrency(summary.totalOtSpend)}</Amount>
                 </p>
               ) : null}

@@ -64,10 +64,10 @@ const USER_CRITICAL: ReadonlyArray<readonly [string, string]> = [
   // [file, a string that identifies the element's line]
   ["components/operations/EntryLogList.tsx", "Running total"],
   ["components/operations/EntryLogList.tsx", "Day total"],
-  ["components/operations/EntryLogList.tsx", "italic"],           // empty-state copy
+  ["components/operations/EntryLogList.tsx", "text-slate-500 text-xs font-semibold"], // empty-state copy
   ["app/app/sites/[id]/operations/[type]/AllOperationsPageClient.tsx", "Logs</p>"],
   ["app/app/sites/[id]/operations/[type]/AllOperationsPageClient.tsx", "Day total"],
-  ["app/app/sites/[id]/operations/[type]/AllOperationsPageClient.tsx", "italic"],
+  ["app/app/sites/[id]/operations/[type]/AllOperationsPageClient.tsx", "text-slate-500 text-xs font-semibold"], // empty-state copy
   ["app/app/sites/[id]/operations/[type]/AllOperationsPageClient.tsx", "getTypeColor(row.type)"], // row type chip
 ];
 

@@ -109,7 +109,7 @@ export function SiteTools({
           <p className="mb-1 break-words text-sm font-medium text-slate-400">
             {siteName}
           </p>
-          <h1 className="text-2xl font-bold text-white">Tools</h1>
+          <h1 className="text-2xl font-semibold text-white">Tools</h1>
           {data ? (
             <p className="mt-2 text-sm text-slate-400">
               {data.itemCount} {data.itemCount === 1 ? "item" : "items"} across{" "}
@@ -242,7 +242,7 @@ export function SiteTools({
                         {tool.categoryName}
                       </p>
                     </div>
-                    <span className="shrink-0 text-base font-bold tabular-nums text-white">
+                    <span className="shrink-0 text-base font-semibold tabular-nums text-white">
                       {tool.quantityHere} here
                     </span>
                   </div>

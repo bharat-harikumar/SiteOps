@@ -12,7 +12,7 @@ export type RowAction = {
   onSelect: () => void;
   /** Optional leading icon. */
   icon?: LucideIcon;
-  /** Tailwind text color class for the label, e.g. "text-sky-400". */
+  /** Tailwind text color class for the label, e.g. "text-blue-400". */
   tone?: string;
   disabled?: boolean;
 };
@@ -72,9 +72,9 @@ export function RowActionsMenu({ actions, label = "Row actions" }: { actions: Ro
           }
           setOpen((v) => !v);
         }}
-        className={`grid h-10 w-10 cursor-pointer place-items-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/50 ${
+        className={`grid h-10 w-10 cursor-pointer place-items-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
           open
-            ? "border-sky-500/50 bg-sky-500/10 text-sky-400"
+            ? "border-blue-500/50 bg-blue-500/10 text-blue-400"
             : "border-white/10 bg-white/5 text-slate-400 hover:text-slate-200"
         }`}
       >

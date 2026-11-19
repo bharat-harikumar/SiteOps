@@ -14,7 +14,7 @@ import { SharePassword, TempPasswordField } from './TempPasswordField';
 import { generateTempPassword } from './tempPassword';
 import { useReturnFocus } from './useReturnFocus';
 
-const labelClass = 'text-xs font-semibold uppercase text-on-surface-variant';
+const labelClass = 'text-xs font-semibold text-on-surface-variant';
 const inputClass =
   'h-11 w-full rounded border border-outline bg-surface-container-lowest px-3 text-sm text-on-surface focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
 
@@ -81,7 +81,7 @@ export function CreateUserDrawer({
       className="flex h-full w-full max-w-lg flex-col overflow-y-auto border-l border-outline-variant bg-surface-container-low"
     >
       <header className="flex items-center justify-between gap-3 border-b border-outline-variant px-5 py-4">
-        <h2 id="create-user-title" className="flex items-center gap-2 text-lg font-black text-on-surface">
+        <h2 id="create-user-title" className="flex items-center gap-2 text-lg font-semibold text-on-surface">
           <UserPlus className="h-5 w-5" /> New account
         </h2>
         <button
@@ -96,7 +96,7 @@ export function CreateUserDrawer({
 
       {created ? (
         <div className="flex flex-col gap-4 p-5">
-          <p className="text-sm font-semibold text-on-surface">Account created.</p>
+          <p className="text-sm font-semibold text-on-surface">Account created</p>
           <SharePassword email={created.email} password={created.password} />
           <button type="button" onClick={close} className="btn-primary h-11 px-5 text-xs">
             Done
@@ -140,7 +140,7 @@ export function CreateUserDrawer({
           <button
             type="submit"
             disabled={creating}
-            className="flex h-11 items-center justify-center gap-2 rounded bg-primary px-5 text-xs font-semibold uppercase text-on-primary hover:bg-sky-400 disabled:opacity-60"
+            className="flex h-11 items-center justify-center gap-2 rounded bg-primary px-5 text-xs font-semibold text-on-primary hover:bg-blue-400 disabled:opacity-60"
           >
             {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
             {creating ? 'Creating…' : 'Create account'}

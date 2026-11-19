@@ -24,7 +24,7 @@ type FieldRequest = {
   requestedBy: string;
 };
 
-const labelClass = 'text-xs font-semibold uppercase text-on-surface-variant';
+const labelClass = 'text-xs font-semibold text-on-surface-variant';
 const inputClass =
   'h-11 w-full rounded border border-outline bg-surface-container-lowest px-3 text-sm text-on-surface focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
 
@@ -118,9 +118,9 @@ export function FieldRequestsPageClient({
   return (
     <div className="space-y-5 pb-20">
       <header>
-        <h2 className="text-2xl font-extrabold tracking-tight text-on-surface">Field Requests</h2>
+        <h2 className="text-2xl font-semibold tracking-tight text-on-surface">Field Requests</h2>
         <p className="text-sm text-on-surface-variant">
-          Propose new fields and review pending requests.
+          Propose new fields and review pending requests
         </p>
       </header>
 
@@ -134,7 +134,7 @@ export function FieldRequestsPageClient({
       ) : null}
 
       <form onSubmit={submit} className="card-standard flex flex-col gap-4 rounded-2xl p-4">
-        <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Propose a Field</h3>
+        <h3 className="text-lg font-semibold tracking-tight text-on-surface">Propose a Field</h3>
         <div className="flex flex-col gap-2">
           <label htmlFor="siteId" className={labelClass}>Site ID</label>
           <input id="siteId" name="siteId" required className={inputClass} />
@@ -161,7 +161,7 @@ export function FieldRequestsPageClient({
         </div>
         <button
           type="submit"
-          className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded bg-primary text-xs font-semibold uppercase text-on-primary hover:bg-sky-400"
+          className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded bg-primary text-xs font-semibold text-on-primary hover:bg-blue-400"
         >
           <Send className="w-[18px] h-[18px]" />
           Submit Request
@@ -170,8 +170,8 @@ export function FieldRequestsPageClient({
 
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-on-surface">Request Queue</h3>
-          <span className="rounded-full bg-surface-container-low px-2 py-1 text-[10px] font-semibold text-on-surface-variant">
+          <h3 className="text-lg font-semibold text-on-surface">Request Queue</h3>
+          <span className="rounded-full bg-surface-container-low px-2 py-1 text-xs font-semibold text-on-surface-variant">
             {items.length}
           </span>
         </div>
@@ -187,16 +187,16 @@ export function FieldRequestsPageClient({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-sm font-semibold text-on-surface">{request.proposedName}</div>
-                    <div className="text-[10px] font-semibold mt-0.5 text-on-surface-variant">Site {request.siteId}</div>
+                    <div className="text-xs font-semibold mt-0.5 text-on-surface-variant">Site {request.siteId}</div>
                   </div>
-                  <span className={`rounded-full px-2 py-1 text-xs font-semibold uppercase ${statusChip(request.status)}`}>
+                  <span className={`rounded-full px-2 py-1 text-xs font-semibold capitalize ${statusChip(request.status)}`}>
                     {request.status}
                   </span>
                 </div>
-                <div className="grid grid-cols-3 gap-3 rounded-lg bg-surface-container-low p-3 text-[10px] font-semibold">
+                <div className="grid grid-cols-3 gap-3 rounded-lg bg-surface-container-low p-3 text-xs font-semibold">
                   <div>
                     <div className={labelClass}>Type</div>
-                    <div className="text-on-surface">{request.fieldType}</div>
+                    <div className="text-on-surface capitalize">{request.fieldType}</div>
                   </div>
                   <div>
                     <div className={labelClass}>Category</div>
@@ -213,7 +213,7 @@ export function FieldRequestsPageClient({
                       type="button"
                       disabled={pendingId === request.fieldRequestId}
                       onClick={() => review(request.fieldRequestId, 'Approved')}
-                      className="flex h-11 items-center gap-1 rounded bg-primary px-3 text-xs font-semibold uppercase text-on-primary disabled:opacity-60"
+                      className="flex h-11 items-center gap-1 rounded bg-primary px-3 text-xs font-semibold text-on-primary disabled:opacity-60"
                     >
                       <Check className="w-4 h-4" />
                       Approve
@@ -222,7 +222,7 @@ export function FieldRequestsPageClient({
                       type="button"
                       disabled={pendingId === request.fieldRequestId}
                       onClick={() => review(request.fieldRequestId, 'Declined')}
-                      className="flex h-11 items-center gap-1 rounded border border-outline px-3 text-xs font-semibold uppercase text-on-surface-variant disabled:opacity-60"
+                      className="flex h-11 items-center gap-1 rounded border border-outline px-3 text-xs font-semibold text-on-surface-variant disabled:opacity-60"
                     >
                       <X className="w-4 h-4" />
                       Decline
@@ -231,7 +231,7 @@ export function FieldRequestsPageClient({
                       type="button"
                       disabled={pendingId === request.fieldRequestId}
                       onClick={() => withdraw(request.fieldRequestId)}
-                      className="flex h-11 items-center gap-1 rounded px-3 text-xs font-semibold uppercase text-on-surface-variant hover:bg-surface-container disabled:opacity-60"
+                      className="flex h-11 items-center gap-1 rounded px-3 text-xs font-semibold text-on-surface-variant hover:bg-surface-container disabled:opacity-60"
                     >
                       <Undo2 className="w-4 h-4" />
                       Withdraw

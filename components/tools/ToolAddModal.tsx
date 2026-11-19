@@ -78,11 +78,11 @@ export function ToolAddModal({
       className="max-h-[calc(100dvh-1rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-outline-variant bg-surface-container-lowest p-5"
     >
       <div className="space-y-3.5">
-        <h3 id={`${id}-title`} className="text-base font-bold text-white">
+        <h3 id={`${id}-title`} className="text-base font-semibold text-white">
           New tool type
         </h3>
 
-        <label className="flex flex-col gap-1.5 text-sm font-semibold uppercase tracking-wide text-on-surface-variant">
+        <label className="flex flex-col gap-1.5 text-sm font-semibold tracking-wide text-on-surface-variant">
           Name
           <input
             autoFocus
@@ -95,7 +95,7 @@ export function ToolAddModal({
           />
         </label>
 
-        <label className="flex flex-col gap-1.5 text-sm font-semibold uppercase tracking-wide text-on-surface-variant">
+        <label className="flex flex-col gap-1.5 text-sm font-semibold tracking-wide text-on-surface-variant">
           Category
           <select
             value={categoryId}
@@ -120,7 +120,7 @@ export function ToolAddModal({
           </p>
         ) : categoriesError ? (
           <div role="alert" className="text-sm text-slate-300">
-            <p>Couldn't load tool categories.</p>
+            <p>Couldn't load tool categories</p>
             <button
               type="button"
               onClick={onRetryCategories}
@@ -142,7 +142,7 @@ export function ToolAddModal({
           </p>
         ) : null}
 
-        <label className="flex flex-col gap-1.5 text-sm font-semibold uppercase tracking-wide text-on-surface-variant">
+        <label className="flex flex-col gap-1.5 text-sm font-semibold tracking-wide text-on-surface-variant">
           Initial quantity in godown
           <input
             type="text"
@@ -173,14 +173,14 @@ export function ToolAddModal({
               categoriesError
             }
             onClick={() => void create()}
-            className="flex-1 cursor-pointer rounded-xl bg-primary px-4 py-2.5 text-sm font-bold uppercase text-on-primary transition-colors hover:opacity-90 disabled:opacity-60"
+            className="flex-1 cursor-pointer rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary transition-colors hover:opacity-90 disabled:opacity-60"
           >
             {busy ? "Saving…" : "Create tool type"}
           </button>
           <button
             type="button"
             onClick={close}
-            className="cursor-pointer rounded-xl border border-outline px-4 py-2.5 text-sm font-semibold uppercase text-on-surface-variant transition-colors hover:bg-surface-container-low"
+            className="cursor-pointer rounded-xl border border-outline px-4 py-2.5 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-surface-container-low"
           >
             Cancel
           </button>

@@ -86,11 +86,11 @@ export default function AdminLiveFeedPage() {
     <div className="flex flex-col gap-4">
       <header className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Live Feed</h2>
-          <p className="text-sm text-on-surface-variant">Real-time activity across all sites.</p>
+          <h2 className="text-lg font-semibold text-white">Live Feed</h2>
+          <p className="text-sm text-on-surface-variant">Real-time activity across all sites</p>
         </div>
         <span
-          className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase ${
+          className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
             state.kind === 'ready'
               ? 'bg-primary-container text-on-primary-container'
               : 'bg-surface-container-low text-on-surface-variant'
@@ -124,9 +124,9 @@ export default function AdminLiveFeedPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-white">
-                    <span className="font-semibold uppercase">{activity.type}</span> entry logged at site {activity.siteId}.
+                    <span className="font-semibold capitalize">{activity.type}</span> entry logged at site {activity.siteId}.
                   </p>
-                  <p className="text-[10px] font-semibold mt-0.5 text-on-surface-variant">
+                  <p className="text-xs font-semibold mt-0.5 text-on-surface-variant">
                     {formatDateTime(activity.createdAt)}
                   </p>
                 </div>

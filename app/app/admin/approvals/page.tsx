@@ -37,7 +37,7 @@ export default async function AdminApprovalsPage() {
   return (
     <div className="flex flex-col gap-4">
       <header className="card-standard p-4">
-        <h2 className="text-lg font-bold text-white">Review Queues</h2>
+        <h2 className="text-lg font-semibold text-white">Review Queues</h2>
         <p className="text-sm text-slate-400">
           Resource requests, field requests, transfer requests, and duplicate category reviews.
         </p>

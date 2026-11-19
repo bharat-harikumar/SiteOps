@@ -181,9 +181,9 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
       {/* Section header */}
       <div className="flex items-center justify-between px-1 mb-6">
         <div>
-          <h3 className="text-xl font-extrabold tracking-tight text-white uppercase">Select Log Category</h3>
-          <p className="text-sm text-slate-500 font-medium italic mt-1.5">
-            Pick the type of operation you want to record.
+          <h3 className="text-xl font-semibold tracking-tight text-white">Select Log Category</h3>
+          <p className="text-sm text-slate-500 font-medium mt-1.5">
+            Pick the type of operation you want to record
           </p>
         </div>
         <button
@@ -211,7 +211,7 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
               onClick={() => onSelect(c)}
               className="flex-1 flex items-center gap-5 p-5 text-left"
             >
-              <div className="w-14 h-14 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center shadow-lg transition-colors group-hover:bg-white/10 text-sky-400 shrink-0">
+              <div className="w-14 h-14 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center transition-colors group-hover:bg-white/10 text-blue-400 shrink-0">
                 {(() => {
                   const mappedType = entryTypeFromName(c.name);
                   return mappedType ? (
@@ -222,7 +222,7 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
                 })()}
               </div>
               <div className="space-y-1 min-w-0">
-                <h4 className="font-bold text-slate-200 uppercase tracking-tight group-hover:text-sky-400 transition-colors">
+                <h4 className="font-semibold text-slate-200 tracking-tight group-hover:text-blue-400 transition-colors">
                   {c.name}
                 </h4>
               </div>
@@ -249,7 +249,7 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
                 type="button"
                 onClick={() => onSelect(c)}
                 aria-label={`Open ${c.name}`}
-                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-600 hover:bg-sky-500 hover:text-slate-950 transition"
+                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-600 hover:bg-blue-500 hover:text-slate-950 transition"
               >
                 <ChevronRight className="w-5 h-5 transition-transform hover:translate-x-0.5" />
               </button>
@@ -265,10 +265,10 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
         className="w-full max-w-md rounded-2xl border border-white/10 bg-surface p-6 shadow-2xl"
       >
         <div className="space-y-4">
-          <h3 className="text-xl font-extrabold tracking-tight text-white uppercase">Add Category</h3>
+          <h3 className="text-xl font-semibold tracking-tight text-white">Add Category</h3>
 
           <div className="space-y-1.5">
-            <label htmlFor="category-name" className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Name</label>
+            <label htmlFor="category-name" className="text-xs font-semibold text-slate-400">Name</label>
             <input
               id="category-name"
               type="text"
@@ -281,11 +281,11 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Input Fields</p>
+              <p className="text-xs font-semibold text-slate-400">Input Fields</p>
               <button
                 type="button"
                 onClick={() => setFields((prev) => [...prev, { label: "", fieldType: "Text", unit: "" }])}
-                className="btn-secondary px-3 py-1.5 text-[10px]"
+                className="btn-secondary px-3 py-1.5 text-xs"
               >
                 Add Field
               </button>
@@ -322,7 +322,7 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="category-remarks" className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Remarks</label>
+            <label htmlFor="category-remarks" className="text-xs font-semibold text-slate-400">Remarks</label>
             <textarea
               id="category-remarks"
               value={remarks}
@@ -337,7 +337,7 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
             <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-start gap-3">
               <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400">Similar Categories Found</p>
+                <p className="text-xs font-semibold text-amber-400">Similar Categories Found</p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {confirmOverride.slice(0, 4).map((item) => (
                     <span key={item.id} className="badge-amber">
@@ -350,9 +350,9 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
           ) : null}
 
           {similarity?.requiresReview && !confirmOverride?.length ? (
-            <p className="flex items-center gap-1.5 text-[10px] font-bold text-amber-400 uppercase tracking-widest">
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-400">
               <AlertTriangle className="w-4 h-4 shrink-0" />
-              Similar category detected — will require admin review.
+              Similar category detected — will require admin review
             </p>
           ) : null}
 

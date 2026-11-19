@@ -16,9 +16,9 @@ export function ApiUnavailableBanner({
     message ??
     `Service connection unstable${endpoint ? ` — ${method?.toUpperCase() ?? 'GET'} ${endpoint}` : ''}. Offline updates will sync upon reconnection.`;
   return (
-    <div className="bg-amber-500/10 border border-amber-500/20 py-3 px-4 flex items-center justify-center gap-2 backdrop-blur-md rounded-xl">
+    <div className="bg-amber-500/10 border border-amber-500/20 py-3 px-4 flex items-center justify-center gap-2 rounded-xl">
       <WifiOff className="w-4 h-4 text-amber-400 shrink-0" />
-      <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">{text}</span>
+      <span className="text-xs font-semibold text-amber-400">{text}</span>
     </div>
   );
 }
