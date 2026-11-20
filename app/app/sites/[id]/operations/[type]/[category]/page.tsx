@@ -4,7 +4,9 @@ import { notFound, redirect } from "next/navigation";
 import { checkOwnership } from "@/lib/auth/ownership";
 import { safeGetSessionFromHeaders } from "@/lib/auth/session";
 import { getEntriesBySite, type EntryType, type MaterialWorkStage } from "@/lib/db/queries/entries";
+import { getLabourProgress } from "@/lib/db/queries/labourTargets";
 import { getSiteById } from "@/lib/db/queries/sites";
+import { isSplitLabourWorkType } from "@/lib/validation/schemas";
 import { serializeRow } from "@/lib/utils/serialize";
 
 import { getOperationCategoryOptions } from "../categoryOptions";
@@ -64,14 +66,19 @@ export default async function CategoryDetailPage({
     if (anyForCategory.length === 0) notFound();
   }
 
-  const entries = await getEntriesBySite(siteId, type as EntryType, {
-    from: from || undefined,
-    to: to || undefined,
-    category,
-    workStage: (workStage || undefined) as MaterialWorkStage | undefined,
-    sort,
-    limit: 200,
-  });
+  // Mason/helper progress counts ALL entries for this work type, so it ignores
+  // the date/stage filters and the 200-row cap the list below applies.
+  const [entries, manpower] = await Promise.all([
+    getEntriesBySite(siteId, type as EntryType, {
+      from: from || undefined,
+      to: to || undefined,
+      category,
+      workStage: (workStage || undefined) as MaterialWorkStage | undefined,
+      sort,
+      limit: 200,
+    }),
+    type === "labour" && isSplitLabourWorkType(category) ? getLabourProgress(siteId, category) : null,
+  ]);
 
   return (
     <CategoryDetailPageClient
@@ -82,6 +89,7 @@ export default async function CategoryDetailPage({
       initialEntries={serializeRow(entries) as any}
       initialFilters={{ from, to, workStage, sort }}
       highlightId={highlight}
+      manpower={manpower}
     />
   );
 }

@@ -11,12 +11,14 @@ import { DateFilterField } from "@/components/operations/DateFilterField";
 import { FilterPanel } from "@/components/operations/FilterPanel";
 import { countActiveFilters } from "@/components/operations/filterCount";
 import EntryLogList from "@/components/operations/EntryLogList";
+import ManpowerProgress from "@/components/operations/ManpowerProgress";
 import {
   buildGroupedRows,
   buildMaterialQuantityTotals,
   entryMatchesSearch,
 } from "@/components/operations/categoryView";
 import type { EntryType } from "@/lib/db/queries/entries";
+import type { LabourProgress } from "@/lib/db/queries/labourTargets";
 import {
   type Entry,
   formatCurrency,
@@ -44,6 +46,8 @@ type Props = {
   initialEntries: Entry[];
   initialFilters: Filters;
   highlightId?: string | null;
+  // Set only for split-labour work types (Plastering, Brick work).
+  manpower?: LabourProgress | null;
 };
 
 export default function CategoryDetailPageClient({
@@ -54,6 +58,7 @@ export default function CategoryDetailPageClient({
   initialEntries,
   initialFilters,
   highlightId = null,
+  manpower = null,
 }: Props) {
   const router = useNavRouter();
   const [filters, setFilters] = useState(initialFilters);
@@ -133,6 +138,7 @@ export default function CategoryDetailPageClient({
             ) : null}
           </div>
         </div>
+        {manpower ? <ManpowerProgress siteId={siteId} workType={category} initial={manpower} /> : null}
       </section>
 
       <FilterPanel
