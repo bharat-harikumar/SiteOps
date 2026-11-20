@@ -5,6 +5,7 @@ import {
   buildGroupedRows,
   entrySuccessDestination,
   buildMaterialQuantityTotals,
+  formatDeployed,
 } from "./categoryView";
 
 const m = (over: Record<string, unknown>) => ({
@@ -162,5 +163,20 @@ describe("buildMaterialQuantityTotals", () => {
   it("avoids floating point drift", () => {
     const entries = [m({ quantity: "0.1", unit: "M3" }), m({ quantity: "0.2", unit: "M3" })];
     expect(buildMaterialQuantityTotals(entries as any)).toEqual([{ unit: "M3", total: 0.3 }]);
+  });
+});
+
+describe("formatDeployed", () => {
+  it("shows the bare count when no target is set", () => {
+    expect(formatDeployed(13, null)).toBe("13");
+  });
+  it("shows count / target with a rounded percent", () => {
+    expect(formatDeployed(13, 60)).toBe("13 / 60 (22%)");
+  });
+  it("lets progress run past 100%", () => {
+    expect(formatDeployed(65, 60)).toBe("65 / 60 (108%)");
+  });
+  it("omits the percent for a zero target instead of dividing by zero", () => {
+    expect(formatDeployed(0, 0)).toBe("0 / 0");
   });
 });
