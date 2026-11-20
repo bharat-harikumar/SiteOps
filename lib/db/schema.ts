@@ -233,6 +233,23 @@ export const labourEntries = pgTable("labour_entries", {
   index("labour_entries_site_id_work_stage_idx").on(t.siteId, t.workStage),
 ]);
 
+// Planned mason/helper person-days per site + split-labour work type, shown as
+// "deployed / target" on the labour category page. work_type is the exact
+// labour_entries.work_type string, matching the page's category filter.
+export const labourTargets = pgTable("labour_targets", {
+  id: identityId(),
+  siteId: uuid("site_id").notNull().references(() => sites.siteId, { onDelete: "cascade" }),
+  workType: varchar("work_type", { length: 100 }).notNull(),
+  masonTarget: integer("mason_target"),
+  helperTarget: integer("helper_target"),
+  updatedBy: uuid("updated_by").references(() => userProfiles.userId, { onDelete: "set null" }),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex("labour_targets_site_work_type_uq").on(t.siteId, t.workType),
+  check("labour_targets_mason_target_range", sql`${t.masonTarget} IS NULL OR ${t.masonTarget} BETWEEN 0 AND 100000`),
+  check("labour_targets_helper_target_range", sql`${t.helperTarget} IS NULL OR ${t.helperTarget} BETWEEN 0 AND 100000`),
+]);
+
 export const materialEntries = pgTable("material_entries", {
   id: identityId(),
   materialEntryId: uuid("material_entry_id").notNull().unique().defaultRandom(),

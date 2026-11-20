@@ -188,6 +188,17 @@ export const labourEntrySchema = labourCommonCreateShape
     }
   });
 
+// Planned mason/helper person-days for one site + split-labour work type.
+// Both keys are required so a client can never half-clear a target by omission.
+const labourTargetValue = z.number().int().min(0).max(100000).nullable();
+export const labourTargetSchema = z.object({
+  workType: z.string().trim().min(1).max(100).refine(isSplitLabourWorkType, {
+    message: "Targets are only supported for Plastering and Brickwork",
+  }),
+  masonTarget: labourTargetValue,
+  helperTarget: labourTargetValue,
+});
+
 export const updateLabourEntrySchema = z.object({
   date: entryDateSchema.optional(),
   peopleCount: z.number().int().positive().max(ENTRY_FIELD_CONSTRAINTS.peopleCount.max).optional(),

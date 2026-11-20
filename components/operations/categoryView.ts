@@ -142,3 +142,11 @@ export function buildMaterialQuantityTotals(entries: Entry[]): QuantityTotal[] {
     }))
     .sort((a, b) => b.total - a.total || String(a.unit).localeCompare(String(b.unit)));
 }
+
+// Header text for one split-labour role: "13", or "13 / 60 (22%)" against a
+// target. A zero target has no meaningful percent, so it is left off.
+export function formatDeployed(deployed: number, target: number | null): string {
+  if (target == null) return String(deployed);
+  if (target === 0) return `${deployed} / 0`;
+  return `${deployed} / ${target} (${Math.round((deployed / target) * 100)}%)`;
+}
