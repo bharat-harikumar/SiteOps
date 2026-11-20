@@ -6,6 +6,7 @@ import { ApiUnavailableBanner } from '@/components/ui/ApiUnavailableBanner';
 import type { ClientResult } from '@/lib/http/client';
 import { useApiResult } from '@/lib/http/useApiQuery';
 import { friendlyErrorMessage } from '@/lib/ui/toastMessages';
+import { Select } from "@/components/ui/Select";
 
 type AnalyticsResponse = {
   period: '7d' | '30d' | '90d';
@@ -60,15 +61,16 @@ export function AdminAnalyticsPageClient({
 
       <label className="grid gap-2 rounded-2xl border border-outline-variant bg-surface p-4 text-sm font-semibold text-on-surface">
         Period
-        <select
+        <Select
           value={period}
-          onChange={(e) => setPeriod(e.target.value as typeof period)}
-          className="rounded-2xl border border-outline-variant bg-surface px-4 py-3 text-base text-on-surface"
-        >
-          <option value="7d">7d</option>
-          <option value="30d">30d</option>
-          <option value="90d">90d</option>
-        </select>
+          onChange={(value) => setPeriod(value as typeof period)}
+          label="Period"
+          options={[
+            { value: "7d", label: "7d" },
+            { value: "30d", label: "30d" },
+            { value: "90d", label: "90d" },
+          ]}
+        />
       </label>
 
       {result?.ok ? (

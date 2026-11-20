@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { requestJson } from "@/lib/http/client";
 import { useApiResult } from "@/lib/http/useApiQuery";
 import { friendlyErrorMessage } from "@/lib/ui/toastMessages";
+import { DatePicker } from "@/components/ui/DatePicker";
+import { Select } from "@/components/ui/Select";
 
 // Entry form for custom ("dynamic") categories — those not in the static
 // entryFieldRegistry. The form is driven by the category's approved
@@ -145,14 +147,7 @@ export function DynamicEntryForm({ categoryId, categoryName, siteId }: Props) {
         <label htmlFor="dyn-date" className={labelClass}>
           Date *
         </label>
-        <input
-          id="dyn-date"
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          required
-          className="input-standard"
-        />
+        <DatePicker id="dyn-date" value={date} onChange={setDate} clearable={false} />
       </div>
 
       {fields.map((field) => {
@@ -165,21 +160,15 @@ export function DynamicEntryForm({ categoryId, categoryName, siteId }: Props) {
               {field.unit ? ` (${field.unit})` : ""}
             </label>
             {field.fieldType === "Dropdown" ? (
-              <select
+              <Select
                 id={id}
                 value={values[field.fieldDefinitionId] ?? ""}
-                onChange={(e) => setValue(field.fieldDefinitionId, e.target.value)}
-                className="input-standard appearance-none bg-slate-900"
-              >
-                <option value="" className="bg-slate-900">
-                  Select…
-                </option>
-                {opts.map((o) => (
-                  <option key={String(o)} value={String(o)} className="bg-slate-900">
-                    {String(o)}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setValue(field.fieldDefinitionId, value)}
+                options={[
+                  { value: "", label: "Select…" },
+                  ...opts.map((o) => ({ value: String(o), label: String(o) })),
+                ]}
+              />
             ) : (
               <input
                 id={id}

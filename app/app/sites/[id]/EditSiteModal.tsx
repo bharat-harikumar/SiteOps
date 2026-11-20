@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ModalShell } from "@/components/ui/motion";
 import { requestJson } from "@/lib/http/client";
 import { notifyError } from "@/lib/ui/toast";
+import { Select } from "@/components/ui/Select";
 
 type Supervisor = { userId: string; displayName: string };
 
@@ -93,21 +94,25 @@ export function EditSiteModal({
           <input type="number" inputMode="decimal" min="0" step="0.01" value={budget} onChange={(e) => setBudget(e.target.value)} className={inputClass} />
         </div>
         <div className="flex flex-col gap-2">
-          <label className={labelClass}>Status</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value as Site["status"])} className={`${inputClass} appearance-none`}>
-            <option value="In Progress">In Progress</option>
-            <option value="Blocked">Blocked</option>
-            <option value="Completed">Completed</option>
-          </select>
+          <label htmlFor="edit-site-status" className={labelClass}>Status</label>
+          <Select
+            id="edit-site-status"
+            value={status}
+            onChange={(value) => setStatus(value as Site["status"])}
+            options={["In Progress", "Blocked", "Completed"].map((v) => ({ value: v, label: v }))}
+          />
         </div>
         <div className="flex flex-col gap-2">
-          <label className={labelClass}>Supervisor</label>
-          <select value={supervisorId} onChange={(e) => setSupervisorId(e.target.value)} className={`${inputClass} appearance-none`}>
-            {supervisors.length === 0 ? <option value={site.supervisorId}>Current supervisor</option> : null}
-            {supervisors.map((s) => (
-              <option key={s.userId} value={s.userId}>{s.displayName}</option>
-            ))}
-          </select>
+          <label htmlFor="edit-site-supervisor" className={labelClass}>Supervisor</label>
+          <Select
+            id="edit-site-supervisor"
+            value={supervisorId}
+            onChange={setSupervisorId}
+            options={[
+              ...(supervisors.length === 0 ? [{ value: site.supervisorId, label: "Current supervisor" }] : []),
+              ...supervisors.map((s) => ({ value: s.userId, label: s.displayName })),
+            ]}
+          />
         </div>
 
         <div className="flex gap-3 pt-2">

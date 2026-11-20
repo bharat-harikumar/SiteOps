@@ -13,6 +13,7 @@ import { notifyError } from '@/lib/ui/toast';
 import { SharePassword, TempPasswordField } from './TempPasswordField';
 import { generateTempPassword } from './tempPassword';
 import { useReturnFocus } from './useReturnFocus';
+import { Select } from "@/components/ui/Select";
 
 const labelClass = 'text-xs font-semibold text-on-surface-variant';
 const inputClass =
@@ -120,11 +121,12 @@ export function CreateUserDrawer({
           <TempPasswordField id="new-temp-password" label="Temp password *" value={tempPassword} onChange={setTempPassword} />
           <div className="flex flex-col gap-2">
             <label htmlFor="new-role" className={labelClass}>Role *</label>
-            <select id="new-role" value={role} onChange={(e) => setRole(e.target.value as Role)} className={inputClass}>
-              {ALL_ROLES.map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
+            <Select
+              id="new-role"
+              value={role}
+              onChange={(value) => setRole(value as Role)}
+              options={ALL_ROLES.map((r) => ({ value: r, label: r }))}
+            />
           </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="new-designation" className={labelClass}>Designation</label>

@@ -8,6 +8,7 @@ import { RowActionsMenu } from '@/components/catalog/RowActionsMenu';
 import { ALL_ROLES, type Role } from '@/lib/auth/roles';
 
 import { initialsFor, type AdminUser } from './adminUsersView';
+import { Select } from "@/components/ui/Select";
 
 export type UserRowProps = {
   user: AdminUser;
@@ -52,17 +53,15 @@ function RoleControl({ user, isSelf, saving, onRoleChange }: UserRowProps) {
   if (isSelf) return <span className="text-sm text-on-surface">{user.role}</span>;
   return (
     <div className="flex items-center gap-2">
-      <select
+      <Select
+        size="sm"
+        className="w-36"
         value={user.role}
         disabled={saving}
-        onChange={(e) => onRoleChange(user, e.target.value as Role)}
+        onChange={(value) => onRoleChange(user, value as Role)}
         aria-label={`Role for ${user.email ?? user.userId}`}
-        className="h-10 rounded border border-outline bg-surface-container-lowest px-3 text-sm text-on-surface focus:border-primary focus:outline-none disabled:opacity-60"
-      >
-        {ALL_ROLES.map((r) => (
-          <option key={r} value={r}>{r}</option>
-        ))}
-      </select>
+        options={ALL_ROLES.map((r) => ({ value: r, label: r }))}
+      />
       {saving ? <Loader2 className="h-4 w-4 animate-spin text-on-surface-variant" aria-label="Saving" /> : null}
     </div>
   );

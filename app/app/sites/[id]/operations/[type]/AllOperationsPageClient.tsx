@@ -33,7 +33,8 @@ import {
   mergeLoadedRows,
   type AllOperationsSort,
 } from "@/components/operations/allOperationsView";
-import { buildCombinedRows } from "@/components/operations/entryFormat";
+import { buildCombinedRows, SPEND_SORT_OPTIONS } from "@/components/operations/entryFormat";
+import { Select } from "@/components/ui/Select";
 
 // Matches the per-type limit the server page requests; a short page therefore
 // means that type is exhausted.
@@ -329,20 +330,13 @@ export default function AllOperationsPageClient({
           >
             Sort by
           </label>
-          <select
+          <Select
             id="filter-sort"
             value={filters.sort}
-            onChange={(event) =>
-              setFilters((state) => ({ ...state, sort: event.target.value as AllOperationsSort }))
-            }
-            className="input-standard appearance-none bg-slate-900"
+            onChange={(value) => setFilters((state) => ({ ...state, sort: value as AllOperationsSort }))}
             aria-label="Sort"
-          >
-            <option value="newest" className="bg-slate-900">Newest first</option>
-            <option value="oldest" className="bg-slate-900">Oldest first</option>
-            <option value="highest_spend" className="bg-slate-900">Highest spend</option>
-            <option value="lowest_spend" className="bg-slate-900">Lowest spend</option>
-          </select>
+            options={SPEND_SORT_OPTIONS}
+          />
         </div>
 
         <div className="flex items-center justify-between gap-2 md:col-span-3">

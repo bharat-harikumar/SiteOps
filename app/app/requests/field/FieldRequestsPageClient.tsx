@@ -8,6 +8,7 @@ import { requestJson, type ClientResult } from '@/lib/http/client';
 import { useApiResult } from '@/lib/http/useApiQuery';
 import { toastClientError, toastSuccess } from '@/lib/ui/toast';
 import { friendlyErrorMessage } from '@/lib/ui/toastMessages';
+import { Select } from "@/components/ui/Select";
 
 type FieldRequest = {
   // `id` is the numeric identity column; `fieldRequestId` is the uuid every
@@ -153,11 +154,12 @@ export function FieldRequestsPageClient({
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="fieldType" className={labelClass}>Field Type</label>
-          <select id="fieldType" name="fieldType" defaultValue="Text" className={inputClass}>
-            <option value="Text">Text</option>
-            <option value="Number">Number</option>
-            <option value="Dropdown">Dropdown</option>
-          </select>
+          <Select
+            id="fieldType"
+            name="fieldType"
+            defaultValue="Text"
+            options={["Text", "Number", "Dropdown"].map((v) => ({ value: v, label: v }))}
+          />
         </div>
         <button
           type="submit"

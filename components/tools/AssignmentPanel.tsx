@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronDown, Minus, Package, Plus } from "lucide-react";
+import { Minus, Package, Plus } from "lucide-react";
 
 import type { AssignmentInput } from "@/lib/tools/types";
+import { Select } from "@/components/ui/Select";
 
 export type SiteOption = { siteId: string; name: string };
 
@@ -105,28 +106,20 @@ export function AssignmentPanel({
         )}
 
         {/* Add site select dropdown */}
-        <div className="relative">
-          <select
-            aria-label="Add a site"
-            value={addSiteId}
-            onChange={(e) => {
-              setAddSiteId(e.target.value);
-              setAddQty(1);
-            }}
-            disabled={available.length === 0 || free < 1}
-            className="h-9 w-full appearance-none cursor-pointer rounded-xl border border-outline bg-white/5 pl-3 pr-10 text-xs text-on-surface outline-none transition focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/40 disabled:opacity-40"
-          >
-            <option value="" className="bg-[#0f172a] text-on-surface">{free < 1 ? "No free units to assign" : "Add another site…"}</option>
-            {available.map((s) => (
-              <option key={s.siteId} value={s.siteId} className="bg-[#0f172a] text-on-surface">
-                {s.name}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
-            <ChevronDown className="h-4 w-4" />
-          </div>
-        </div>
+        <Select
+          size="sm"
+          aria-label="Add a site"
+          value={addSiteId}
+          onChange={(next) => {
+            setAddSiteId(next);
+            setAddQty(1);
+          }}
+          disabled={available.length === 0 || free < 1}
+          options={[
+            { value: "", label: free < 1 ? "No free units to assign" : "Add another site…" },
+            ...available.map((s) => ({ value: s.siteId, label: s.name })),
+          ]}
+        />
 
         {/* Units to assign controls */}
         {addSiteId ? (

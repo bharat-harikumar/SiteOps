@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { dedupeUnitOptionsByName, displayUnitName } from "@/lib/catalog/units";
 import { useApiResult } from "@/lib/http/useApiQuery";
 import { notifyError } from "@/lib/ui/toast";
+import { Select } from "@/components/ui/Select";
 
 export type UnitOption = {
   unitId: string;
@@ -76,31 +77,26 @@ export function UnitSelect({ label, value, onChange, required, allowedNames }: P
         {label}
         {required && " *"}
       </label>
-      <select
+      <Select
         value={value ? `${value.mode}:${value.unitId}` : ""}
-        onChange={(event) => {
+        onChange={(next) => {
           const nextValue = options.find(
-            (option) => `${option.mode}:${option.unitId}` === event.target.value,
+            (option) => `${option.mode}:${option.unitId}` === next,
           ) ?? null;
           onChange(nextValue);
         }}
         required={required}
         disabled={loading}
-        className="input-standard appearance-none bg-slate-900"
-      >
-        <option value="" className="bg-slate-900">
-          {loading ? "Loading..." : "Select..."}
-        </option>
-        {options.map((option) => (
-          <option
-            key={`${option.mode}:${option.unitId}`}
-            value={`${option.mode}:${option.unitId}`}
-            className="bg-slate-900"
-          >
-            {option.label}
-          </option>
-        ))}
-      </select>
+        label={label}
+        aria-label={label}
+        options={[
+          { value: "", label: loading ? "Loading…" : "Select…" },
+          ...options.map((option) => ({
+            value: `${option.mode}:${option.unitId}`,
+            label: option.label,
+          })),
+        ]}
+      />
     </div>
   );
 }

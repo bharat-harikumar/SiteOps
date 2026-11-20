@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavRouter } from '@/lib/nav/useNavRouter';
-import { ArrowRightLeft, MapPin, Truck, Package, Users, ChevronDown, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowRightLeft, MapPin, Truck, Package, Users, AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { notifyError } from '@/lib/ui/toast';
 
@@ -11,6 +11,7 @@ import { requestJson } from '@/lib/http/client';
 import { useCatalogNames } from '@/lib/catalog/useCatalogNames';
 import { filterToAllowedCanonical } from '@/lib/catalog/selectors';
 import { labourDefaultTypes, materialDefaultTypes } from '@/lib/validation/schemas';
+import { Select } from "@/components/ui/Select";
 
 export type TransferSiteOption = {
   siteId: string;
@@ -141,12 +142,18 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
                 From site
               </label>
               <div className="relative">
-                <select id="transfer-from-site" required value={fromSiteId} onChange={(e) => setFromSiteId(e.target.value)} className="input-standard pl-10 appearance-none bg-slate-900">
-                  <option value="" className="bg-slate-900">Select site</option>
-                  {sites.map((s) => <option key={s.siteId} value={s.siteId} className="bg-slate-900">{s.name}</option>)}
-                </select>
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <Select
+                  id="transfer-from-site"
+                  required
+                  value={fromSiteId}
+                  onChange={setFromSiteId}
+                  triggerClassName="pl-10"
+                  options={[
+                    { value: "", label: "Select site" },
+                    ...sites.map((s) => ({ value: s.siteId, label: s.name })),
+                  ]}
+                />
+                <MapPin className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               </div>
             </div>
 
@@ -159,12 +166,18 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
                 To site
               </label>
               <div className="relative">
-                <select id="transfer-to-site" required value={toSiteId} onChange={(e) => setToSiteId(e.target.value)} className="input-standard pl-10 appearance-none bg-slate-900">
-                  <option value="" className="bg-slate-900">Select site</option>
-                  {sites.filter((s) => s.siteId !== fromSiteId).map((s) => <option key={s.siteId} value={s.siteId} className="bg-slate-900">{s.name}</option>)}
-                </select>
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-400" />
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <Select
+                  id="transfer-to-site"
+                  required
+                  value={toSiteId}
+                  onChange={setToSiteId}
+                  triggerClassName="pl-10"
+                  options={[
+                    { value: "", label: "Select site" },
+                    ...sites.filter((s) => s.siteId !== fromSiteId).map((s) => ({ value: s.siteId, label: s.name })),
+                  ]}
+                />
+                <MapPin className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-400" />
               </div>
             </div>
           </div>
@@ -200,23 +213,31 @@ export function TransferForm({ sites, defaultFromSiteId, onSuccess }: Props) {
           {resourceType === 'Labour' ? (
             <div className="space-y-2">
               <label htmlFor="transfer-work-type" className="text-xs font-semibold text-slate-500 ml-1">Work Type</label>
-              <select id="transfer-work-type" value={workTypeEnum} onChange={(e) => setWorkTypeEnum(e.target.value)} disabled={labourLoading} className="input-standard appearance-none bg-slate-900">
-                <option value="" className="bg-slate-900">
-                  {labourLoading ? 'Loading…' : labourWorkTypes.length ? 'Select…' : 'No work types available'}
-                </option>
-                {labourWorkTypes.map((v) => <option key={v} value={v} className="bg-slate-900">{v}</option>)}
-              </select>
+              <Select
+                id="transfer-work-type"
+                value={workTypeEnum}
+                onChange={setWorkTypeEnum}
+                disabled={labourLoading}
+                options={[
+                  { value: "", label: labourLoading ? 'Loading…' : labourWorkTypes.length ? 'Select…' : 'No work types available' },
+                  ...labourWorkTypes.map((v) => ({ value: v, label: v })),
+                ]}
+              />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label htmlFor="transfer-material-type" className="text-xs font-semibold text-slate-500 ml-1">Material Type</label>
-                <select id="transfer-material-type" value={materialTypeEnum} onChange={(e) => setMaterialTypeEnum(e.target.value)} disabled={materialLoading} className="input-standard appearance-none bg-slate-900">
-                  <option value="" className="bg-slate-900">
-                    {materialLoading ? 'Loading…' : materialTypes.length ? 'Select…' : 'No material types available'}
-                  </option>
-                  {materialTypes.map((v) => <option key={v} value={v} className="bg-slate-900">{v}</option>)}
-                </select>
+                <Select
+                  id="transfer-material-type"
+                  value={materialTypeEnum}
+                  onChange={setMaterialTypeEnum}
+                  disabled={materialLoading}
+                  options={[
+                    { value: "", label: materialLoading ? 'Loading…' : materialTypes.length ? 'Select…' : 'No material types available' },
+                    ...materialTypes.map((v) => ({ value: v, label: v })),
+                  ]}
+                />
               </div>
               {/* UnitSelect renders its own label — no wrapper <label> here. */}
               <UnitSelect label="Unit" value={unit} onChange={setUnit} required />

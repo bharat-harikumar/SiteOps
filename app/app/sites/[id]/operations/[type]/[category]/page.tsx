@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { checkOwnership } from "@/lib/auth/ownership";
 import { safeGetSessionFromHeaders } from "@/lib/auth/session";
+import { loadActiveCatalogNames } from "@/lib/db/queries/catalogLists";
 import { getEntriesBySite, type EntryType, type MaterialWorkStage } from "@/lib/db/queries/entries";
 import { getLabourProgress } from "@/lib/db/queries/labourTargets";
 import { getSiteById } from "@/lib/db/queries/sites";
@@ -68,7 +69,7 @@ export default async function CategoryDetailPage({
 
   // Mason/helper progress counts ALL entries for this work type, so it ignores
   // the date/stage filters and the 200-row cap the list below applies.
-  const [entries, manpower] = await Promise.all([
+  const [entries, manpower, workStages] = await Promise.all([
     getEntriesBySite(siteId, type as EntryType, {
       from: from || undefined,
       to: to || undefined,
@@ -78,6 +79,8 @@ export default async function CategoryDetailPage({
       limit: 200,
     }),
     type === "labour" && isSplitLabourWorkType(category) ? getLabourProgress(siteId, category) : null,
+    // Admin-managed "Work Stage" list — the same one the entry form offers.
+    loadActiveCatalogNames("Work Stage"),
   ]);
 
   return (
@@ -90,6 +93,7 @@ export default async function CategoryDetailPage({
       initialFilters={{ from, to, workStage, sort }}
       highlightId={highlight}
       manpower={manpower}
+      workStages={workStages}
     />
   );
 }

@@ -8,6 +8,7 @@ import { notifyError } from "@/lib/ui/toast";
 
 import { CatalogAddModal, type CatalogCreateResult } from "@/components/catalog/CatalogAddModal";
 import { requestJson } from "@/lib/http/client";
+import { Select } from "@/components/ui/Select";
 
 export type SubcategoryOption = {
   subcategoryId: string;
@@ -195,25 +196,22 @@ export function SubcategoryCombobox({
       </div>
 
       <div className="flex items-center gap-2">
-        <select
+        <Select
           value={selectedCatalogValue?.subcategoryId ?? ""}
-          onChange={(e) => {
-            const found = catalog.find((s) => s.subcategoryId === e.target.value) ?? null;
+          onChange={(next) => {
+            const found = catalog.find((s) => s.subcategoryId === next) ?? null;
             onChange(found);
           }}
           required={required}
           disabled={loadingCatalog}
-          className="input-standard appearance-none bg-slate-900 flex-1"
-        >
-          <option value="" className="bg-slate-900">
-            {loadingCatalog ? "Loading…" : catalog.length === 0 ? `No ${itemNounLower} yet` : "Select…"}
-          </option>
-          {catalog.map((s) => (
-            <option key={s.subcategoryId} value={s.subcategoryId} className="bg-slate-900">
-              {s.name}
-            </option>
-          ))}
-        </select>
+          label={label}
+          aria-label={label}
+          className="min-w-0 flex-1"
+          options={[
+            { value: "", label: loadingCatalog ? "Loading…" : catalog.length === 0 ? `No ${itemNounLower} yet` : "Select…" },
+            ...catalog.map((s) => ({ value: s.subcategoryId, label: s.name })),
+          ]}
+        />
 
         {role === "Admin" && selectedCatalogValue && (
           <button

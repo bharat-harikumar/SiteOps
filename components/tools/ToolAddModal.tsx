@@ -8,6 +8,7 @@ import { ModalShell } from "@/components/ui/motion";
 import { useToolMutations, type ToolCategoryDTO } from "@/lib/client/tools";
 import { notifyError } from "@/lib/ui/toast";
 import { quantityError } from "./movementFormState";
+import { Select } from "@/components/ui/Select";
 
 // Add-tool flow lifted out of the inline toolbar into a focused modal, mirroring
 // CatalogAddModal. Same validation/behaviour as the old inline form.
@@ -97,21 +98,18 @@ export function ToolAddModal({
 
         <label className="flex flex-col gap-1.5 text-sm font-semibold tracking-wide text-on-surface-variant">
           Category
-          <select
+          <Select
             value={categoryId}
             disabled={categoriesLoading || categoriesError}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className="h-12 w-full cursor-pointer rounded-xl border border-outline px-3 text-base text-on-surface"
-          >
-            <option value="">Select…</option>
-            {categories
-              .filter((c) => c.isActive)
-              .map((c) => (
-                <option key={c.categoryId} value={c.categoryId}>
-                  {c.name}
-                </option>
-              ))}
-          </select>
+            onChange={setCategoryId}
+            label="Category"
+            options={[
+              { value: "", label: "Select…" },
+              ...categories
+                .filter((c) => c.isActive)
+                .map((c) => ({ value: c.categoryId, label: c.name })),
+            ]}
+          />
         </label>
 
         {categoriesLoading ? (

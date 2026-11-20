@@ -12,6 +12,7 @@ import {
   quantityError,
   type MovementActionName,
 } from "./movementFormState";
+import { Select } from "@/components/ui/Select";
 
 export type MovementOperation = { action: MovementActionName; toolId?: string };
 export type MovementToolChoice = {
@@ -284,15 +285,17 @@ export function ToolMovementForm({
                 htmlFor={`${id}-tool`}
               >
                 Tool
-                <select
+                <Select
                   id={`${id}-tool`}
                   value={selectedId}
                   disabled={busy || uncertain}
-                  onChange={(event) => {
+                  label="Tool"
+                  className="mt-2"
+                  onChange={(next) => {
                     const tool = tools.find(
-                      (item) => item.toolId === event.target.value,
+                      (item) => item.toolId === next,
                     );
-                    setSelectedId(event.target.value);
+                    setSelectedId(next);
                     setReviewed(
                       tool
                         ? { toolId: tool.toolId, version: tool.version }
@@ -301,15 +304,14 @@ export function ToolMovementForm({
                     setNeedsReview(false);
                     setMessage("");
                   }}
-                  className="input-standard mt-2 min-h-11 text-base"
-                >
-                  <option value="">Select a tool</option>
-                  {tools.map((tool) => (
-                    <option key={tool.toolId} value={tool.toolId}>
-                      {tool.name} · {tool.available} available
-                    </option>
-                  ))}
-                </select>
+                  options={[
+                    { value: "", label: "Select a tool" },
+                    ...tools.map((tool) => ({
+                      value: tool.toolId,
+                      label: `${tool.name} · ${tool.available} available`,
+                    })),
+                  ]}
+                />
               </label>
             )}
             {tools.length === 0 ? (
@@ -323,20 +325,18 @@ export function ToolMovementForm({
                 htmlFor={`${id}-site`}
               >
                 Destination site
-                <select
+                <Select
                   id={`${id}-site`}
                   value={targetId}
                   disabled={busy || uncertain}
-                  onChange={(event) => setTargetId(event.target.value)}
-                  className="input-standard mt-2 min-h-11 text-base"
-                >
-                  <option value="">Select a site</option>
-                  {sites.map((site) => (
-                    <option key={site.siteId} value={site.siteId}>
-                      {site.name}
-                    </option>
-                  ))}
-                </select>
+                  label="Destination site"
+                  className="mt-2"
+                  onChange={setTargetId}
+                  options={[
+                    { value: "", label: "Select a site" },
+                    ...sites.map((site) => ({ value: site.siteId, label: site.name })),
+                  ]}
+                />
                 {sites.length === 0 ? (
                   <span className="mt-2 block text-sm text-slate-400">
                     No other available sites to transfer to
