@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, Save, Trash2 } from 'lucide-react';
-import { useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { useNavRouter } from '@/lib/nav/useNavRouter';
 import { toast } from "sonner";
 import { confirmDialog } from "@/lib/ui/confirm";
@@ -29,6 +29,8 @@ import {
 import { clearsFieldError, validateEntryValues, type ValidationFailure } from "./EntryForm.validate";
 import { SubcategoryCombobox, type SubcategoryOption } from "./SubcategoryCombobox";
 import { UnitSelect, type UnitOption } from "./UnitSelect";
+import { DatePicker } from "@/components/ui/DatePicker";
+import { Select } from "@/components/ui/Select";
 
 type Props = {
   categoryId: string;
@@ -487,20 +489,13 @@ function FieldRow({
           {field.label}
           {field.required && " *"}
         </label>
-        <select
+        <Select
           id={id}
           value={String(value ?? "")}
-          onChange={(e: ChangeEvent<HTMLSelectElement>) => onChange(e.target.value)}
+          onChange={onChange}
           required={field.required}
-          className={`${inputClass} appearance-none bg-slate-900`}
-        >
-          <option value="" className="bg-slate-900">Select…</option>
-          {field.options?.map((o) => (
-            <option key={o.value} value={o.value} className="bg-slate-900">
-              {o.label}
-            </option>
-          ))}
-        </select>
+          options={[{ value: "", label: "Select…" }, ...(field.options ?? [])]}
+        />
       </Field>
     );
   }
@@ -524,6 +519,23 @@ function FieldRow({
     );
   }
 
+  if (field.kind === "date") {
+    return (
+      <Field name={field.name} error={error}>
+        <label htmlFor={id} className={labelClass}>
+          {field.label}
+          {field.required && " *"}
+        </label>
+        <DatePicker
+          id={id}
+          value={String(value ?? "")}
+          onChange={onChange}
+          clearable={!field.required}
+        />
+      </Field>
+    );
+  }
+
   return (
     <Field name={field.name} error={error}>
       <label htmlFor={id} className={labelClass}>
@@ -532,7 +544,7 @@ function FieldRow({
       </label>
       <input
         id={id}
-        type={field.kind === "number" ? "number" : field.kind === "date" ? "date" : "text"}
+        type={field.kind === "number" ? "number" : "text"}
         inputMode={numericInputModeFor(field)}
         value={String(value ?? "")}
         onChange={(e) => onChange(e.target.value)}

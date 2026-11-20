@@ -11,6 +11,7 @@ import { ToolCategoryManager } from "@/components/tools/ToolCategoryManager";
 import { useToolCategories, useToolMutations, useTools, type ToolDTO } from "@/lib/client/tools";
 import { confirmDialog } from "@/lib/ui/confirm";
 import { notifyError } from "@/lib/ui/toast";
+import { Select } from "@/components/ui/Select";
 
 const SUBTABS = ["Tools", "Categories"] as const;
 
@@ -140,18 +141,17 @@ function ToolsTable() {
           />
         </div>
         <div className="flex items-center gap-2">
-          <select
+          <Select
+            size="sm"
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="h-8.5 flex-1 sm:flex-none cursor-pointer rounded-lg border border-white/10 bg-slate-900 px-3 text-xs text-white outline-none focus:border-blue-500"
-          >
-            <option value="">All categories</option>
-            {categories.map((c) => (
-              <option key={c.categoryId} value={c.categoryId}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+            onChange={setCategoryFilter}
+            aria-label="Category"
+            className="flex-1 sm:w-44 sm:flex-none"
+            options={[
+              { value: "", label: "All categories" },
+              ...categories.map((c) => ({ value: c.categoryId, label: c.name })),
+            ]}
+          />
           <button
             type="button"
             onClick={() => setAddOpen(true)}

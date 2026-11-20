@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ModalShell } from "@/components/ui/motion";
 import { requestJson } from "@/lib/http/client";
 import { notifyError } from "@/lib/ui/toast";
+import { Checkbox, Radio } from "@/components/ui/Checkbox";
 
 type UnitOption = { unitId: string; label: string };
 type Mapping = { unitId: string; label: string; isDefault: boolean };
@@ -97,12 +98,11 @@ export function AllowedUnitsEditor({ subcategoryId, name, onClose }: Props) {
                 return (
                   <li key={unit.unitId} className="flex items-center justify-between rounded-lg px-2 py-1.5 hover:bg-surface-container-low">
                     <label className="flex items-center gap-2 text-sm text-white">
-                      <input type="checkbox" checked={checked} onChange={() => toggle(unit.unitId)} />
+                      <Checkbox checked={checked} onChange={() => toggle(unit.unitId)} />
                       {unit.label}
                     </label>
                     <label className={`flex items-center gap-1 text-xs ${checked ? "text-on-surface-variant" : "opacity-30"}`}>
-                      <input
-                        type="radio"
+                      <Radio
                         name="default-unit"
                         disabled={!checked}
                         checked={defaultUnitId === unit.unitId}

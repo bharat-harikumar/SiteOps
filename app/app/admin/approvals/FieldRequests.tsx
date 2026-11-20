@@ -5,6 +5,7 @@ import { useEffect, useMemo, useOptimistic, useState } from 'react';
 import { ApiUnavailableBanner } from '@/components/ui/ApiUnavailableBanner';
 import { requestJson, type ClientResult } from '@/lib/http/client';
 import { toastClientError, toastSuccess } from '@/lib/ui/toast';
+import { Select } from "@/components/ui/Select";
 
 export type FieldRequest = {
   id: number;
@@ -140,27 +141,27 @@ export function FieldRequests({ initialRequests }: { initialRequests: FieldReque
                 </div>
                 {request.status === 'Pending' ? (
                   <div className="mt-3 grid gap-2">
-                    <select
+                    <Select
                       value={selectedCategory}
-                      onChange={(e) => setMergeCategory((prev) => ({ ...prev, [request.fieldRequestId]: e.target.value }))}
-                      className="input-standard h-11"
-                    >
-                      <option value="">Choose merge category</option>
-                      {categoriesResult?.ok ? categoriesResult.data.map((category) => (
-                        <option key={category.categoryId} value={category.categoryId}>{category.name}</option>
-                      )) : null}
-                    </select>
+                      onChange={(value) => setMergeCategory((prev) => ({ ...prev, [request.fieldRequestId]: value }))}
+                      aria-label="Merge category"
+                      options={[
+                        { value: "", label: "Choose merge category" },
+                        ...(categoriesResult?.ok
+                          ? categoriesResult.data.map((category) => ({ value: category.categoryId, label: category.name }))
+                          : []),
+                      ]}
+                    />
                     {isSub ? (
-                      <select
+                      <Select
                         value={mergeSubcategory[request.fieldRequestId] ?? ''}
-                        onChange={(e) => setMergeSubcategory((prev) => ({ ...prev, [request.fieldRequestId]: e.target.value }))}
-                        className="input-standard h-11"
-                      >
-                        <option value="">Choose merge subcategory</option>
-                        {subs.map((sub) => (
-                          <option key={sub.subcategoryId} value={sub.subcategoryId}>{sub.name}</option>
-                        ))}
-                      </select>
+                        onChange={(value) => setMergeSubcategory((prev) => ({ ...prev, [request.fieldRequestId]: value }))}
+                        aria-label="Merge subcategory"
+                        options={[
+                          { value: "", label: "Choose merge subcategory" },
+                          ...subs.map((sub) => ({ value: sub.subcategoryId, label: sub.name })),
+                        ]}
+                      />
                     ) : null}
                     <div className="mt-2 flex flex-wrap gap-2">
                       <button

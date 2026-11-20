@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { checkOwnership } from "@/lib/auth/ownership";
 import { safeGetSessionFromHeaders } from "@/lib/auth/session";
+import { loadActiveCatalogNames } from "@/lib/db/queries/catalogLists";
 import { getEntriesBySite, type EntryType, type MaterialWorkStage } from "@/lib/db/queries/entries";
 import { getSiteById } from "@/lib/db/queries/sites";
 import { serializeRow } from "@/lib/utils/serialize";
@@ -127,7 +128,12 @@ export default async function OperationDetailPage({
     sort: initialFilters.sort as "newest" | "oldest" | "highest_spend" | "lowest_spend",
     limit: 200,
   });
-  const categoryOptions = await getOperationCategoryOptions(type as EntryType);
+  // Work stages come from the admin-managed "Work Stage" list (the same one the
+  // entry form offers), so stages added or renamed there show in the filter.
+  const [categoryOptions, workStages] = await Promise.all([
+    getOperationCategoryOptions(type as EntryType),
+    loadActiveCatalogNames("Work Stage"),
+  ]);
 
   return (
     <OperationDetailPageClient
@@ -137,6 +143,7 @@ export default async function OperationDetailPage({
       initialEntries={serializeRow(entries) as any}
       initialFilters={initialFilters}
       categoryOptions={categoryOptions}
+      workStages={workStages}
       highlightId={highlight}
       initialView={initialView}
     />

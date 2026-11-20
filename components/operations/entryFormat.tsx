@@ -55,14 +55,14 @@ export function swapDateRangeIfInverted(from: string, to: string): { from: strin
   return { from, to, swapped: false };
 }
 
-export const workStages = [
-  "Basement Level",
-  "Brick Level",
-  "Lintel Level",
-  "Roof Level",
-  "Compound Wall",
-  "Other",
-] as const;
+// Sort choices for the operation filters. Incident has no spend, so it takes
+// only the first two.
+export const SPEND_SORT_OPTIONS = [
+  { value: "newest", label: "Newest first" },
+  { value: "oldest", label: "Oldest first" },
+  { value: "highest_spend", label: "Highest spend" },
+  { value: "lowest_spend", label: "Lowest spend" },
+];
 
 export const typeLabel: Record<EntryType, string> = {
   labour: clientDescriptorFor("labour").label,

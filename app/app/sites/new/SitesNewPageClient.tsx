@@ -8,6 +8,7 @@ import { notifyError } from "@/lib/ui/toast";
 
 import { can } from "@/lib/auth/capabilities";
 import { requestJson } from "@/lib/http/client";
+import { Select } from "@/components/ui/Select";
 
 type Supervisor = { userId: string; displayName: string };
 
@@ -100,14 +101,15 @@ export function SitesNewPageClient({ role, supervisors }: Props) {
         {can(role, "resource:manage_all") && (
           <div className="flex flex-col gap-2">
             <label htmlFor="supervisor" className={labelClass}>Supervisor</label>
-            <select id="supervisor" value={supervisorId} onChange={(e) => setSupervisorId(e.target.value)} className={inputClass}>
-              <option value="">Assign to me</option>
-              {supervisors.map((s) => (
-                <option key={s.userId} value={s.userId}>
-                  {s.displayName}
-                </option>
-              ))}
-            </select>
+            <Select
+              id="supervisor"
+              value={supervisorId}
+              onChange={setSupervisorId}
+              options={[
+                { value: "", label: "Assign to me" },
+                ...supervisors.map((s) => ({ value: s.userId, label: s.displayName })),
+              ]}
+            />
           </div>
         )}
 

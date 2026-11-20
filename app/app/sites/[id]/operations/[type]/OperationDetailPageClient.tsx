@@ -19,8 +19,9 @@ import {
   type Entry,
   formatCurrency,
   typeLabel,
-  workStages,
+  SPEND_SORT_OPTIONS,
 } from "@/components/operations/entryFormat";
+import { Select } from "@/components/ui/Select";
 
 type Site = {
   name: string;
@@ -42,6 +43,8 @@ type Props = {
   initialEntries: Entry[];
   initialFilters: Filters;
   categoryOptions: string[];
+  // Active admin-managed "Work Stage" names, in catalog order.
+  workStages: string[];
   highlightId?: string | null;
   initialView?: "category" | "all";
 };
@@ -55,6 +58,7 @@ export default function OperationDetailPageClient({
   initialEntries,
   initialFilters,
   categoryOptions: initialCategoryOptions,
+  workStages: catalogStages,
   highlightId = null,
   initialView = "category",
 }: Props) {
@@ -86,6 +90,11 @@ export default function OperationDetailPageClient({
     new Set(filters.category ? [filters.category, ...initialCategoryOptions] : initialCategoryOptions),
   );
 
+  // Keep a stage from the URL selectable even if it was since renamed/removed.
+  const workStages = Array.from(
+    new Set(filters.workStage ? [...catalogStages, filters.workStage] : catalogStages),
+  );
+
   // Header numbers only — the grouped-card rendering itself lives in EntryLogList.
   const { totalSpend, visibleLogCount } = useMemo(
     () => buildGroupedRows(entries, type, filters.sort),
@@ -100,7 +109,7 @@ export default function OperationDetailPageClient({
           .filter((entry) => entry.workStage === stage)
           .reduce((sum, entry) => sum + Number(entry.cost ?? 0), 0),
       })),
-    [entries],
+    [entries, workStages],
   );
 
   function applyFilters() {
@@ -205,20 +214,16 @@ export default function OperationDetailPageClient({
           >
             Category
           </label>
-          <select
+          <Select
             id="filter-category"
             value={filters.category}
-            onChange={(event) => setFilters((state) => ({ ...state, category: event.target.value }))}
-            className="input-standard appearance-none bg-slate-900"
+            onChange={(value) => setFilters((state) => ({ ...state, category: value }))}
             aria-label="Category"
-          >
-            <option value="" className="bg-slate-900">All categories</option>
-            {categoryOptions.map((option) => (
-              <option key={option} value={option} className="bg-slate-900">
-                {option}
-              </option>
-            ))}
-          </select>
+            options={[
+              { value: "", label: "All categories" },
+              ...categoryOptions.map((option) => ({ value: option, label: option })),
+            ]}
+          />
         </div>
         {(type === "labour" || type === "material" || type === "machinery" || type === "expense") ? (
           <div className="space-y-2">
@@ -228,18 +233,16 @@ export default function OperationDetailPageClient({
             >
               Work stage
             </label>
-            <select
+            <Select
               id="filter-stage"
               value={filters.workStage}
-              onChange={(event) => setFilters((state) => ({ ...state, workStage: event.target.value }))}
-              className="input-standard appearance-none bg-slate-900"
+              onChange={(value) => setFilters((state) => ({ ...state, workStage: value }))}
               aria-label="Work stage"
-            >
-              <option value="" className="bg-slate-900">All stages</option>
-              {workStages.map((stage) => (
-                <option key={stage} value={stage} className="bg-slate-900">{stage}</option>
-              ))}
-            </select>
+              options={[
+                { value: "", label: "All stages" },
+                ...workStages.map((stage) => ({ value: stage, label: stage })),
+              ]}
+            />
           </div>
         ) : (
           <div className="space-y-2">
@@ -258,22 +261,17 @@ export default function OperationDetailPageClient({
           >
             Sort by
           </label>
-          <select
+          <Select
             id="filter-sort"
             value={filters.sort}
-            onChange={(event) => setFilters((state) => ({ ...state, sort: event.target.value }))}
-            className="input-standard appearance-none bg-slate-900"
+            onChange={(value) => setFilters((state) => ({ ...state, sort: value }))}
             aria-label="Sort"
-          >
-            <option value="newest" className="bg-slate-900">Newest first</option>
-            <option value="oldest" className="bg-slate-900">Oldest first</option>
-            {(type === "labour" || type === "material" || type === "machinery" || type === "expense") ? (
-              <>
-                <option value="highest_spend" className="bg-slate-900">Highest spend</option>
-                <option value="lowest_spend" className="bg-slate-900">Lowest spend</option>
-              </>
-            ) : null}
-          </select>
+            options={
+              type === "labour" || type === "material" || type === "machinery" || type === "expense"
+                ? SPEND_SORT_OPTIONS
+                : SPEND_SORT_OPTIONS.slice(0, 2)
+            }
+          />
         </div>
         <div className="grid gap-3 md:col-span-5 md:grid-cols-[1fr_auto]">
           <button type="button" onClick={applyFilters} className="btn-primary h-12 py-3">

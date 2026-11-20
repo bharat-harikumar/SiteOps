@@ -7,6 +7,7 @@ import { ApiUnavailableBanner } from '@/components/ui/ApiUnavailableBanner';
 import type { ClientResult } from '@/lib/http/client';
 import { useApiResult } from '@/lib/http/useApiQuery';
 import { formatDate } from '@/lib/utils/formatDate';
+import { Select } from "@/components/ui/Select";
 
 type Site = {
   // `siteId` is the uuid every /api/sites/{id}/… route matches on; `id` is the
@@ -76,17 +77,12 @@ export function AdminExpensesPageClient({
 
       <label className="grid gap-2 rounded-2xl border border-outline-variant bg-surface p-4 text-sm font-semibold text-on-surface">
         Site
-        <select
+        <Select
           value={siteId}
-          onChange={(e) => setSiteId(e.target.value)}
-          className="rounded-2xl border border-outline-variant bg-surface px-4 py-3 text-base text-on-surface"
-        >
-          {sites.map((site) => (
-            <option key={site.id} value={site.id}>
-              {site.name}
-            </option>
-          ))}
-        </select>
+          onChange={setSiteId}
+          label="Site"
+          options={sites.map((site) => ({ value: site.siteId, label: site.name }))}
+        />
       </label>
 
       <section className="grid grid-cols-2 gap-3">

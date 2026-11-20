@@ -7,6 +7,7 @@ import { RenameModal } from "@/components/catalog/RenameModal";
 import { RowActionsMenu, type RowAction } from "@/components/catalog/RowActionsMenu";
 import { useToolCategories, useToolMutations, type ToolCategoryDTO } from "@/lib/client/tools";
 import { notifyError } from "@/lib/ui/toast";
+import { Toggle } from "@/components/ui/Toggle";
 
 // Tool categories CRUD. Categories are deactivated (not deleted) when tools
 // reference them — the FK restrict on tools.category_id backs this (case 9).
@@ -116,10 +117,7 @@ export function ToolCategoryManager() {
         </button>
       </div>
 
-      <label className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant">
-        <input type="checkbox" checked={showInactive} onChange={(e) => setShowInactive(e.target.checked)} />
-        Show inactive
-      </label>
+      <Toggle checked={showInactive} onChange={setShowInactive} label="Show inactive" />
 
       {visible.length === 0 ? (
         <p className="text-sm text-on-surface-variant">No categories yet</p>

@@ -8,6 +8,7 @@ import { requestJson, type ClientResult } from '@/lib/http/client';
 import { useApiResult } from '@/lib/http/useApiQuery';
 import { toastClientError, toastSuccess } from '@/lib/ui/toast';
 import { friendlyErrorMessage } from '@/lib/ui/toastMessages';
+import { Select } from "@/components/ui/Select";
 
 type ResourceRequest = {
   // `id` is the numeric identity column; `requestId` is the uuid every
@@ -133,12 +134,12 @@ export function ResourceRequestsPageClient({
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="type" className={labelClass}>Resource Type</label>
-          <select id="type" name="type" defaultValue="Materials" className={inputClass}>
-            <option value="Labour">Labour</option>
-            <option value="Materials">Materials</option>
-            <option value="Money">Money</option>
-            <option value="Machinery">Machinery</option>
-          </select>
+          <Select
+            id="type"
+            name="type"
+            defaultValue="Materials"
+            options={["Labour", "Materials", "Money", "Machinery"].map((v) => ({ value: v, label: v }))}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="details" className={labelClass}>Details</label>

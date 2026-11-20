@@ -11,6 +11,7 @@ import { ModalShell } from "@/components/ui/motion";
 import { EntryTypeIcon, entryTypeFromName } from "@/components/constants/EntryTypeIcon";
 import { requestJson } from "@/lib/http/client";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
+import { Select } from "@/components/ui/Select";
 
 export type CategoryOption = {
   categoryId: string;
@@ -300,15 +301,16 @@ export function CategoryPicker({ initialCategories = [], onSelect, role, siteId 
                   onChange={(e) => setFields((prev) => prev.map((item, i) => i === idx ? { ...item, label: e.target.value } : item))}
                   className="col-span-6 input-standard py-2"
                 />
-                <select
+                <Select
                   aria-label={`Custom field ${idx + 1} type`}
                   value={field.fieldType}
-                  onChange={(e) => setFields((prev) => prev.map((item, i) => i === idx ? { ...item, fieldType: e.target.value as "Text" | "Number" } : item))}
-                  className="col-span-3 input-standard py-2 appearance-none"
-                >
-                  <option value="Text" className="bg-slate-900">Text</option>
-                  <option value="Number" className="bg-slate-900">Number</option>
-                </select>
+                  onChange={(value) => setFields((prev) => prev.map((item, i) => i === idx ? { ...item, fieldType: value as "Text" | "Number" } : item))}
+                  className="col-span-3"
+                  options={[
+                    { value: "Text", label: "Text" },
+                    { value: "Number", label: "Number" },
+                  ]}
+                />
                 <input
                   type="text"
                   aria-label={`Custom field ${idx + 1} unit`}
