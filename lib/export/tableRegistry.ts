@@ -30,6 +30,7 @@ export const TABLE_REGISTRY: readonly TableEntry[] = [
   { key: "material_type_units", table: schema.materialTypeUnits },
   { key: "field_definitions", table: schema.fieldDefinitions },
   { key: "labour_entries", table: schema.labourEntries },
+  { key: "labour_targets", table: schema.labourTargets },
   { key: "material_entries", table: schema.materialEntries },
   { key: "machinery_entries", table: schema.machineryEntries },
   { key: "expense_entries", table: schema.expenseEntries },
